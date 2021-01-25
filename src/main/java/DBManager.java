@@ -13,7 +13,7 @@ public class DBManager {
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
-
+        return user;
     }
 
     public User[] findTopExpertsByTag(String tag, int idUser){
