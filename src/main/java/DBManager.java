@@ -17,7 +17,7 @@ public class DBManager {
     }
 
     public User[] findTopExpertsByTag(String tag, int idUser){
-
+        return user;
     }
 
     public User[] getCorrelatedUsers(String username){
