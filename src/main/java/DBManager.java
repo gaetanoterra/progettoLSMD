@@ -8,16 +8,12 @@ public class DBManager {
     }
 
     public User[] findMostPopularTagsByLocation(String tag, int idUser){
-
-        return user;
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
-        return user;
     }
 
     public User[] findTopExpertsByTag(String tag, int idUser){
-        return user;
     }
 
     public User[] getCorrelatedUsers(String username){
