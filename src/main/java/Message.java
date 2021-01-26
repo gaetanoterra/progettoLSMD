@@ -1,4 +1,6 @@
-public abstract class Message {
+import java.io.Serializable;
+
+public abstract class Message implements Serializable {
 
     private byte opcode;
 

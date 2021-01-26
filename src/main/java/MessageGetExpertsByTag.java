@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MessageGetExpertsByTag extends Message{
+public class MessageGetExpertsByTag extends Message implements Serializable {
 
     private String tag;
     private ArrayList usersList;

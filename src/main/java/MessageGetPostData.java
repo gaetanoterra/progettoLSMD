@@ -1,4 +1,6 @@
-public class MessageGetPostData extends MessageReadObjectQuery{
+import java.io.Serializable;
+
+public class MessageGetPostData extends MessageReadObjectQuery implements Serializable {
 
     private Post[] post;
 

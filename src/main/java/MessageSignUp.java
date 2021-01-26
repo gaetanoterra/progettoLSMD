@@ -1,4 +1,6 @@
-public class MessageSignUp extends Message{
+import java.io.Serializable;
+
+public class MessageSignUp extends Message implements Serializable {
 
     private User user;
 

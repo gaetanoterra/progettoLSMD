@@ -1,4 +1,6 @@
-public class MessageLogin extends Message{
+import java.io.Serializable;
+
+public class MessageLogin extends Message implements Serializable {
 
     private String username;
     private String password;

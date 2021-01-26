@@ -1,20 +1,31 @@
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Post {
 
-    private int postId;
+    private String postId;
     private String title;
     private ArrayList<Answer> answers;
-    private String creationDate;
+    private Date creationDate;
     private String body;
-    private int ownerUserId;
+    private String ownerUserId;
     private ArrayList<String> tags;
 
     public Post(){
 
     }
 
-    public int getPostId(){
+    public Post(String postId, String title, ArrayList<Answer> answers, Date creationDate, String body, String ownerUserId, ArrayList<String> tags){
+        this.postId = postId;
+        this.title = title;
+        this.answers = answers;
+        this.creationDate = creationDate;
+        this.body = body;
+        this.ownerUserId = ownerUserId;
+        this.tags = tags;
+    }
+
+    public String getPostId(){
         return postId;
     }
 
@@ -26,7 +37,7 @@ public class Post {
         return answers;
     }
 
-    public String getCreationDate(){
+    public Date getCreationDate(){
         return creationDate;
     }
 
@@ -34,7 +45,7 @@ public class Post {
         return body;
     }
 
-    public int getOwnerUserId(){
+    public String getOwnerUserId(){
         return ownerUserId;
     }
 
@@ -42,7 +53,7 @@ public class Post {
         return tags;
     }
 
-    public void setPostId(int id){
+    public void setPostId(String id){
         postId = id;
     }
 
@@ -54,7 +65,7 @@ public class Post {
         this.answers = answers;
     }
 
-    public void setCreationDate(String data){
+    public void setCreationDate(Date data){
         creationDate = data;
     }
 
@@ -62,7 +73,7 @@ public class Post {
         this.body = body;
     }
 
-    public void setOwnerUserId(int userId){
+    public void setOwnerUserId(String userId){
         ownerUserId = userId;
     }
 

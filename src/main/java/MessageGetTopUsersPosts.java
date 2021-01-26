@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class MessageGetTopUsersPosts extends Message{
+public class MessageGetTopUsersPosts extends Message implements Serializable {
 
     private HashMap<User, Post[]> mostAnsweredTopUserPostsMap;
     private String username;

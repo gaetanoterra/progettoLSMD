@@ -1,4 +1,6 @@
-public class MesssageGetUserData extends MessageReadObjectQuery{
+import java.io.Serializable;
+
+public class MesssageGetUserData extends MessageReadObjectQuery implements Serializable {
     private User[] userList;
 
     @Override
