@@ -2,10 +2,16 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
-import java.util.ArrayList;
+import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Indexes.descending;
+import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Updates.set;
 
 public class DocumentDBManager {
@@ -18,12 +24,73 @@ public class DocumentDBManager {
         database = dbConnection.getDatabase("mydb");
     }
 
-    public User[] findMostPopularTagsByLocation(String tag, int idUser){
+    public ArrayList<String> findMostPopularTagsByLocation(String location, int numTags){
+        //trovo tutti gli utenti relativi ad una locazione
+        //scorro tutti i post che hanno ownerUserId tra gli utenti trovati prima
+        //raggruppo per tag e li conto
+        MongoCollection<Document> collPost = database.getCollection("Post");
+        MongoCollection<Document> collUser = database.getCollection("User");
+        ArrayList<String> tags = new ArrayList<>();
 
+
+        ArrayList<User> user = new ArrayList<User>();
+        try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
+        {
+            while (cursor.hasNext())
+            {
+                Document doc = cursor.next();
+                User u = new User();
+
+                //mi interessa solo lo userId
+                u.setId(doc.getString("userId"));
+                user.add(u);
+            }
+        }
+
+        //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
+        Bson m = match(in("owneruserId", user));
+        Bson u = unwind("tags");
+        Bson g = group("$tags", sum("totaleTags",1));
+        Bson s = sort(descending("totaleTags"));
+        Bson l = limit(10);
+
+        try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
+        {
+            while (cursor.hasNext())
+            {
+                Document doc = cursor.next();
+
+                tags.add(doc.getString("tags"));
+            }
+        }
+
+        return tags;
     }
 
-    public User[] findTopExpertsByTag(String tag, int idUser){
+    //restituisco gli id degli utenti più esperti
+    public ArrayList<String> findTopExpertsByTag(String tag, int num){
+        MongoCollection<Document> collPost = database.getCollection("Post");
+        MongoCollection<Document> collUser = database.getCollection("User");
+        ArrayList<String> usersId = new ArrayList<>();
 
+        Bson m = match(in("tags", tag));
+        Bson u = unwind("answers");
+        Bson g = group("$answers.ownerUserId", sum("totaleRisposteUtente",1));
+        Bson s = sort(descending("totaleTags"));
+        Bson l = limit(num);
+        //Bson p = project(fields(include("$answers.ownerUserId")));
+
+        try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
+        {
+            while (cursor.hasNext())
+            {
+                Document doc = cursor.next();
+
+                usersId.add(doc.getString("answers.ownerUserId"));
+            }
+        }
+
+        return usersId;
     }
 
     public Post getPostById(String postId){
@@ -125,18 +192,24 @@ public class DocumentDBManager {
     public boolean insertAnswer(Answer answer, String postId){
         MongoCollection<Document> coll = database.getCollection("Post");
 
-        Document doc = new Document("answerId", answer.getAnswerId()).append("creationDate", answer.getCreationDate()).append("score", answer.getScore()).append("ownerUserId", answer.getOwnerUserId());
+        Document doc = new Document("answerId", answer.getAnswerId()).
+                                    append("creationDate", answer.getCreationDate()).
+                                    append("score", answer.getScore()).
+                                    append("ownerUserId", answer.getOwnerUserId());
 
         coll.updateOne(eq("postId", postId), Updates.push("answers", doc));
 
         return true;
     }
 
-    public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+    /////////////////////////////////////////////////////////////
+    /////////// da levare ///////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    /*public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
         MongoCollection<Document> coll = database.getCollection("Post");
 
 
-    }
+    }*/
 
     public boolean insertPost(Post post){
         MongoCollection<Document> coll = database.getCollection("Post");
@@ -189,9 +262,12 @@ public class DocumentDBManager {
         return res;
     }
 
-    public boolean insertVote(int postId, int answerId, String username, int voto){
+    /////////////////////////////////////////////////////////////
+    /////////// da levare ///////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    /*public boolean insertVote(int postId, int answerId, String username, int voto){
 
-    }
+    }*/
 
     public boolean removeAnswer(Answer answer, String postId){
         MongoCollection<Document> coll = database.getCollection("Post");
@@ -208,9 +284,12 @@ public class DocumentDBManager {
         return true;
     }
 
-    public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+    /////////////////////////////////////////////////////////////
+    /////////// da levare ///////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    /*public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
 
-    }
+    }*/
 
     public boolean removePost(Post post){
         MongoCollection<Document> coll = database.getCollection("Post");
