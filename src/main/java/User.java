@@ -4,7 +4,7 @@ public class User {
 
     private String userId;
     private String password;
-    private String username;
+    private String displayName;
     private int followersNumber = 0;
     private int followedNumber = 0;
     private double reputation = 0;
@@ -17,9 +17,9 @@ public class User {
 
     public User(){
     }
-    public User(String userId, String username, String location, String am, String url){
+    public User(String userId, String displayName, String location, String am, String url){
         this.userId = userId;
-        this.username = username;
+        this.displayName = displayName;
         this.location = location;
         this.aboutMe = am;
         this.websiteURL = url;
@@ -57,8 +57,8 @@ public class User {
         return type;
     }
 
-    public String getUsername(){
-        return username;
+    public String getDisplayName(){
+        return displayName;
     }
 
     public String getLocation(){
@@ -93,8 +93,8 @@ public class User {
 
     public void setType(String type) { this.type = type; }
 
-    public void setUsername(String username){
-        this.username = username;
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
     }
 
     public void setLocation(String location){

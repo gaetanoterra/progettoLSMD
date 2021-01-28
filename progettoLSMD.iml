@@ -14,5 +14,7 @@
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:4.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:bson:4.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:4.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:4.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
   </component>
 </module>

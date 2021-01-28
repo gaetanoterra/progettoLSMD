@@ -136,14 +136,14 @@ public class DocumentDBManager {
 
     }
 
-    public User GetUserData(String username){
+    public User GetUserData(String displayName){
         MongoCollection<Document> coll = database.getCollection("User");
 
-        Document userDoc = coll.find(eq("username", username)).first();
+        Document userDoc = coll.find(eq("displayName", displayName)).first();
         User user = new User();
 
         user.setId(userDoc.getString("userId"));
-        user.setUsername(username);
+        user.setDisplayName(displayName);
         user.setPassword(userDoc.getString("password"));
         user.setFollowersNumber(userDoc.getInteger("followersNumber"));
         user.setFollowedNumber(userDoc.getInteger("followedNumber"));
@@ -170,7 +170,7 @@ public class DocumentDBManager {
                 User u = new User();
 
                 u.setId(doc.getString("userId"));
-                u.setUsername(doc.getString("username"));
+                u.setDisplayName(doc.getString("displayName"));
                 u.setPassword(doc.getString("password"));
                 u.setFollowersNumber(doc.getInteger("followersNumber"));
                 u.setFollowedNumber(doc.getInteger("followedNumber"));
@@ -205,7 +205,7 @@ public class DocumentDBManager {
     /////////////////////////////////////////////////////////////
     /////////// da levare ///////////////////////////////////////
     /////////////////////////////////////////////////////////////
-    /*public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+    /*public boolean insertFollowRelationAndUpdate(String displayNameFollower, String displayNameFollowed){
         MongoCollection<Document> coll = database.getCollection("Post");
 
 
@@ -231,14 +231,14 @@ public class DocumentDBManager {
         boolean res = true;
         MongoCollection<Document> coll = database.getCollection("Users");
 
-        /* controllo con la checkUser se lo username è già in uso */
-        if(checkUser(user.getUsername())){
+        /* controllo con la checkUser se lo displayName è già in uso */
+        if(checkUser(user.getDisplayName())){
             res = false;
-            System.out.println("Username presente");
+            System.out.println("displayName presente");
         }
         else {
             Document us = new Document("userId", user.getUserId())
-                    .append("username", user.getUsername())
+                    .append("displayName", user.getDisplayName())
                     .append("password", user.getPassword())
                     .append("creationDate", user.getCreationData())
                     .append("location", user.getLocation())
@@ -250,11 +250,11 @@ public class DocumentDBManager {
         return res;
     }
 
-    private boolean checkUser(String username) {
+    private boolean checkUser(String displayName) {
         MongoCollection<Document> coll = database.getCollection("Users");
         boolean res = false;
 
-        long count = coll.countDocuments(eq("username", username));
+        long count = coll.countDocuments(eq("displayName", displayName));
 
         if(count > 0)
             res = true;
@@ -265,7 +265,7 @@ public class DocumentDBManager {
     /////////////////////////////////////////////////////////////
     /////////// da levare ///////////////////////////////////////
     /////////////////////////////////////////////////////////////
-    /*public boolean insertVote(int postId, int answerId, String username, int voto){
+    /*public boolean insertVote(int postId, int answerId, String displayName, int voto){
 
     }*/
 
@@ -287,7 +287,7 @@ public class DocumentDBManager {
     /////////////////////////////////////////////////////////////
     /////////// da levare ///////////////////////////////////////
     /////////////////////////////////////////////////////////////
-    /*public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+    /*public boolean removeFollowRelationAndUpdate(String displayNameFollower, String displayNameFollowed){
 
     }*/
 
@@ -299,10 +299,10 @@ public class DocumentDBManager {
         return true;
     }
 
-    public boolean removeUser(String username){
+    public boolean removeUser(String displayName){
         MongoCollection<Document> coll = database.getCollection("User");
 
-        coll.deleteOne(eq("username", username));
+        coll.deleteOne(eq("displayName", displayName));
 
         return true;
     }
