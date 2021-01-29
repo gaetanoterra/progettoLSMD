@@ -1,6 +1,6 @@
 public class Answer {
 
-    private int answerId;
+    private String answerId;
     private String creationDate;
     private double score;
     private int ownerUserId;
@@ -9,7 +9,7 @@ public class Answer {
 
     }
 
-    public int getAnswerId(){
+    public String getAnswerId(){
         return answerId;
     }
 
@@ -25,7 +25,7 @@ public class Answer {
         return ownerUserId;
     }
 
-    public void setAnswerId(int answerId){
+    public void setAnswerId(String answerId){
         this.answerId = answerId;
     }
 

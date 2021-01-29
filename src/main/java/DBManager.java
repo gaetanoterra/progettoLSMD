@@ -1,4 +1,9 @@
+import org.neo4j.driver.Session;
+import org.neo4j.driver.TransactionWork;
+
 import java.util.*;
+
+import static org.neo4j.driver.Values.parameters;
 
 public class DBManager {
 
@@ -62,7 +67,23 @@ public class DBManager {
 
     }
 
-    public boolean insertVote(int postId,String username, int voto){
+    public boolean insertRelationAnswerTo(String postId, User user){
+
+    }
+
+    public boolean insertRelationContainsTag(String name, String postId){
+
+    }
+
+    public boolean insertRelationPostsAnswer(String answerId, User user){
+
+    }
+
+    public boolean insertRelationPostsQuestion(String postId, User user){
+
+    }
+
+    public boolean insertRelationVote(int postId,String username, int voto){
 
     }
 
@@ -75,6 +96,26 @@ public class DBManager {
     }
 
     public boolean removePost(Post post){
+
+    }
+
+    public boolean removeRelationAnswerTo(String postId, String answerId){
+
+    }
+
+    public boolean removeRelationContainsTag(String postId, String name){
+
+    }
+
+    public boolean removeRelationPostsAnswer(String userId, String answerId){
+
+    }
+
+    public boolean removeRelationPostsQuestion(String userId, String postId){
+
+    }
+
+    public boolean removeRelationVote(String userId, String answerId){
 
     }
 
