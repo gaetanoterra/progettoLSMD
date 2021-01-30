@@ -18,7 +18,7 @@ public class GraphDBManager {
     public Map<User, Post> findMostAnsweredTopUserPosts(){
 
     }
-    
+
     public void findMostPopularTags(){
         try (Session session = dbConnection.session())
         {
