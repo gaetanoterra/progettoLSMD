@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane prefHeight="447.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSignIn">
+   <children>
+      <Label alignment="CENTER" layoutX="91.0" prefHeight="59.0" prefWidth="118.0" text="SIGN IN">
+         <font>
+            <Font name="Courier New" size="24.0" />
+         </font></Label>
+      <Label layoutX="107.0" layoutY="93.0" text="Username:" AnchorPane.bottomAnchor="335.0" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0" AnchorPane.topAnchor="93.0">
+         <font>
+            <Font name="Courier New" size="16.0" />
+         </font>
+      </Label>
+      <PasswordField layoutX="55.0" layoutY="211.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
+      <Separator layoutX="34.0" layoutY="58.0" prefHeight="2.0" prefWidth="233.0" />
+      <Label layoutX="107.0" layoutY="194.0" text="Password:" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0">
+         <font>
+            <Font name="Courier New" size="16.0" />
+         </font>
+      </Label>
+      <TextField alignment="CENTER" layoutX="55.0" layoutY="118.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
+      <Button alignment="CENTER" layoutX="103.0" layoutY="266.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="94.0" text="Sign In" AnchorPane.leftAnchor="103.0" AnchorPane.rightAnchor="103.0">
+         <font>
+            <Font name="Courier New" size="16.0" />
+         </font>
+      </Button>
+      <Separator layoutX="34.0" layoutY="333.0" prefHeight="2.0" prefWidth="233.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="33.0" />
+      <Label layoutX="100.0" layoutY="368.0" text="Create Account" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="99.0">
+         <font>
+            <Font name="Courier New" size="12.0" />
+         </font>
+      </Label>
+      <Button layoutX="103.0" layoutY="383.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="94.0" text="Sign Up" AnchorPane.leftAnchor="103.0" AnchorPane.rightAnchor="103.0">
+         <font>
+            <Font name="Courier New" size="16.0" />
+         </font>
+      </Button>
+   </children>
+</GridPane>

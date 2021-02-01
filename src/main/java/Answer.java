@@ -1,3 +1,5 @@
+import javafx.event.ActionEvent;
+
 public class Answer {
 
     private String answerId;
@@ -39,5 +41,16 @@ public class Answer {
 
     public void setOwnerUserId(int userId){
         ownerUserId = userId;
+    }
+
+    public static class ControllerAnonymousInterface {
+
+        public void eventButtonSignIn(ActionEvent event){
+            Main.switchScene(1);
+        }
+
+        public void eventButtonSignUp(ActionEvent event){
+            Main.switchScene(2);
+        }
     }
 }
