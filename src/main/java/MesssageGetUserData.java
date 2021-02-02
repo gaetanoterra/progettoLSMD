@@ -1,10 +1,10 @@
 import java.io.Serializable;
 
-public class MesssageGetUserData extends MessageReadObjectQuery implements Serializable {
+public class MesssageGetUserData extends MessageReadObjectQuery {
     private User[] userList;
 
     @Override
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return super.getOpcode();
     }
 

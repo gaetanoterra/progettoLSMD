@@ -1,8 +1,8 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Main extends Application{
 
+    private static ClientServerManager clientServerManager;
     private static AnchorPane root;
 
     static List<AnchorPane> grid = new ArrayList<AnchorPane>();
@@ -35,9 +36,10 @@ public class Main extends Application{
 
             primaryStage.setScene(scene);
             primaryStage.show();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        }catch(Exception e){e.printStackTrace();}
+
+        //creo un'istanza di ClientServerManager per connettermi al Server
+        clientServerManager = new ClientServerManager();
     }
 
     public static void switchScene(int idx){
@@ -47,7 +49,12 @@ public class Main extends Application{
         idx_cur = idx;
     }
 
+    public static ClientServerManager getClientServerManager() {
+        return clientServerManager;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
+
 }

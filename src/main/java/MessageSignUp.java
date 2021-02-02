@@ -1,11 +1,15 @@
 import java.io.Serializable;
 
-public class MessageSignUp extends Message implements Serializable {
+public class MessageSignUp extends Message {
 
     private User user;
 
+    public MessageSignUp(User user){
+        this.user = user;
+    }
+
     @Override
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return super.getOpcode();
     }
 

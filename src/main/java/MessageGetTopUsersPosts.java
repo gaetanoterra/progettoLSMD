@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class MessageGetTopUsersPosts extends Message implements Serializable {
+public class MessageGetTopUsersPosts extends Message {
 
     private HashMap<User, Post[]> mostAnsweredTopUserPostsMap;
     private String username;
@@ -15,7 +15,7 @@ public class MessageGetTopUsersPosts extends Message implements Serializable {
     }
 
     @Override
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return super.getOpcode();
     }
 }

@@ -1,10 +1,10 @@
 import java.io.Serializable;
 
-public abstract class Message implements Serializable {
+public abstract class Message implements Serializable{
 
-    private byte opcode;
+    private Opcode opcode;
 
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return opcode;
     }
 }

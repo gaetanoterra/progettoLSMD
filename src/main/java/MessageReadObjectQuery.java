@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public abstract class MessageReadObjectQuery extends Message implements Serializable {
+public abstract class MessageReadObjectQuery extends Message {
 
     private byte getObjectOpcode;
 

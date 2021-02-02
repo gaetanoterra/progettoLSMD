@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MessageGetExpertsByTag extends Message implements Serializable {
+public class MessageGetExpertsByTag extends Message {
 
     private String tag;
     private ArrayList usersList;
@@ -15,7 +15,7 @@ public class MessageGetExpertsByTag extends Message implements Serializable {
     }
 
     @Override
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return super.getOpcode();
     }
 }

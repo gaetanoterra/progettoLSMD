@@ -1,11 +1,21 @@
 import javafx.event.ActionEvent;
+import javafx.fxml.*;
 import javafx.scene.control.*;
+
+import java.io.IOException;
 
 public class ControllerSignIn {
 
-    private Label label_error_message_signin;
+    ClientServerManager clm = Main.getClientServerManager();
 
-    public void eventButtonConfirmSignIn(ActionEvent actionEvent) {
+    @FXML
+    private Label label_error_message_signin;
+    @FXML
+    private TextField textfield_signin_username, textfield_signin_password;
+
+    //invio le cose a ClientServerManager, il quale effettuerà la richiesta a ClientManager
+    public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException {
+        clm.send(new MessageLogin(Opcode.Message_Login, textfield_signin_username.getText(), textfield_signin_password.getText()));
         /*if(controlloUsernamePassword){
             label_error_message_signin.setText("");
             Main.switchScene(3);
@@ -18,7 +28,7 @@ public class ControllerSignIn {
 
     }
 
-    public void ceventButtonSignUpSignIn(ActionEvent actionEvent) {
+    public void eventButtonSignUpSignIn(ActionEvent actionEvent) {
         Main.switchScene(2);
     }
 

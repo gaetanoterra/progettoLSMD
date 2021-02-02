@@ -1,11 +1,11 @@
 import java.io.Serializable;
 
-public class MessageLogOut extends Message implements Serializable {
+public class MessageLogOut extends Message {
 
     private String username;
 
     @Override
-    public byte getOpcode() {
+    public Opcode getOpcode() {
         return super.getOpcode();
     }
 
