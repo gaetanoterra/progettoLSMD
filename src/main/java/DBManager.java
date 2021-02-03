@@ -11,7 +11,18 @@ public class DBManager {
     private GraphDBManager graphDBMan;
 
     public DBManager(){
+        documentDBMan = new DocumentDBManager();
+        //graphDBMan = new GraphDBManager();
+    }
 
+    public boolean checkUsernamePassword(String username, String password){
+        User user = getUserData(username);
+
+        if(user.getDisplayName().equals(username) && user.getPassword().equals(password)) {
+            return true;
+        }
+
+        return false;
     }
 
     public User[] findMostPopularTagsByLocation(String tag, int idUser){
@@ -43,8 +54,10 @@ public class DBManager {
 
     }
 
-    public User GetUserData(String username){
+    public User getUserData(String username){
+        User user = documentDBMan.getUserData(username);
 
+        return user;
     }
 
     public User[] getUsersRank(){

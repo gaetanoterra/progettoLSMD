@@ -136,24 +136,26 @@ public class DocumentDBManager {
 
     }
 
-    public User GetUserData(String displayName){
+    public User getUserData(String displayName){
         MongoCollection<Document> coll = database.getCollection("User");
 
         Document userDoc = coll.find(eq("displayName", displayName)).first();
         User user = new User();
 
-        user.setId(userDoc.getString("userId"));
-        user.setDisplayName(displayName);
-        user.setPassword(userDoc.getString("password"));
-        user.setFollowersNumber(userDoc.getInteger("followersNumber"));
-        user.setFollowedNumber(userDoc.getInteger("followedNumber"));
-        user.setReputation(userDoc.getDouble("reputation"));
-        user.setCreationData(userDoc.getDate("creationDate"));
-        user.setLastAccessDate(userDoc.getDate("lastAccessDate"));
-        user.setType(userDoc.getString("type"));
-        user.setLocation(userDoc.getString("location"));
-        user.setAboutMe(userDoc.getString("aboutMe"));
-        user.setWebsiteURL(userDoc.getString("websiteURL"));
+        if(userDoc != null) {
+            user.setId(userDoc.getString("userId"));
+            user.setDisplayName(displayName);
+            user.setPassword(userDoc.getString("password"));
+            user.setFollowersNumber(userDoc.getInteger("followersNumber"));
+            user.setFollowedNumber(userDoc.getInteger("followedNumber"));
+            user.setReputation(userDoc.getDouble("reputation"));
+            user.setCreationData(userDoc.getDate("creationDate"));
+            user.setLastAccessDate(userDoc.getDate("lastAccessDate"));
+            user.setType(userDoc.getString("type"));
+            user.setLocation(userDoc.getString("location"));
+            user.setAboutMe(userDoc.getString("aboutMe"));
+            user.setWebsiteURL(userDoc.getString("websiteURL"));
+        }
 
         return user;
     }

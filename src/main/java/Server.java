@@ -19,8 +19,8 @@ public class Server {
                     System.out.println("nuova richiesta di connessione ricevuta");
 
                     //creo una nuova istanza di ClientManager
-                    //ClientManager clientManager = new ClientManager();
-                    //clientManager.run();
+                    ClientManager clientManager = new ClientManager(s);
+                    clientManager.run();
 
                 }catch(IOException e){System.err.println(e.getMessage());}
             }

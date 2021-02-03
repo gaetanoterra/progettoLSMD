@@ -7,7 +7,7 @@ public class ClientServerManager extends Thread {
     private  ObjectInputStream ois;
     private Socket socket;
     private boolean in_attesa = true; //vedo se sto aspettando la risposta del server
-    private boolean connesso_al_server = false;
+    private boolean login_effettuato = false;
     private  int portNumber;
 
     public ClientServerManager() {
@@ -27,17 +27,24 @@ public class ClientServerManager extends Thread {
             System.out.println("richiesta connessione inviata al server");
 
             while(true){
-                Message msg = (Message)ois.readObject();
+                Message msg = receive();
                 System.out.println("ricevuto messaggio dal server di tipo:" + msg.getOpcode());
 
                 switch (msg.getOpcode()){
                     case Message_Ok:
+                        in_attesa = false;
                         break;
 
                     case Message_Fail:
                         break;
 
                     case Message_Login:
+                        MessageLogin msgl = (MessageLogin) msg;
+
+                        if(msgl.getUsername().equals("ok"))
+                            login_effettuato = true;
+
+                        in_attesa = false;
                         break;
 
                     case Message_Logout:
@@ -64,7 +71,6 @@ public class ClientServerManager extends Thread {
         } catch (EOFException e) {
             System.out.println("Il server ha rifutato la connessione");
             synchronized(this){
-                connesso_al_server = false;
                 in_attesa=false;
                 notifyAll();
             }
@@ -79,6 +85,14 @@ public class ClientServerManager extends Thread {
     }
 
     public void send(Message messaggio) throws IOException {
+        in_attesa = true;
         oos.writeObject(messaggio);
+    }
+
+    public boolean controlloUsernamePassword() throws InterruptedException {
+        while(in_attesa)
+            wait();
+
+        return login_effettuato;
     }
 }

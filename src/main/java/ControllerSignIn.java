@@ -13,18 +13,16 @@ public class ControllerSignIn {
     @FXML
     private TextField textfield_signin_username, textfield_signin_password;
 
-    //invio le cose a ClientServerManager, il quale effettuerà la richiesta a ClientManager
-    public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException {
+    //invio opcode, username e password a ClientServerManager, il quale effettuerà la richiesta a ClientManager
+    public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException, InterruptedException {
         clm.send(new MessageLogin(Opcode.Message_Login, textfield_signin_username.getText(), textfield_signin_password.getText()));
-        /*if(controlloUsernamePassword){
+        if(clm.controlloUsernamePassword()){
             label_error_message_signin.setText("");
             Main.switchScene(3);
-            //adesso devo modificare il messaggio comunicando che il signin ha avuto successo
         }
         else{
-            Main.switchScene(0);
-            label_error_message_signin.setText("Username o password errate");
-        }*/
+            label_error_message_signin.setText("*Username o password errate");
+        }
 
     }
 

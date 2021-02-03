@@ -13,6 +13,7 @@ public class ClientManager extends Thread{
         this.socket = socket;
         ois = new ObjectInputStream(socket.getInputStream());
         oos = new ObjectOutputStream(socket.getOutputStream());
+        dbManager = new DBManager();
     }
 
     public void run(){
@@ -28,6 +29,15 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Login:
+                        MessageLogin msgl =  (MessageLogin) msg;
+                        String u = msgl.getUsername();
+                        String p = msgl.getPassword();
+
+                        //adesso invio la richiesta a DBManager
+                        if(dbManager.checkUsernamePassword(u, p))
+                            send(new MessageLogin(Opcode.Message_Login, "ok", null));
+                        else
+                            send(new MessageLogin(Opcode.Message_Login, "fail", null));
                         break;
 
                     case Message_Logout:

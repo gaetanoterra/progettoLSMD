@@ -11,6 +11,10 @@ public class MessageLogin extends Message {
         this.username = username;
         this.password = password;
     }
+
+    public MessageLogin(Opcode opcode){
+        this.opcode = opcode;
+    }
     @Override
     public Opcode getOpcode() {
         return super.getOpcode();
