@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerSignIn">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ControllerSignIn">
    <children>
       <Label alignment="CENTER" layoutX="299.0" layoutY="14.0" prefHeight="109.0" prefWidth="203.0" text="SIGN IN" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="298.0">
          <font>
@@ -15,7 +15,7 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <PasswordField fx:id="textfield_signin_password" layoutX="55.0" layoutY="365.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
+      <PasswordField fx:id="passwordfiled_signin_password" layoutX="55.0" layoutY="365.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
       <Separator layoutX="37.0" layoutY="141.0" prefHeight="3.0" prefWidth="726.0" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="37.0" />
       <Label alignment="CENTER" layoutX="107.0" layoutY="341.0" text="Password:" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0">
          <font>
