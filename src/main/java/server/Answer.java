@@ -29,19 +29,23 @@ public class Answer {
         return ownerUserId;
     }
 
-    public void setAnswerId(String answerId){
+    public Answer setAnswerId(String answerId){
         this.answerId = answerId;
+        return this;
     }
 
-    public void setCreationDate(String data){
+    public Answer setCreationDate(String data){
         creationDate = data;
+        return this;
     }
 
-    public void setScore(double score){
+    public Answer setScore(double score){
         this.score = score;
+        return this;
     }
 
-    public void setOwnerUserId(int userId){
+    public Answer setOwnerUserId(int userId){
         ownerUserId = userId;
+        return this;
     }
 }

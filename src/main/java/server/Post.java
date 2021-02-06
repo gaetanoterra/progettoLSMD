@@ -55,31 +55,38 @@ public class Post {
         return tags;
     }
 
-    public void setPostId(String id){
+    public Post setPostId(String id){
         postId = id;
+        return this;
     }
 
-    public void setTitle(String title){
+    public Post setTitle(String title){
         this.title = title;
+        return this;
     }
 
-    public void setAnswers(List<Answer> answers){
+    public Post setAnswers(List<Answer> answers){
         this.answers = answers;
+        return this;
     }
 
-    public void setCreationDate(Date data){
+    public Post setCreationDate(Date data){
         creationDate = data;
+        return this;
     }
 
-    public void setBody(String body){
+    public Post setBody(String body){
         this.body = body;
+        return this;
     }
 
-    public void setOwnerUserId(String userId){
+    public Post setOwnerUserId(String userId){
         ownerUserId = userId;
+        return this;
     }
 
-    public void setTags(List<String> tags){
+    public Post setTags(List<String> tags){
         this.tags = tags;
+        return this;
     }
 }

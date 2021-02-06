@@ -1,6 +1,11 @@
 package middleware;
 
 public enum OperationCD {
-    Create,
-    Delete
+    Create  (0),
+    Delete  (1);
+
+    private final byte operation;
+    OperationCD(int operation){
+        this.operation = (byte)operation;
+    }
 }

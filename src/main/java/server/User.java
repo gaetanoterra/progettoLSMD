@@ -75,39 +75,63 @@ public class User {
         return websiteURL;
     }
 
-    public void setId(String id){
+    public User setId(String id){
         this.userId = id;
+        return this;
     }
 
-    public void setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
+        return this;
     }
 
-    public void setFollowersNumber(int followersNumber) { this.followersNumber = followersNumber; }
+    public User setFollowersNumber(int followersNumber) {
+        this.followersNumber = followersNumber;
+        return this;
+    }
 
-    public void setFollowedNumber(int followedNumber) { this.followedNumber = followedNumber; }
+    public User setFollowedNumber(int followedNumber) {
+        this.followedNumber = followedNumber;
+        return this;
+    }
 
-    public void setReputation(double reputation) { this.reputation = reputation; }
+    public User setReputation(double reputation) {
+        this.reputation = reputation;
+        return this;
+    }
 
-    public void setCreationData(Date creationData) { this.creationDate = creationData; }
+    public User setCreationData(Date creationData) {
+        this.creationDate = creationData;
+        return this;
+    }
 
-    public void setLastAccessDate(Date lastAccessDate) { this.lastAccessDate = lastAccessDate; }
+    public User setLastAccessDate(Date lastAccessDate) {
+        this.lastAccessDate = lastAccessDate;
+        return this;
+    }
 
-    public void setType(String type) { this.type = type; }
+    public User setType(String type) {
+        this.type = type;
+        return this;
+    }
 
-    public void setDisplayName(String displayName){
+    public User setDisplayName(String displayName){
         this.displayName = displayName;
+        return this;
     }
 
-    public void setLocation(String location){
+    public User setLocation(String location){
         this.location = location;
+        return this;
     }
 
-    public void setAboutMe(String aboutMe){
+    public User setAboutMe(String aboutMe){
         this.aboutMe = aboutMe;
+        return this;
     }
 
-    public void setWebsiteURL(String websiteURL){
+    public User setWebsiteURL(String websiteURL){
         this.websiteURL = websiteURL;
+        return this;
     }
 }
