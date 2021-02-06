@@ -1,13 +1,10 @@
 package middleware;
 
-import client.*;
-import server.*;
-
 public abstract class MessageCreateDelete extends Message {
 
-    private int operation;
-
-    public Object getObject(){
-
+    protected OperationCD operation;
+    public OperationCD getOperation() {
+        return operation;
     }
+    public abstract Object getObject();
 }

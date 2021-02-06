@@ -27,7 +27,7 @@ public class ControllerSignIn {
         user.setDisplayName(textfield_signin_username.getText());
         user.setPassword(passwordfield_signin_password.getText());
 
-        clm.send(new MessageLogin(Opcode.Message_Login, user));
+        clm.send(new MessageLogin(user));
         if(clm.checkLastServerAnswer()){
             label_error_message_signin.setText("");
 

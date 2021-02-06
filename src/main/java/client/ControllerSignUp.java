@@ -28,7 +28,7 @@ public class ControllerSignUp {
         user.setDisplayName(textfield_signup_username.getText());
         user.setPassword(passwordfield_signup_password.getText());
 
-        clm.send(new MessageSignUp(Opcode.Message_Signup, user));
+        clm.send(new MessageSignUp(user));
 
         if(clm.checkLastServerAnswer()){
             label_error_message_signup.setText("");

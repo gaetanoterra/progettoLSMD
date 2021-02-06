@@ -1,13 +1,11 @@
 package middleware;
 
-import client.*;
-import server.*;
-
 public abstract class MessageReadObjectQuery extends Message {
 
-    private byte getObjectOpcode;
+    protected byte objectOpcode;
 
-    public Object getObject() {
-        return getObjectOpcode;
+    public byte getObjectOpcode() {
+        return this.objectOpcode;
     }
+    public abstract Object getObject();
 }

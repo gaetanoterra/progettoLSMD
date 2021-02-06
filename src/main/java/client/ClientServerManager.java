@@ -1,6 +1,5 @@
 package client;
 
-import server.*;
 import middleware.*;
 
 import java.io.*;
@@ -28,7 +27,7 @@ public class ClientServerManager extends Thread {
 
         try {
             //richiedo al client di mostrarmi i post più recenti da visualizzare sulla schermata iniziale
-            send(new MessageGetPostData(Opcode.Message_Get_Post_Data));
+            send(new MessageGetPostData());
             System.out.println("richiesta connessione inviata al server");
 
             while(true){
@@ -36,15 +35,6 @@ public class ClientServerManager extends Thread {
                 System.out.println("ricevuto messaggio dal server di tipo:" + msg.getOpcode());
 
                 switch (msg.getOpcode()){
-                    case Message_Ok:
-                        last_server_answer = true;
-                        in_attesa = false;
-                        break;
-
-                    case Message_Fail:
-                        last_server_answer = false;
-                        in_attesa = false;
-                        break;
 
                     case Message_Login:
                         MessageLogin msgl = (MessageLogin) msg;
@@ -63,7 +53,7 @@ public class ClientServerManager extends Thread {
                     case Message_Signup:
                         MessageSignUp msgs = (MessageSignUp)msg;
 
-                        if(msgs.getUser().equals("ok"))
+                        if(msgs.getStatus() == StatusCode.Message_Ok)
                             last_server_answer = true;
 
                         in_attesa = false;
@@ -78,7 +68,7 @@ public class ClientServerManager extends Thread {
                     case Message_Get_Post_Data:
                         break;
 
-                    case Message_Get_Top_Users_Post:
+                    case Message_Get_Top_Users_Posts:
                         break;
                 }
 
@@ -92,7 +82,6 @@ public class ClientServerManager extends Thread {
             }
         }catch (IOException | ClassNotFoundException e) {
             System.out.println("connessione chiusa");
-            return;
         }
     }
 

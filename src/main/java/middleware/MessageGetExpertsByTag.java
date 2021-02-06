@@ -1,16 +1,27 @@
 package middleware;
 
-import java.util.ArrayList;
+import server.User;
 
-import client.*;
-import server.*;
+import java.util.ArrayList;
 
 public class MessageGetExpertsByTag extends Message {
 
     private String tag;
-    private ArrayList usersList;
+    private ArrayList<User> usersList;
 
-    public ArrayList getUsersList() {
+    //usato per la richiesta del client
+    public MessageGetExpertsByTag(String tag){
+        this(tag, null);
+    }
+
+    //usato per la risposta del server
+    public MessageGetExpertsByTag(String tag, ArrayList<User> usersList){
+        this.opcode = Opcode.Message_Get_Experts;
+        this.tag = tag;
+        this.usersList = usersList;
+    }
+
+    public ArrayList<User> getUsersList() {
         return usersList;
     }
 
@@ -18,8 +29,4 @@ public class MessageGetExpertsByTag extends Message {
         return tag;
     }
 
-    @Override
-    public Opcode getOpcode() {
-        return super.getOpcode();
-    }
 }

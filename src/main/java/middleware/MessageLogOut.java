@@ -1,15 +1,12 @@
 package middleware;
 
-import client.*;
-import server.*;
-
 public class MessageLogOut extends Message {
 
     private String username;
 
-    @Override
-    public Opcode getOpcode() {
-        return super.getOpcode();
+    public MessageLogOut(String username) {
+        this.opcode = Opcode.Message_Logout;
+        this.username = username;
     }
 
     public String getUsername() {

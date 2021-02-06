@@ -1,24 +1,31 @@
 package middleware;
 
-import client.*;
 import server.*;
 
 public class MessageSignUp extends Message {
 
-    private Opcode opcode;
     private User user;
+    private StatusCode status;
 
-    public MessageSignUp(Opcode opcode, User user){
-        this.opcode = opcode;
-        this.user = user;
+    //usato dal client
+    public MessageSignUp(User user) {
+        this(user, null);
+    }
+    //usato dal server
+    public MessageSignUp(StatusCode status) {
+        this(null, status);
     }
 
-    @Override
-    public Opcode getOpcode() {
-        return super.getOpcode();
+    public MessageSignUp(User user, StatusCode status){
+        this.opcode = Opcode.Message_Signup;
+        this.user = user;
+        this.status = status;
     }
 
     public User getUser() {
         return user;
+    }
+    public StatusCode getStatus() {
+        return status;
     }
 }

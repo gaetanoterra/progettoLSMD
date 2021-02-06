@@ -36,7 +36,7 @@ public class ControllerWrite {
         post.setTitle(textfield_titolo_post.getText());
         post.setTags(tags);
 
-        clm.send(new MessageCreatePost(Opcode.Message_Create_Post, post));
+        clm.send(new MessagePost(OperationCD.Create, post));
 
         Main.switchScene(3);
     }

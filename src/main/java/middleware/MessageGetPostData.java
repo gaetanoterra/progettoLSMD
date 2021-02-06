@@ -1,30 +1,26 @@
 package middleware;
 
-import client.*;
 import server.*;
+
+import java.util.ArrayList;
 
 public class MessageGetPostData extends MessageReadObjectQuery {
 
-    Opcode opcode;
-    private Post[] post;
+    private ArrayList<Post> postList;
 
     //usato per la richiesta del client
-    public MessageGetPostData(Opcode opcode){
-        this.opcode = opcode;
+    public MessageGetPostData(){
+        this(null);
     }
 
     //usato per la risposta dal server
-    public MessageGetPostData(Opcode opcode, Post[] post){
-        this.opcode = opcode;
-        this.post = post;
-    }
-    @Override
-    public Opcode getOpcode() {
-        return super.getOpcode();
+    public MessageGetPostData(ArrayList<Post> postList){
+        this.opcode = Opcode.Message_Get_Post_Data;
+        this.postList = postList;
     }
 
     @Override
-    public Object getObject() {
-        return super.getObject();
+    public ArrayList<Post> getObject() {
+        return this.postList;
     }
 }

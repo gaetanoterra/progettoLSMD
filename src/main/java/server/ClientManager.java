@@ -1,6 +1,5 @@
 package server;
 
-import client.*;
 import middleware.*;
 
 import java.io.*;
@@ -24,14 +23,9 @@ public class ClientManager extends Thread{
     public void run(){
         try{
             while(true) {
-                Message msg = (Message)ois.readObject();
+                Message msg = receive();
 
                 switch (msg.getOpcode()){
-                    case Message_Ok:
-                        break;
-
-                    case Message_Fail:
-                        break;
 
                     case Message_Login:
                         MessageLogin msgl = (MessageLogin)msg;
@@ -46,10 +40,10 @@ public class ClientManager extends Thread{
                             loggedUser = user;
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante
                             //loggedUser.setLastAccessDate(new Date());
-                            send(new MessageLogin(Opcode.Message_Login, user));
+                            send(new MessageLogin(user));
                         }
                         else
-                            send(new MessageLogin(Opcode.Message_Login, null));
+                            send(new MessageLogin(null));
                         break;
 
                     case Message_Logout:
@@ -60,45 +54,79 @@ public class ClientManager extends Thread{
                         MessageSignUp msgs = (MessageSignUp)msg;
 
                         if(dbManager.insertUser(msgs.getUser())){
-                            send(new MessageSignUp(Opcode.Message_Ok, null));
+                            send(new MessageSignUp(StatusCode.Message_Ok));
                         }
                         else{
-                            send(new MessageSignUp(Opcode.Message_Fail, null));
+                            send(new MessageSignUp(StatusCode.Message_Fail));
                         }
                         break;
 
                     case Message_Get_Experts:
                         break;
 
-                    case Message_Create_Post:
+                    case Message_Post:
+                        MessagePost msgPost = (MessagePost)msg;
+                        switch (msgPost.getOperation()) {
+                            case Create:
+                                break;
+                            case Delete:
+                                Post post = msgPost.getPost();
+                                post.setOwnerUserId(loggedUser.getDisplayName());
+                                dbManager.insertPost(post);
+                                break;
+                            default:
+                                throw new Exception("You are not supposed to be here");
+                        }
                         break;
-
-                    case Message_Create_User:
+                    case Message_Answer:
+                        MessageAnswer msgAnswer = (MessageAnswer)msg;
+                        switch (msgAnswer.getOperation()) {
+                            case Create:
+                                break;
+                            case Delete:
+                                break;
+                            default:
+                                throw new Exception("You are not supposed to be here");
+                        }
                         break;
-
-                    case Message_Create_Answer:
+                    case Message_User:
+                        MessageUser msgUser = (MessageUser)msg;
+                        switch (msgUser.getOperation()) {
+                            case Create:
+                                break;
+                            case Delete:
+                                break;
+                            default:
+                                throw new Exception("You are not supposed to be here");
+                        }
                         break;
-
-                    case Message_Delete_Post:
-                        MessageCreatePost msgc = (MessageCreatePost)msg;
-                        Post post = msgc.getPost();
-
-                        post.setOwnerUserId(loggedUser.getDisplayName());
-
-                        dbManager.insertPost(post);
-
+                    case Message_Follow:
+                        MessageFollow msgFollow = (MessageFollow)msg;
+                        switch (msgFollow.getOperation()) {
+                            case Create:
+                                break;
+                            case Delete:
+                                break;
+                            default:
+                                throw new Exception("You are not supposed to be here");
+                        }
                         break;
-
-                    case Message_Delete_User:
-                        break;
-
-                    case Message_Delete_Answer:
+                    case Message_Vote:
+                        MessageVote msgVote = (MessageVote)msg;
+                        switch (msgVote.getOperation()) {
+                            case Create:
+                                break;
+                            case Delete:
+                                break;
+                            default:
+                                throw new Exception("You are not supposed to be here");
+                        }
                         break;
 
                     case Message_Get_Post_Data:
                         break;
 
-                    case Message_Get_Top_Users_Post:
+                    case Message_Get_Top_Users_Posts:
                         break;
                 }
             }
@@ -111,8 +139,8 @@ public class ClientManager extends Thread{
         return (Message)ois.readObject();
     }
 
-    public void send(Message messaggio) throws IOException {
-        oos.writeObject(messaggio);
+    public void send(Message message) throws IOException {
+        oos.writeObject(message);
     }
 
 }
