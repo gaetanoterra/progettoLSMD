@@ -66,13 +66,15 @@ public class ClientManager extends Thread{
 
                     case Message_Post:
                         MessagePost msgPost = (MessagePost)msg;
+                        Post post = msgPost.getPost();
+                        post.setOwnerUserId(loggedUser.getDisplayName());
+
                         switch (msgPost.getOperation()) {
                             case Create:
+                                dbManager.insertPost(post);
                                 break;
                             case Delete:
-                                Post post = msgPost.getPost();
-                                post.setOwnerUserId(loggedUser.getDisplayName());
-                                dbManager.insertPost(post);
+                                dbManager.removePost(post);
                                 break;
                             default:
                                 throw new Exception("You are not supposed to be here");
