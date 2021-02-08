@@ -40,7 +40,7 @@ public class ClientServerManager extends Thread {
                         MessageLogin msgl = (MessageLogin) msg;
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
-                        if(msgl.getUser() != null) {
+                        if(msgl.getStatus() == StatusCode.Message_Ok) {
                             ControllerProfileInterface.fillProfileInterface(msgl.getUser());
                             last_server_answer = true;
                         }
@@ -60,9 +60,6 @@ public class ClientServerManager extends Thread {
                         break;
 
                     case Message_Get_Experts:
-                        break;
-
-                    case Message_Create_Delete:
                         break;
 
                     case Message_Get_Post_Data:

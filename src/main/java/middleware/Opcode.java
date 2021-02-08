@@ -10,12 +10,11 @@ public enum Opcode {
     Message_Get_Post_Data   (5),
     Message_Get_Top_Users_Posts (6),
     Message_Get_Experts (7),
-    Message_Create_Delete   (8),
-    Message_Answer  (9),
-    Message_User    (10),
-    Message_Follow  (11),
-    Message_Vote    (12),
-    Message_Post    (13);
+    Message_Answer  (8),
+    Message_User    (9),
+    Message_Follow  (10),
+    Message_Vote    (11),
+    Message_Post    (12);
     private final byte opcode;
     Opcode(int opcode){
         this.opcode = (byte)opcode;

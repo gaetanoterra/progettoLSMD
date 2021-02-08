@@ -15,20 +15,20 @@ public class DBManager {
         //graphDBMan = new server.GraphDBManager();
     }
 
-    public User[] findMostPopularTagsByLocation(String tag, int idUser){
+    public User[] findMostPopularTagsByLocation(String tag, String idUser){
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
     }
 
-    public User[] findTopExpertsByTag(String tag, int idUser){
+    public User[] findTopExpertsByTag(String tag, String idUser){
     }
 
     public User[] getCorrelatedUsers(String username){
 
     }
 
-    public Post getPostById(int postId){
+    public Post getPostById(String postId){
 
     }
 
@@ -54,12 +54,18 @@ public class DBManager {
 
     }
 
-    public boolean insertAnswer(Answer answer){
+    public boolean insertAnswer(Answer answer, String postId){
+        documentDBMan.insertAnswer(answer, postId);
+        graphDBMan.insertAnswer(answer);
+        graphDBMan.insertRelationAnswerTo(answer.getAnswerId(), postId);
 
+        return true;
     }
 
     public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+        graphDBMan.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
 
+        return true;
     }
 
     public boolean insertPost(Post post){
@@ -81,10 +87,6 @@ public class DBManager {
         return res;
     }
 
-    public boolean insertRelationAnswerTo(String postId, User user){
-
-    }
-
     public boolean insertRelationContainsTag(String name, String postId){
 
     }
@@ -97,7 +99,7 @@ public class DBManager {
 
     }
 
-    public boolean insertRelationVote(int postId,String username, int voto){
+    public boolean insertRelationVote(String answerId, String username){
 
     }
 
@@ -133,7 +135,7 @@ public class DBManager {
 
     }
 
-    public boolean removeUser(String username){
+    public boolean removeUser(User user){
 
     }
 

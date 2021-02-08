@@ -1,13 +1,11 @@
 package server;
 
-import javafx.event.ActionEvent;
-
 public class Answer {
 
     private String answerId;
     private String creationDate;
     private double score;
-    private int ownerUserId;
+    private String ownerUserId;
 
     public Answer(){
 
@@ -25,7 +23,7 @@ public class Answer {
         return score;
     }
 
-    public int getOwnerUserId(){
+    public String getOwnerUserId(){
         return ownerUserId;
     }
 
@@ -44,7 +42,7 @@ public class Answer {
         return this;
     }
 
-    public Answer setOwnerUserId(int userId){
+    public Answer setOwnerUserId(String userId){
         ownerUserId = userId;
         return this;
     }
