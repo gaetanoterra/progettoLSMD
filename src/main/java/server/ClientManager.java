@@ -70,11 +70,11 @@ public class ClientManager extends Thread{
 
                         switch (msgPost.getOperation()) {
                             case Create:
-                                post.setOwnerUserId(loggedUser.getDisplayName());
+                                post.setOwnerUserId(loggedUser.getUserId());
                                 dbManager.insertPost(post);
                                 break;
                             case Delete:
-                                dbManager.removePost(post);
+                                dbManager.removePost(post, loggedUser.getUserId());
                                 break;
                             default:
                                 throw new Exception("You are not supposed to be here");
@@ -86,11 +86,11 @@ public class ClientManager extends Thread{
 
                         switch (msgAnswer.getOperation()) {
                             case Create:
-                                answer.setOwnerUserId(loggedUser.getDisplayName());
+                                answer.setOwnerUserId(loggedUser.getUserId());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                                 break;
                             case Delete:
-                                dbManager.removeAnswer(answer);
+                                dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 break;
                             default:
                                 throw new Exception("You are not supposed to be here");
@@ -130,10 +130,10 @@ public class ClientManager extends Thread{
 
                         switch (msgVote.getOperation()) {
                             case Create:
-                                dbManager.insertRelationVote(answer.getAnswerId(), loggedUser.getDisplayName());
+                                dbManager.insertRelationVote(answer.getAnswerId(), loggedUser.getUserId(), msgVote.getVoto());
                                 break;
                             case Delete:
-                                dbManager.removeRelationVote(loggedUser.getDisplayName(),answer.getAnswerId());
+                                dbManager.removeRelationVote(loggedUser.getUserId(),answer.getAnswerId());
                                 break;
                             default:
                                 throw new Exception("You are not supposed to be here");

@@ -160,37 +160,37 @@ public class GraphDBManager {
         }
     }
 
-    public void insertRelationPostsAnswer(String answerId, User user){
+    public void insertRelationUserAnswer(String answerId, String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:server.User) WHERE u.userId = $userId" +
                                 "MATCH (a:server.Answer) WHERE a.answerId = $answerId" +
                                 "CREATE (u)-[:POSTS_ANSWER]->(a)",
-                        parameters("userId", user.getUserId(), "answerId", answerId));
+                        parameters("userId", userId, "answerId", answerId));
                 return null;
             });
         }
     }
 
-    public void insertRelationPostsQuestion(String postId, User user){
+    public void insertRelationPostsQuestion(String postId, String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:server.User) WHERE u.userId = $userId" +
                                 "MATCH (q:Question) WHERE q.questionId = $questionId" +
                                 "CREATE (u)-[:POSTS_QUESTION]->(q)",
-                        parameters("userId", user.getUserId(), "questionId", postId));
+                        parameters("userId", userId, "questionId", postId));
                 return null;
             });
         }
     }
 
-    public void insertRelationVote(String answerId, User user, int voto){
+    public void insertRelationVote(String answerId, String userId, int voto){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:server.User) WHERE u.userId = $userId " +
                                 "MATCH (a:server.Answer) WHERE a.answerId = $answerId " +
                                 "CREATE (u)-[:VOTES {voteTypeId: $voteTypeId}]->(a)",
-                        parameters("userId", user.getUserId(), "answerId", answerId, "voteTypeId", voto));
+                        parameters("userId", userId, "answerId", answerId, "voteTypeId", voto));
                 return null;
             });
         }
@@ -274,7 +274,7 @@ public class GraphDBManager {
         }
     }
 
-    public void removeRelationPostsAnswer(String userId, String answerId){
+    public void removeRelationUserAnswer(String userId, String answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:server.User {userId = $userId})-[r:POSTS_ANSWER]->(:server.Answer {answerId = $answerId})" +

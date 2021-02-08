@@ -35,7 +35,7 @@ public class DocumentDBManager {
         database = dbConnection.getDatabase("mydb");
     }
 
-    public ArrayList<String> findMostPopularTagsByLocation(String location, int numTags){
+    public String[] findMostPopularTagsByLocation(String location, int numTags){
         //trovo tutti gli utenti relativi ad una locazione
         //scorro tutti i post che hanno ownerUserId tra gli utenti trovati prima
         //raggruppo per tag e li conto
@@ -75,11 +75,11 @@ public class DocumentDBManager {
             }
         }
 
-        return tags;
+        return (String[]) tags.toArray();
     }
 
     //restituisco gli id degli utenti più esperti
-    public ArrayList<String> findTopExpertsByTag(String tag, int num){
+    public String[] findTopExpertsByTag(String tag, int num){
         MongoCollection<Document> collPost = database.getCollection("server.Post");
         MongoCollection<Document> collUser = database.getCollection("server.User");
         ArrayList<String> usersId = new ArrayList<>();
@@ -101,7 +101,7 @@ public class DocumentDBManager {
             }
         }
 
-        return usersId;
+        return (String[]) usersId.toArray();
     }
 
     public Map<User, Pair<String,Integer>[]> findHotTopicsForTopUsers(){
@@ -196,7 +196,7 @@ public class DocumentDBManager {
                 (ArrayList<String>)postDoc.get("tags"));
     }
 
-    public ArrayList<Post> getPostsByTag(String[] tags){
+    public Post[] getPostsByTag(String[] tags){
         MongoCollection<Document> coll = database.getCollection("server.Post");
 
         ArrayList<Post> posts = new ArrayList<>();
@@ -217,7 +217,7 @@ public class DocumentDBManager {
             }
         }
 
-        return posts;
+        return (Post[]) posts.toArray();
     }
 
     public Post[] getPostsByText(String text){
@@ -261,7 +261,7 @@ public class DocumentDBManager {
         return user;
     }
 
-    public ArrayList<User> getUsersRank(){
+    public User[] getUsersRank(){
         MongoCollection<Document> coll = database.getCollection("server.User");
 
         ArrayList<User> user = new ArrayList<>();
@@ -289,7 +289,7 @@ public class DocumentDBManager {
             }
         }
 
-        return user;
+        return (User[]) user.toArray();
     }
 
     public boolean insertAnswer(Answer answer, String postId){
