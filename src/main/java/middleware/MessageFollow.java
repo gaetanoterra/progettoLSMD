@@ -2,6 +2,7 @@ package middleware;
 
 import server.User;
 
+//classe messaggio, utilizzata per inviare una richiesta di creazione/eliminazione follow al server
 public class MessageFollow extends MessageCreateDelete{
 
     private User user;

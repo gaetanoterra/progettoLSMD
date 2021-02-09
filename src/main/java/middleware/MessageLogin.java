@@ -2,6 +2,7 @@ package middleware;
 
 import server.*;
 
+//classe messaggio, utilizzata per inviare una richiesta di login al server (non è la stessa di MessagePost?)
 public class MessageLogin extends Message {
 
     private User user;

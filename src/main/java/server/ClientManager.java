@@ -6,6 +6,7 @@ import middleware.*;
 import java.io.*;
 import java.net.*;
 
+//classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 public class ClientManager extends Thread{
 
     private DBManager dbManager;

@@ -5,6 +5,7 @@ import middleware.*;
 import java.io.*;
 import java.net.*;
 
+//classe preposta a ricevere le risposte dal server e passare i risultati ai vari Controller
 public class ClientServerManager extends Thread {
 
     private ObjectOutputStream oos;

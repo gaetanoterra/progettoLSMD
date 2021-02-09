@@ -4,6 +4,7 @@ import server.User;
 
 import java.util.ArrayList;
 
+//classe messaggio, utilizzata per richiedere utenti per tag al server
 public class MessageGetExpertsByTag extends Message {
 
     private String tag;

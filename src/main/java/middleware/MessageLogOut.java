@@ -1,5 +1,6 @@
 package middleware;
 
+//classe messaggio, utilizzata per inviare una richiesta di logout al server
 public class MessageLogOut extends Message {
 
     private String username;

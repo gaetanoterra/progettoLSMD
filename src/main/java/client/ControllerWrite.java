@@ -12,6 +12,7 @@ import java.util.List;
 import server.*;
 import middleware.*;
 
+//classe per gestire l'interfaccia dove scrivere un nuovo post
 public class ControllerWrite {
 
     ClientServerManager clm = Main.getClientServerManager();

@@ -11,6 +11,7 @@ import java.io.IOException;
 import server.*;
 import middleware.*;
 
+//classe preposta a gestire l'interfaccia della registrazione utente
 public class ControllerSignUp {
 
     ClientServerManager clm = Main.getClientServerManager();

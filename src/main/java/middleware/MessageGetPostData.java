@@ -4,6 +4,7 @@ import server.*;
 
 import java.util.ArrayList;
 
+//classe inutilizzata?
 public class MessageGetPostData extends MessageReadObjectQuery {
 
     private ArrayList<Post> postList;

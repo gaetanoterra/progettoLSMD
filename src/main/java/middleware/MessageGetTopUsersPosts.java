@@ -4,6 +4,7 @@ import server.*;
 
 import java.util.HashMap;
 
+//classe messaggio, utilizzata per richiedere utenti e post più popolari al server
 public class MessageGetTopUsersPosts extends Message {
 
     private HashMap<User, Post[]> mostAnsweredTopUserPostsMap;

@@ -2,6 +2,7 @@ package middleware;
 
 import server.*;
 
+//classe messaggio, utilizzata per inviare una richiesta di creazione/eliminazione Post al server
 public class MessagePost extends MessageCreateDelete{
 
     private Post post;

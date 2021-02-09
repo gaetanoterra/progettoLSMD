@@ -7,6 +7,8 @@ import static org.neo4j.driver.Values.parameters;
 import client.*;
 import middleware.*;
 
+
+//classe preposta ad effettuare le query del graph database
 public class GraphDBManager {
 
     private Driver dbConnection;
@@ -24,6 +26,7 @@ public class GraphDBManager {
 
     }
 
+    //funzione che effettua la query per trovare i tag più "popolari"
     public void findMostPopularTags(){
         try (Session session = dbConnection.session())
         {
@@ -43,6 +46,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per trovare le risposte più votate
     public void findMostVotedAnswers(){
         try (Session session = dbConnection.session())
         {
@@ -63,6 +67,7 @@ public class GraphDBManager {
     }
 
     //si potrebbe aggiungere l'immagine del profile (se inserita nel graph) alle cose da prendere
+    //funzione che effettua la query per trovare gli utenti correlati all'utente username
     public String[] getCorrelatedUsers(String username){
         ArrayList<String> users = new ArrayList<>();
 
@@ -85,6 +90,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per trovare gli utenti correlati ad un certo tag
     public String[] getRecommendedUsers(String userId, String tagName){
         try (Session session = dbConnection.session())
         {
@@ -106,6 +112,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per per inserire il nodo Answer
     public void insertAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -116,6 +123,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione Follow tra due username
     public void insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -128,6 +136,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire il nodo Post
     public void insertPost(Post post){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
@@ -138,6 +147,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione Answer_to tra Post e Answer
     public void insertRelationAnswerTo(String answerId, String postId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -150,6 +160,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione Contains_tag tra Post e Tag
     public void insertRelationContainsTag(String name, String postId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -162,6 +173,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione tra User e Answer
     public void insertRelationUserAnswer(String answerId, String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -174,6 +186,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione Posts_question tra User e Post
     public void insertRelationPostsQuestion(String postId, String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -186,6 +199,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
     public void insertRelationVote(String answerId, String userId, int voto){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -198,6 +212,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire il nodo Tag
     public void insertTag(String name){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -208,6 +223,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per inserire il nodo User
     public void insertUser(User user){
         try (Session session = dbConnection.session())
         {
@@ -219,8 +235,7 @@ public class GraphDBManager {
         }
     }
 
-
-
+    //funzione che effettua la query per rimuovere il nodo Answer
     public void removeAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -232,6 +247,7 @@ public class GraphDBManager {
         }
     }
 
+    //funzione che effettua la query per rimuovere la relazione Follows tra due utenti
     public void removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {

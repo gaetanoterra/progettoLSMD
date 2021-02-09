@@ -1,9 +1,8 @@
 package middleware;
 
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
-
 import server.Post;
 
+//classe messaggio, utilizzata per richiedere Post in base ad un parametro answer al server
 public class MessageGetPostByParameter extends Message{
 
     private Parameter parameter;

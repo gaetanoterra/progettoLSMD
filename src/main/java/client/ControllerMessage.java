@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import server.*;
 import middleware.*;
 
+//classe preposta a controllare l'interfaccia del messaggio
 public class ControllerMessage {
 
     private static TextArea textarea_message;

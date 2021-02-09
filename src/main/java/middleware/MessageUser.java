@@ -2,6 +2,7 @@ package middleware;
 
 import server.User;
 
+//classe messaggio, utilizzata per inviare una richiesta di creazione/eliminazione User al server e dalla funzione di modifica utente
 public class MessageUser extends MessageCreateDelete{
 
     private User user;

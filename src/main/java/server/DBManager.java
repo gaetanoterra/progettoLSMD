@@ -2,6 +2,7 @@ package server;
 
 import java.util.*;
 
+//classe preposta a ricevere le richieste dal clientManager e a propagarle al documentDB e al graphDB
 public class DBManager {
 
     private DocumentDBManager documentDBMan;

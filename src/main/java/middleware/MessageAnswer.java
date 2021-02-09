@@ -2,6 +2,7 @@ package middleware;
 
 import server.Answer;
 
+//classe messaggio, utilizzata per inviare una richiesta di creazione/eliminazione answer al server
 public class MessageAnswer extends MessageCreateDelete{
 
     private Answer answer;

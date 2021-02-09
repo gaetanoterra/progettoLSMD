@@ -10,6 +10,7 @@ import middleware.*;
 
 import java.io.IOException;
 
+//classe preposta a gestire l'interfaccia da cui si visualizzano i Post
 public class ControllerAnonymousInterface {
 
     private ClientServerManager clm = Main.getClientServerManager();

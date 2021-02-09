@@ -2,6 +2,7 @@ package middleware;
 
 import server.Answer;
 
+//classe messaggio, utilizzata per inviare una richiesta di creazione/eliminazione voto al server
 public class MessageVote extends MessageCreateDelete{
 
     private Answer answer;

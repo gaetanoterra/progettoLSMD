@@ -9,6 +9,7 @@ import server.*;
 
 import java.io.IOException;
 
+//classe preposta a gestire l'interfaccia del login
 public class ControllerSignIn {
 
     ClientServerManager clm = Main.getClientServerManager();
@@ -44,12 +45,14 @@ public class ControllerSignIn {
 
     }
 
+    //mi sposto sull'interfaccia della signup
     public void eventButtonSignUpSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
         Main.switchScene(2);
     }
 
+    //annullo la signin e torno dove ero
     public void eventButtonCancelSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");

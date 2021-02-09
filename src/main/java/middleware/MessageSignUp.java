@@ -2,6 +2,7 @@ package middleware;
 
 import server.*;
 
+//classe messaggio, utilizzata per inviare una richiesta di registrazione al server
 public class MessageSignUp extends Message {
 
     private User user;
