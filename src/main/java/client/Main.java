@@ -15,7 +15,7 @@ import middleware.*;
 
 public class Main extends Application{
 
-    private static String logged_user = null;
+    private static User logged_user = null;
 
     private static ClientServerManager clientServerManager;
     private static AnchorPane root;
@@ -60,15 +60,15 @@ public class Main extends Application{
         return clientServerManager;
     }
 
-    public static void setLog(String username){
-        logged_user = username;
+    public static void setLog(User user){
+        logged_user = user;
     }
 
     public static void resetLog(){
         logged_user = null;
     }
 
-    public static String getLog(){
+    public static User getLog(){
         return logged_user;
     }
 

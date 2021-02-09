@@ -43,7 +43,7 @@ public class ClientServerManager extends Thread {
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
                             ControllerProfileInterface.fillProfileInterface(msgl.getUser());
                             ControllerAnonymousInterface.setLoggedInterface(msgl.getUser().getDisplayName());
-                            Main.setLog(msgl.getUser().getDisplayName());
+                            Main.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
                         in_attesa = false;
@@ -67,6 +67,11 @@ public class ClientServerManager extends Thread {
                         break;
 
                     case Message_Get_Post_Data:
+                        break;
+
+                    case Message_Get_Post:
+                        //chiamo una funzione di ControllerAnonymousInterface per popolare il pane con i Post
+                        ControllerAnonymousInterface.setPosts(((MessageGetPostByParameter)msg).getPost());
                         break;
 
                     case Message_Get_Top_Users_Posts:

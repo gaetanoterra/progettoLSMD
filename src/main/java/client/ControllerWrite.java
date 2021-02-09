@@ -29,7 +29,7 @@ public class ControllerWrite {
 
         Post post = new Post();
 
-        post.setPostId("1234");
+        //post.setPostId("1234");
         post.setAnswers(null);
         post.setBody(textarea_body_post.getText());
         post.setCreationDate(new Date());

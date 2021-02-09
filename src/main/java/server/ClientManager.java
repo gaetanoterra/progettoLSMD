@@ -1,5 +1,6 @@
 package server;
 
+import client.Main;
 import middleware.*;
 
 import java.io.*;
@@ -146,27 +147,35 @@ public class ClientManager extends Thread{
                     case Message_Get_Post:
                         MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
 
+                        Post[] resultPost = new Post[0];
                         switch (msgParameter.getParameter()){
                             case Date:
-                                dbManager.getPostByDate(msgParameter.getValue());
+                                resultPost = dbManager.getPostByDate(msgParameter.getValue());
                                 break;
 
                             case Tags:
                                 String[] tags = msgParameter.getValue().split(";");
-                                dbManager.getPostsByTag(tags);
+                                resultPost = dbManager.getPostsByTag(tags);
                                 break;
 
                             case Text:
-                                dbManager.getPostByText(msgParameter.getValue());
+                                resultPost = dbManager.getPostByText(msgParameter.getValue());
                                 break;
 
                             case Username:
-                                dbManager.getPostByOwnerUsername(msgParameter.getValue());
+                                resultPost = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
                         }
+                        
+                        send(new MessageGetPostByParameter(null, null, resultPost));
                         break;
 
                     case Message_Get_Top_Users_Posts:
+                        break;
+
+                    case Message_Update_User_data:
+                        dbManager.updateUserData(((MessageUser)msg).getUser());
+                        Main.setLog(((MessageUser)msg).getUser());
                         break;
                 }
             }

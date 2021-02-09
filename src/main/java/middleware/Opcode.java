@@ -15,9 +15,9 @@ public enum Opcode {
     Message_User    (10),
     Message_Follow  (11),
     Message_Vote    (12),
-    Message_Post    (13);
+    Message_Post    (13),
+    Message_Update_User_data    (14);
     private final byte opcode;
-
 
     Opcode(int opcode){
         this.opcode = (byte)opcode;

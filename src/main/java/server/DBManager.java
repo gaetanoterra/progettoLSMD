@@ -165,8 +165,6 @@ public class DBManager {
     }
 
     public boolean updateUserData(User user){
-        documentDBMan.updateUserData(user);
-
-        return true;
+        return documentDBMan.updateUserData(user);
     }
 }

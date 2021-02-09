@@ -39,10 +39,10 @@
       <RadioButton layoutX="114.0" layoutY="171.0" mnemonicParsing="false" onAction="#eventSetSearchMethod" text="Setting5" />
       <RadioButton layoutX="191.0" layoutY="171.0" mnemonicParsing="false" onAction="#eventSetSearchMethod" text="Setting6" />
       <Pane layoutX="14.0" layoutY="208.0" prefHeight="484.0" prefWidth="771.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" />
-      <Button layoutX="395.0" layoutY="159.0" mnemonicParsing="false" onAction="#eventSetFilter" prefHeight="25.0" prefWidth="80.0" text="Interesting" />
-      <Button layoutX="475.0" layoutY="159.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Hot" />
-      <Button layoutX="555.0" layoutY="159.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Week" />
-      <Button layoutX="635.0" layoutY="159.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Month" />
+      <Button fx:id="sort_interesting" layoutX="395.0" layoutY="159.0" mnemonicParsing="false" onAction="#eventSetFilter" prefHeight="25.0" prefWidth="80.0" text="Interesting" />
+      <Button fx:id="sort_hot" layoutX="475.0" layoutY="159.0" mnemonicParsing="false" onAction="#eventSetFilter" prefHeight="25.0" prefWidth="80.0" text="Hot" />
+      <Button fx:id="sort_week" layoutX="555.0" layoutY="159.0" mnemonicParsing="false" onAction="#eventSetFilter" prefHeight="25.0" prefWidth="80.0" text="Week" />
+      <Button layoutX="635.0" layoutY="159.0" mnemonicParsing="false" onAction="#eventSetFilter" prefHeight="25.0" prefWidth="80.0" text="Month" />
       <Button fx:id="button_profile_anonymous_interface" layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#eventButtonProfile" prefHeight="36.0" prefWidth="82.0" text="Profile">
          <font>
             <Font name="Courier New" size="14.0" />

@@ -20,4 +20,6 @@ public class MessageGetPostByParameter extends Message{
     public Parameter getParameter() { return parameter; }
 
     public String getValue() { return value; }
+
+    public Post[] getPost() { return post; }
 }
