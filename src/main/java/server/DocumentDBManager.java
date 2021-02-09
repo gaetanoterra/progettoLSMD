@@ -45,7 +45,14 @@ public class DocumentDBManager {
 
 
         ArrayList<User> user = new ArrayList<>();
-        try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
+
+        collUser.find(eq("location", location)).forEach(doc -> {
+            User u = new User();
+            u.setId(doc.getString("userId"));
+            user.add(u);
+        });
+
+        /*try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
         {
             while (cursor.hasNext())
             {
@@ -56,16 +63,20 @@ public class DocumentDBManager {
                 u.setId(doc.getString("userId"));
                 user.add(u);
             }
-        }
+        }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
         Bson m = match(in("owneruserId", user));
         Bson u = unwind("tags");
         Bson g = group("$tags", sum("totaleTags",1));
         Bson s = sort(descending("totaleTags"));
-        Bson l = limit(10);
+        Bson l = limit(numTags);
 
-        try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
+        collUser.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc -> {
+            tags.add(doc.getString("tags"));
+        });
+
+        /*try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
         {
             while (cursor.hasNext())
             {
@@ -73,16 +84,17 @@ public class DocumentDBManager {
 
                 tags.add(doc.getString("tags"));
             }
-        }
+        }*/
 
         return (String[]) tags.toArray();
     }
 
     //restituisco gli id degli utenti più esperti
-    public String[] findTopExpertsByTag(String tag, int num){
+    public User[] findTopExpertsByTag(String tag, int num){
         MongoCollection<Document> collPost = database.getCollection("server.Post");
         MongoCollection<Document> collUser = database.getCollection("server.User");
         ArrayList<String> usersId = new ArrayList<>();
+        ArrayList<User> user = new ArrayList<>();
 
         Bson m = match(in("tags", tag));
         Bson u = unwind("answers");
@@ -101,7 +113,24 @@ public class DocumentDBManager {
             }
         }
 
-        return (String[]) usersId.toArray();
+        collUser.find(in("userId", (String[])usersId.toArray())).forEach(document ->{
+            User us = new User()
+                    .setId(document.getString("userId"))
+                    .setDisplayName(document.getString("displayName"))
+                    .setPassword(document.getString("password"))
+                    .setFollowersNumber(document.getInteger("followersNumber"))
+                    .setFollowedNumber(document.getInteger("followedNumber"))
+                    .setReputation(document.getDouble("reputation"))
+                    .setCreationData(document.getDate("creationDate"))
+                    .setLastAccessDate(document.getDate("lastAccessDate"))
+                    .setType(document.getString("type"))
+                    .setLocation(document.getString("location"))
+                    .setAboutMe(document.getString("aboutMe"))
+                    .setWebsiteURL(document.getString("websiteURL"));
+            user.add(us);
+        });
+
+        return (User[]) user.toArray();
     }
 
     public Map<User, Pair<String,Integer>[]> findHotTopicsForTopUsers(){
@@ -141,7 +170,7 @@ public class DocumentDBManager {
             // user done, now the three posts
             // for each user id ($userId)
             int userId = Integer.parseInt(user.getUserId());
-            Bson c = match(eq("Answers.OwnerUserId", userId));
+            Bson c = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
             Bson d = unwind("$Answers");
             Bson e = unwind("$Tags");
             Bson f = new Document("$group",
@@ -403,9 +432,11 @@ public class DocumentDBManager {
     }
 
     public boolean removeUser(String displayName){
-        MongoCollection<Document> coll = database.getCollection("server.User");
+        MongoCollection<Document> collUser = database.getCollection("server.User");
+        MongoCollection<Document> collPost = database.getCollection("server.Post");
 
-        coll.deleteOne(eq("displayName", displayName));
+        collUser.deleteOne(eq("displayName", displayName));
+        collPost.deleteMany(eq("ownerUserId", displayName));
 
         return true;
     }
@@ -413,7 +444,10 @@ public class DocumentDBManager {
     public boolean updateUserData(User user){
         MongoCollection<Document> coll = database.getCollection("server.User");
 
-        coll.updateOne(eq("userId", user.getUserId()), and(set("password", user.getPassword()), set("location", user.getLocation()), set("aboutMe", user.getAboutMe()), set("websiteURL", user.getWebsiteURL())));
+        coll.updateOne(eq("userId", user.getUserId()), and(set("password", user.getPassword()),
+                                                                    set("location", user.getLocation()),
+                                                                    set("aboutMe", user.getAboutMe()),
+                                                                    set("websiteURL", user.getWebsiteURL())));
 
         return true;
     }

@@ -62,37 +62,39 @@ public class GraphDBManager {
         }
     }
 
+    //si potrebbe aggiungere l'immagine del profile (se inserita nel graph) alle cose da prendere
+    public String[] getCorrelatedUsers(String username){
+        ArrayList<String> users = new ArrayList<>();
 
-    public void getCorrelatedUsers(String username){
         try (Session session = dbConnection.session())
         {
-            session.readTransaction((TransactionWork<List<String>>) tx -> {
+            return (String[]) session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run( "MATCH (u3:server.User)<-[:FOLLOWS]-(u2:server.User)<-[:FOLLOWS]-(u:server.User {userId: $userId}) " +
                                 "WHERE u3 <> u and u3 <> u2 //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2) " +
                                 "RETURN distinct u3.displayName AS Username " +
                                 "LIMIT 10",
                         parameters( "userId", username) );
-                ArrayList<String> users = new ArrayList<>();
+
                 while(result.hasNext())
                 {
                     Record r = result.next();
                     users.add(r.get("Username").asString());
                 }
                 return users;
-            });
+            }).toArray();
         }
     }
 
-    public void getRecommendedUsers(String username, String name){
+    public String[] getRecommendedUsers(String userId, String tagName){
         try (Session session = dbConnection.session())
         {
-            List<String> usersList = session.readTransaction((TransactionWork<List<String>>) tx -> {
+            return (String[]) session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run( "MATCH (u: server.User {userId : $userId})-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {name: $name}), " +
                                 "(u2: server.User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t) " +
                                 "WHERE u <> u2 " +
                                 "RETURN distinct u2.displayName as Username " +
                                 "LIMIT 10",
-                        parameters("userId", username, "name", name));
+                        parameters("userId", userId, "name", tagName));
                 ArrayList<String> users = new ArrayList<>();
                 while(result.hasNext())
                 {
@@ -100,7 +102,7 @@ public class GraphDBManager {
                     users.add(r.get("Username").asString());
                 }
                 return users;
-            });
+            }).toArray();
         }
     }
 

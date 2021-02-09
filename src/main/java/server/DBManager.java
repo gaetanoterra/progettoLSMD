@@ -12,33 +12,37 @@ public class DBManager {
         //graphDBMan = new server.GraphDBManager();
     }
 
-    public User[] findMostPopularTagsByLocation(String tag, String idUser){
+    public String[] findMostPopularTagsByLocation(String location, int numTags){
+        return documentDBMan.findMostPopularTagsByLocation(location, numTags);
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
     }
 
-    public User[] findTopExpertsByTag(String tag, String idUser){
+    public User[] findTopExpertsByTag(String tag, int numExperts){
+        return documentDBMan.findTopExpertsByTag(tag, numExperts);
     }
 
-    public User[] getCorrelatedUsers(String username){
-
+    //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
+    public String[] getCorrelatedUsers(String username){
+        return graphDBMan.getCorrelatedUsers(username);
     }
 
     public Post getPostById(String postId){
-
+        return documentDBMan.getPostById(postId);
     }
 
     public Post[] getPostsByTag(String[] tags){
-
+        return documentDBMan.getPostsByTag(tags);
     }
 
-    public Post getPostByText(String text){
-
+    public Post[] getPostByText(String text){
+        return documentDBMan.getPostsByText(text);
     }
 
-    public User[] getRecommendedUsers(String username){
-
+    //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
+    public String[] getRecommendedUsers(String username, String tag){
+        return graphDBMan.getRecommendedUsers(username, tag);
     }
 
     public User getUserData(String username){
@@ -48,7 +52,7 @@ public class DBManager {
     }
 
     public User[] getUsersRank(){
-
+        return documentDBMan.getUsersRank();
     }
 
     public boolean insertAnswer(Answer answer, String postId){
@@ -90,12 +94,13 @@ public class DBManager {
     }
 
     public boolean insertRelationContainsTag(String name, String postId){
+        graphDBMan.insertRelationContainsTag(name, postId);
 
+        return true;
     }
 
-    public boolean insertRelationPostsAnswer(String answerId, User user){
-
-    }
+    /*public boolean insertRelationPostsAnswer(String answerId, User user){
+    }*/
 
     public boolean insertRelationVote(String answerId, String userId, int voto){
         graphDBMan.insertRelationVote(answerId, userId, voto);
@@ -128,12 +133,14 @@ public class DBManager {
     }
 
     public boolean removeRelationContainsTag(String postId, String name){
+        graphDBMan.removeRelationContainsTag(postId, name);
 
+        return true;
     }
 
-    public boolean removeRelationPostsAnswer(String userId, String answerId){
+    /*public boolean removeRelationPostsAnswer(String userId, String answerId){
 
-    }
+    }*/
 
 
     public boolean removeRelationVote(String userId, String answerId){
@@ -154,6 +161,8 @@ public class DBManager {
     }
 
     public boolean updateUserData(User user){
+        documentDBMan.updateUserData(user);
 
+        return true;
     }
 }
