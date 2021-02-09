@@ -15,10 +15,12 @@ import middleware.*;
 
 public class Main extends Application{
 
+    private static String logged_user = null;
+
     private static ClientServerManager clientServerManager;
     private static AnchorPane root;
 
-    static List<AnchorPane> grid = new ArrayList<AnchorPane>();
+    private static List<AnchorPane> grid = new ArrayList<AnchorPane>();
 
     private static int idx_cur = 0;
 
@@ -56,6 +58,18 @@ public class Main extends Application{
 
     public static ClientServerManager getClientServerManager() {
         return clientServerManager;
+    }
+
+    public static void setLog(String username){
+        logged_user = username;
+    }
+
+    public static void resetLog(){
+        logged_user = null;
+    }
+
+    public static String getLog(){
+        return logged_user;
     }
 
     public static void main(String[] args) {

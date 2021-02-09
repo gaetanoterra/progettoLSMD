@@ -42,12 +42,16 @@ public class ClientServerManager extends Thread {
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
                             ControllerProfileInterface.fillProfileInterface(msgl.getUser());
+                            ControllerAnonymousInterface.setLoggedInterface(msgl.getUser().getDisplayName());
+                            Main.setLog(msgl.getUser().getDisplayName());
                             last_server_answer = true;
                         }
                         in_attesa = false;
                         break;
 
                     case Message_Logout:
+                        Main.resetLog();
+                        ControllerAnonymousInterface.resetInterface();
                         break;
 
                     case Message_Signup:

@@ -211,6 +211,31 @@ public class DocumentDBManager {
         return result;
     }
 
+    //questo va aggiustato
+    public Post[] getPostByDate(String data) {
+        MongoCollection<Document> coll = database.getCollection("server.Post");
+
+        ArrayList<Post> posts = new ArrayList<>();
+        try (MongoCursor<Document> cursor = coll.find(eq("creationDate", data)).iterator())
+        {
+            while (cursor.hasNext())
+            {
+                Document doc = cursor.next();
+                Post p = new Post(doc.getString("postId"),
+                        doc.getString("title"),
+                        (ArrayList<Answer>)doc.get("answers"),
+                        doc.getDate("creationDate"),
+                        doc.getString("body"),
+                        doc.getString("ownerUserId"),
+                        (ArrayList<String>)doc.get("tags"));
+
+                posts.add(p);
+            }
+        }
+
+        return (Post[]) posts.toArray();
+    }
+
     public Post getPostById(String postId){
         MongoCollection<Document> coll = database.getCollection("server.Post");
 
@@ -223,6 +248,30 @@ public class DocumentDBManager {
                 postDoc.getString("body"),
                 postDoc.getString("ownerUserId"),
                 (ArrayList<String>)postDoc.get("tags"));
+    }
+
+    public Post[] getPostByOwnerUsername(String username) {
+        MongoCollection<Document> coll = database.getCollection("server.Post");
+
+        ArrayList<Post> posts = new ArrayList<>();
+        try (MongoCursor<Document> cursor = coll.find(all("ownerUserId", username)).iterator())
+        {
+            while (cursor.hasNext())
+            {
+                Document doc = cursor.next();
+                Post p = new Post(doc.getString("postId"),
+                        doc.getString("title"),
+                        (ArrayList<Answer>)doc.get("answers"),
+                        doc.getDate("creationDate"),
+                        doc.getString("body"),
+                        doc.getString("ownerUserId"),
+                        (ArrayList<String>)doc.get("tags"));
+
+                posts.add(p);
+            }
+        }
+
+        return (Post[]) posts.toArray();
     }
 
     public Post[] getPostsByTag(String[] tags){

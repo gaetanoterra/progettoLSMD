@@ -143,6 +143,29 @@ public class ClientManager extends Thread{
                     case Message_Get_Post_Data:
                         break;
 
+                    case Message_Get_Post:
+                        MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
+
+                        switch (msgParameter.getParameter()){
+                            case Date:
+                                dbManager.getPostByDate(msgParameter.getValue());
+                                break;
+
+                            case Tags:
+                                String[] tags = msgParameter.getValue().split(";");
+                                dbManager.getPostsByTag(tags);
+                                break;
+
+                            case Text:
+                                dbManager.getPostByText(msgParameter.getValue());
+                                break;
+
+                            case Username:
+                                dbManager.getPostByOwnerUsername(msgParameter.getValue());
+                                break;
+                        }
+                        break;
+
                     case Message_Get_Top_Users_Posts:
                         break;
                 }

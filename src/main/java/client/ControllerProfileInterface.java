@@ -71,4 +71,8 @@ public class ControllerProfileInterface {
 
         setInfo(info);
     }
+
+    public void eventButtonBrowse(ActionEvent actionEvent){ Main.switchScene(0); }
+
+    public void eventButtonWrite(ActionEvent actionEvent) { Main.switchScene(4); }
 }

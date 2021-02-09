@@ -28,9 +28,13 @@ public class DBManager {
         return graphDBMan.getCorrelatedUsers(username);
     }
 
+    public Post[] getPostByDate(String data) { return documentDBMan.getPostByDate(data);}
+
     public Post getPostById(String postId){
         return documentDBMan.getPostById(postId);
     }
+
+    public Post[] getPostByOwnerUsername(String username) { return documentDBMan.getPostByOwnerUsername(username); }
 
     public Post[] getPostsByTag(String[] tags){
         return documentDBMan.getPostsByTag(tags);
