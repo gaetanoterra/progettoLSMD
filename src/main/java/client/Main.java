@@ -18,6 +18,7 @@ public class Main extends Application{
     private static User logged_user = null;
 
     private static ClientServerManager clientServerManager;
+    private static ControllerAnonymousInterface controllerAnonymousInterface;
     private static AnchorPane root;
 
     private static List<AnchorPane> grid = new ArrayList<AnchorPane>();
@@ -47,6 +48,8 @@ public class Main extends Application{
 
         //creo un'istanza di client.ClientServerManager per connettermi al server.Server
         clientServerManager = new ClientServerManager();
+        clientServerManager.run();
+        controllerAnonymousInterface = new ControllerAnonymousInterface(clientServerManager);
     }
 
     public static void switchScene(int idx){
@@ -76,4 +79,7 @@ public class Main extends Application{
         launch(args);
     }
 
+    public static ControllerAnonymousInterface getControllerAnonymousInterface() {
+        return controllerAnonymousInterface;
+    }
 }

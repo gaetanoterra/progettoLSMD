@@ -11,7 +11,7 @@ public class ClientServerManager extends Thread {
     private ObjectOutputStream oos;
     private  ObjectInputStream ois;
     private Socket socket;
-    private boolean in_attesa = true; //vedo se sto aspettando la risposta del server
+    private static boolean in_attesa = true; //vedo se sto aspettando la risposta del server
     private boolean last_server_answer = false;
     private  int portNumber;
 
@@ -43,7 +43,7 @@ public class ClientServerManager extends Thread {
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
                             ControllerProfileInterface.fillProfileInterface(msgl.getUser());
-                            ControllerAnonymousInterface.setLoggedInterface(msgl.getUser().getDisplayName());
+                            Main.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
                             Main.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
@@ -52,7 +52,7 @@ public class ClientServerManager extends Thread {
 
                     case Message_Logout:
                         Main.resetLog();
-                        ControllerAnonymousInterface.resetInterface();
+                        Main.getControllerAnonymousInterface().resetInterface();
                         break;
 
                     case Message_Signup:
@@ -71,8 +71,8 @@ public class ClientServerManager extends Thread {
                         break;
 
                     case Message_Get_Post:
-                        //chiamo una funzione di ControllerAnonymousInterface per popolare il pane con i Post
-                        ControllerAnonymousInterface.setPosts(((MessageGetPostByParameter)msg).getPost());
+                        //chiamo una funzione dell'istanza di ControllerAnonymousInterface per popolare il pane con i Post
+                        Main.getControllerAnonymousInterface().setPosts(((MessageGetPostByParameter)msg).getPost());
                         break;
 
                     case Message_Get_Top_Users_Posts:
@@ -99,6 +99,14 @@ public class ClientServerManager extends Thread {
     public void send(Message messaggio) throws IOException {
         in_attesa = true;
         oos.writeObject(messaggio);
+    }
+
+    public static boolean getInAttesa(){
+        return in_attesa;
+    }
+
+    public static void setInAttesa(boolean in_attesa) {
+        ClientServerManager.in_attesa = in_attesa;
     }
 
     public boolean checkLastServerAnswer() throws InterruptedException {

@@ -12,6 +12,7 @@ public class Post {
     private String body;
     private String ownerUserId;
     private List<String> tags;
+    private int views;
 
     public Post(){
 
@@ -55,6 +56,8 @@ public class Post {
         return tags;
     }
 
+    public int getViews() { return views; }
+
     public Post setPostId(String id){
         postId = id;
         return this;
@@ -88,5 +91,9 @@ public class Post {
     public Post setTags(List<String> tags){
         this.tags = tags;
         return this;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
     }
 }
