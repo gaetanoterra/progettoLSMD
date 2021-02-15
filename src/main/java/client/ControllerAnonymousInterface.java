@@ -155,15 +155,15 @@ public class ControllerAnonymousInterface {
     }
 
     public void eventButtonSignIn(ActionEvent event){
-        Main.switchScene(1);
+        Main.switchScene(PageType.SIGN_IN);
     }
 
     public void eventButtonSignUp(ActionEvent event){
-        Main.switchScene(2);
+        Main.switchScene(PageType.SIGN_UP);
     }
 
     public void eventButtonProfile(ActionEvent actionEvent) {
-        Main.switchScene(3);
+        Main.switchScene(PageType.PROFILE_INTERFACE);
         ControllerProfileInterface.lockTextArea();
     }
 

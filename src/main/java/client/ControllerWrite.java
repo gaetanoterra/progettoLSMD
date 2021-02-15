@@ -39,10 +39,10 @@ public class ControllerWrite {
 
         clm.send(new MessagePost(OperationCD.Create, post));
 
-        Main.switchScene(3);
+        Main.switchScene(PageType.PROFILE_INTERFACE);
     }
 
     public void eventButtonCloseWrite(ActionEvent actionEvent) {
-        Main.switchScene(3);
+        Main.switchScene(PageType.PROFILE_INTERFACE);
     }
 }

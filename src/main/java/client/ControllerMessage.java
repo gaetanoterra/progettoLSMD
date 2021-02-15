@@ -17,6 +17,6 @@ public class ControllerMessage {
 
     public void eventButtonCloseMessage(ActionEvent actionEvent) {
         textarea_message.setText("");
-        Main.switchScene(0);
+        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }

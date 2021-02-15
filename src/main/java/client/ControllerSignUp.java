@@ -34,7 +34,7 @@ public class ControllerSignUp {
         if(clm.checkLastServerAnswer()){
             label_error_message_signup.setText("");
             ControllerMessage.setTextArea("Registrazione avvenuta con successo!");
-            Main.switchScene(6);
+            Main.switchScene(PageType.MESSAGE);
         }
         else{
             label_error_message_signup.setText("*Username già in uso");
@@ -42,6 +42,6 @@ public class ControllerSignUp {
     }
 
     public void eventButtonCloseSignup(ActionEvent actionEvent) {
-        Main.switchScene(0);
+        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }

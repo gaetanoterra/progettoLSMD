@@ -35,7 +35,7 @@ public class ControllerProfileInterface {
     private static ChoiceBox choicebox_filters;
 
     public void eventButtonLogout(ActionEvent actionEvent) {
-        Main.switchScene(0);
+        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 
     public String getAboutMe(){
@@ -82,10 +82,10 @@ public class ControllerProfileInterface {
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post
-    public void eventButtonBrowse(ActionEvent actionEvent){ Main.switchScene(0); }
+    public void eventButtonBrowse(ActionEvent actionEvent){ Main.switchScene(PageType.ANONYMOUS_INTERFACE); }
 
     //funzione che mi porta all'interfaccia dove scrivere un nuovo post
-    public void eventButtonWrite(ActionEvent actionEvent) { Main.switchScene(4); }
+    public void eventButtonWrite(ActionEvent actionEvent) { Main.switchScene(PageType.WRITE); }
 
     //funzione per rendere non editabili i textfield
     public static void lockTextArea(){

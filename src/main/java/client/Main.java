@@ -38,8 +38,10 @@ public class Main extends Application{
             grid.add((AnchorPane)FXMLLoader.load(getClass().getResource("write.fxml")));
             grid.add((AnchorPane)FXMLLoader.load(getClass().getResource("analysisInterface.fxml")));
             grid.add((AnchorPane)FXMLLoader.load(getClass().getResource("message.fxml")));
+            grid.add((AnchorPane)FXMLLoader.load(getClass().getResource("post.fxml")));
+            grid.add((AnchorPane)FXMLLoader.load(getClass().getResource("answer.fxml")));
 
-            root.getChildren().add(grid.get(0));
+            root.getChildren().add(grid.get(PageType.ANONYMOUS_INTERFACE.ordinal()));
             Scene scene = new Scene(root);
 
             primaryStage.setScene(scene);
@@ -52,11 +54,11 @@ public class Main extends Application{
         controllerAnonymousInterface = new ControllerAnonymousInterface(clientServerManager);
     }
 
-    public static void switchScene(int idx){
+    public static void switchScene(PageType idx){
 
         root.getChildren().remove(grid.get(idx_cur));
-        root.getChildren().add(grid.get(idx));
-        idx_cur = idx;
+        root.getChildren().add(grid.get(idx.ordinal()));
+        idx_cur = idx.ordinal();
     }
 
     public static ClientServerManager getClientServerManager() {

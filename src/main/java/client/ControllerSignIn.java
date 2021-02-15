@@ -36,7 +36,7 @@ public class ControllerSignIn {
             // (utente qualsiasi, in questo caso sarà dell'utente loggato ma se clicco sul profilo di un altro utente lo visualizzo nellos tesso modo)
 
             //switch della pagina
-            Main.switchScene(3);
+            Main.switchScene(PageType.PROFILE_INTERFACE);
             ControllerProfileInterface.lockTextArea();
         }
         else{
@@ -49,13 +49,13 @@ public class ControllerSignIn {
     public void eventButtonSignUpSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
-        Main.switchScene(2);
+        Main.switchScene(PageType.SIGN_UP);
     }
 
     //annullo la signin e torno dove ero
     public void eventButtonCancelSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
-        Main.switchScene(0);
+        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }
