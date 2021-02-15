@@ -3,22 +3,16 @@ package client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import server.*;
-import middleware.*;
-
-import java.util.ArrayList;
 
 public class ControllerPost {
 
     @FXML
-    private Label label_titolo_post;
+    private Text text_title;
     @FXML
     private ScrollPane scrollpane_body_post, scrollpane_answers_post;
 
@@ -31,82 +25,45 @@ public class ControllerPost {
         Main.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 
-
-    //da completare
     public void setPost(Post post){
-        label_titolo_post.setText(post.getTitle());
+        text_title.setText(post.getTitle());
         scrollpane_body_post.setContent(new Label(post.getBody()));
 
         VBox vbox = new VBox(1);
 
         for(int i = 0; i < post.getAnswers().size(); i++){
 
-            HBox hboxVoti = new HBox(10);
-            HBox hboxTags = new HBox(20);
+            Answer answer = post.getAnswers().get(i);
+
+            VBox vboxVoti = new VBox(10);
+            HBox hboxButtons = new HBox(20);
             HBox hboxTotale = new HBox(60);
-            VBox vboxTitoloTags = new VBox(20);
 
-            //Label labelNumVoti = new Label(posts[i].get + " Voti");
-            Label labelNumAnswer = new Label(posts[i].getAnswers().size() + " Answer");
-            Label labelNumViews = new Label(posts[i].getViews() + " View");
+            Text textBody = new Text(answer.getBody());
+            textBody.setWrappingWidth(320);
 
-            Label labelTag1 = new Label("");
-            Label labelTag2 = new Label("");
-            Label labelTag3 = new Label("");
-            Label labelTag4 = new Label("");
-            Label labelTag5 = new Label("");
+            Label labelNumVoti = new Label(String.valueOf(answer.getScore()));
 
-            if(posts[i].getTags().get(0) != null)
-                labelTag1.setText(posts[i].getTags().get(0));
-            if(posts[i].getTags().get(1) != null)
-                labelTag2.setText(posts[i].getTags().get(1));
-            if(posts[i].getTags().get(2) != null)
-                labelTag3.setText(posts[i].getTags().get(2));
-            if(posts[i].getTags().get(3) != null)
-                labelTag4.setText(posts[i].getTags().get(3));
-            if(posts[i].getTags().get(4) != null)
-                labelTag5.setText(posts[i].getTags().get(4));
+            Button votoPos = new Button("+");
+            Button votoNeg = new Button("-");
+
+            hboxButtons.getChildren().addAll(votoPos, votoNeg);
+
+            vboxVoti.getChildren().addAll(labelNumVoti, hboxButtons);
 
             Separator separator = new Separator();
 
-            Label labelStats = new Label("asked " + posts[i].getCreationDate() + " by " + posts[i].getOwnerUserId());
+            Label labelStats = new Label("answered " + answer.getCreationDate() + " by " + answer.getOwnerUserId());
             labelStats.setPrefWidth(150);
-
-            Label labelTitolo = new Label(posts[i].getTitle());
-            labelTitolo.setFont(Font.font("Courier", 20));
-            labelTitolo.setPrefWidth(320);
-            labelTitolo.setAlignment(Pos.CENTER);
-            labelTitolo.setOnMouseEntered(event -> {
-                labelTitolo.setCursor(Cursor.HAND);
-                labelTitolo.setTextFill(Color.BLUE);
-            });
-            labelTitolo.setOnMouseExited(event -> {
-                labelTitolo.setTextFill(Color.BLACK);
-            });
-            labelTitolo.setOnMouseClicked(event -> {
-                System.out.println("ho cliccato sul titolo");
-            });
-
-            hboxTags.setPrefWidth(320);
-            hboxTags.setAlignment(Pos.CENTER);
-
-            hboxVoti.setAlignment(Pos.CENTER_RIGHT);
-            hboxVoti.setPrefWidth(150);
 
             hboxTotale.setAlignment(Pos.CENTER);
 
-            vboxTitoloTags.setPrefWidth(320);
-            vboxTitoloTags.setAlignment(Pos.CENTER);
-
-            hboxVoti.getChildren().addAll(labelNumAnswer, labelNumViews);
-            hboxTags.getChildren().addAll(labelTag1, labelTag2, labelTag3, labelTag4, labelTag5);
-            vboxTitoloTags.getChildren().addAll(labelTitolo, hboxTags);
-            hboxTotale.getChildren().addAll(hboxVoti, vboxTitoloTags, labelStats);
+            hboxTotale.getChildren().addAll(vboxVoti, textBody, labelStats);
 
             vbox.getChildren().addAll(hboxTotale, separator);
             vbox.setAlignment(Pos.CENTER);
 
         }
-        scrollpane_posts.setContent(vbox);
+        scrollpane_answers_post.setContent(vbox);
     }
 }

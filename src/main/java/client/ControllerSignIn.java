@@ -37,7 +37,7 @@ public class ControllerSignIn {
 
             //switch della pagina
             Main.switchScene(PageType.PROFILE_INTERFACE);
-            ControllerProfileInterface.lockTextArea();
+            Main.getControllerProfileInterface().lockTextArea();
         }
         else{
             label_error_message_signin.setText("*Username o password errate");

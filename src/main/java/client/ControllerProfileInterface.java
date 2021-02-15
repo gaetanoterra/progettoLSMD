@@ -15,24 +15,28 @@ import java.io.IOException;
 public class ControllerProfileInterface {
 
     private boolean modificable = false;
-    private static ClientServerManager clm = Main.getClientServerManager();
+    private static ClientServerManager clm;
     private User[] suggestedUsers;
     private Post[] usersPosts;
 
     @FXML
-    private static TextArea textarea_aboutme;
+    private TextArea textarea_aboutme;
     @FXML
-    private static TextField textfield_location, textfield_cretiondate, textfield_reputation, textfield_url;
+    private TextField textfield_location, textfield_cretiondate, textfield_reputation, textfield_url;
     @FXML
-    private static ImageView imageview_profile;
+    private ImageView imageview_profile;
     @FXML
-    private static Label label_displayname;
+    private Label label_displayname;
     @FXML
-    private static Button button_browse, button_write, button_logout, button_modify;
+    private Button button_browse, button_write, button_logout, button_modify;
     @FXML
-    private static Pane pane_mypost, pane_suggested_users;
+    private Pane pane_mypost, pane_suggested_users;
     @FXML
-    private static ChoiceBox choicebox_filters;
+    private ChoiceBox choicebox_filters;
+
+    public ControllerProfileInterface(ClientServerManager clientServerManager) {
+        clm = clientServerManager;
+    }
 
     public void eventButtonLogout(ActionEvent actionEvent) {
         Main.switchScene(PageType.ANONYMOUS_INTERFACE);
@@ -42,7 +46,7 @@ public class ControllerProfileInterface {
         return textarea_aboutme.getText();
     }
 
-    public static String getDisplayName(){
+    public String getDisplayName(){
         return label_displayname.getText();
     }
 
@@ -50,16 +54,16 @@ public class ControllerProfileInterface {
         return choicebox_filters.getId();
     }
 
-    public static void setDisplayName(String username){
+    public void setDisplayName(String username){
         label_displayname.setText(username);
     }
 
-    public static void setAboutMe(String aboutme){
+    public void setAboutMe(String aboutme){
         textarea_aboutme.setText(aboutme);
     }
 
     //funzione che riempie i campi dell'interfaccia del profilo
-    public static void fillProfileInterface(User user) throws IOException {
+    public void fillProfileInterface(User user) throws IOException {
         setDisplayName(user.getDisplayName());
         setAboutMe(user.getAboutMe());
 
@@ -73,12 +77,12 @@ public class ControllerProfileInterface {
     }
 
     //funzione che riempie i campi del pannello dei post
-    private static void fillPosts() throws IOException {
+    private void fillPosts() throws IOException {
         clm.send(new MessageGetPostByParameter(Parameter.Username, Main.getLog().getDisplayName(), null));
     }
 
     //richiedere gli utenti suggeriti
-    private static void fillSuggestedUsers() {
+    private void fillSuggestedUsers() {
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post
@@ -88,7 +92,7 @@ public class ControllerProfileInterface {
     public void eventButtonWrite(ActionEvent actionEvent) { Main.switchScene(PageType.WRITE); }
 
     //funzione per rendere non editabili i textfield
-    public static void lockTextArea(){
+    public void lockTextArea(){
         textfield_location.setEditable(false);
         textfield_reputation.setEditable(false);
         textfield_cretiondate.setEditable(false);

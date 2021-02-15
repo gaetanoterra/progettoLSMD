@@ -6,6 +6,7 @@ public class Answer {
     private String creationDate;
     private double score;
     private String ownerUserId;
+    private String body;
 
     public Answer(){
 
@@ -27,6 +28,8 @@ public class Answer {
         return ownerUserId;
     }
 
+    public String getBody() { return body; }
+
     public Answer setAnswerId(String answerId){
         this.answerId = answerId;
         return this;
@@ -45,5 +48,9 @@ public class Answer {
     public Answer setOwnerUserId(String userId){
         ownerUserId = userId;
         return this;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

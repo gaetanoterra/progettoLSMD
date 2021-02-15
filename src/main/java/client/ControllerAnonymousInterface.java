@@ -22,6 +22,7 @@ public class ControllerAnonymousInterface {
     private static Parameter searchMethod = Parameter.Date;
     private static String filter = "interesting";
     private static Post[] posts;
+    private static Post last_post_seen;
 
     @FXML
     private Label label_username_anonymous_interface;
@@ -95,6 +96,7 @@ public class ControllerAnonymousInterface {
             labelStats.setPrefWidth(150);
 
             Label labelTitolo = new Label(posts[i].getTitle());
+            labelTitolo.setId("titolo_post:" + i);
             labelTitolo.setFont(Font.font("Courier", 20));
             labelTitolo.setPrefWidth(320);
             labelTitolo.setAlignment(Pos.CENTER);
@@ -106,7 +108,9 @@ public class ControllerAnonymousInterface {
                 labelTitolo.setTextFill(Color.BLACK);
             });
             labelTitolo.setOnMouseClicked(event -> {
-                System.out.println("ho cliccato sul titolo");
+                String titolo = labelTitolo.getId();
+                String[] t = titolo.split(":");
+                last_post_seen = posts[Integer.parseInt(t[1])];
             });
 
             hboxTags.setPrefWidth(320);
@@ -164,7 +168,7 @@ public class ControllerAnonymousInterface {
 
     public void eventButtonProfile(ActionEvent actionEvent) {
         Main.switchScene(PageType.PROFILE_INTERFACE);
-        ControllerProfileInterface.lockTextArea();
+        Main.getControllerProfileInterface().lockTextArea();
     }
 
     public void eventSetSearchMethod(ActionEvent actionEvent) {
@@ -210,5 +214,9 @@ public class ControllerAnonymousInterface {
             filter = "week";
         else if(sort_month.isPressed())
             filter = "month";
+    }
+
+    public static Post lastPostSeen(){
+        return last_post_seen;
     }
 }

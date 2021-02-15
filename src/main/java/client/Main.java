@@ -19,11 +19,12 @@ public class Main extends Application{
 
     private static ClientServerManager clientServerManager;
     private static ControllerAnonymousInterface controllerAnonymousInterface;
+    private static ControllerProfileInterface controllerProfileInterface;
     private static AnchorPane root;
 
     private static List<AnchorPane> grid = new ArrayList<AnchorPane>();
 
-    private static int idx_cur = 0;
+    private static PageType idx_cur = PageType.ANONYMOUS_INTERFACE, last_page_seen = PageType.ANONYMOUS_INTERFACE;
 
     @Override
     public void start (Stage primaryStage) throws Exception {
@@ -51,14 +52,18 @@ public class Main extends Application{
         //creo un'istanza di client.ClientServerManager per connettermi al server.Server
         clientServerManager = new ClientServerManager();
         clientServerManager.run();
+
         controllerAnonymousInterface = new ControllerAnonymousInterface(clientServerManager);
+        controllerProfileInterface = new ControllerProfileInterface(clientServerManager);
     }
 
+    //rischio loop con la pagina answer e post
     public static void switchScene(PageType idx){
 
-        root.getChildren().remove(grid.get(idx_cur));
+        root.getChildren().remove(grid.get(idx_cur.ordinal()));
         root.getChildren().add(grid.get(idx.ordinal()));
-        idx_cur = idx.ordinal();
+        last_page_seen = idx_cur;
+        idx_cur = idx;
     }
 
     public static ClientServerManager getClientServerManager() {
@@ -73,15 +78,15 @@ public class Main extends Application{
         logged_user = null;
     }
 
-    public static User getLog(){
-        return logged_user;
-    }
+    public static User getLog(){ return logged_user; }
+
+    public static PageType getLastPageSeen(){ return last_page_seen; }
+
+    public static ControllerAnonymousInterface getControllerAnonymousInterface() { return controllerAnonymousInterface; }
+
+    public static ControllerProfileInterface getControllerProfileInterface() { return controllerProfileInterface; }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public static ControllerAnonymousInterface getControllerAnonymousInterface() {
-        return controllerAnonymousInterface;
     }
 }
