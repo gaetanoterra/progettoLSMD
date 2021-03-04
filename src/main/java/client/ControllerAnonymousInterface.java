@@ -197,11 +197,11 @@ public class ControllerAnonymousInterface {
         else if(searchMethod == Parameter.Username)
             clm.send(new MessageGetPostByParameter(Parameter.Username, textfield_search.getText(), null));
 
-        while(ClientServerManager.getInAttesa())
+        while(ClientServerManager.isWaiting())
             wait();
 
         fillPostPane();
-        ClientServerManager.setInAttesa(true);
+        ClientServerManager.setWaiting(true);
     }
 
     //event per impostare il valore del filtro

@@ -12,12 +12,16 @@ public class DBManager {
         documentDBMan = new DocumentDBManager();
         //graphDBMan = new server.GraphDBManager();
     }
+    public void close(){
+        this.documentDBMan.close();
+    }
 
     public String[] findMostPopularTagsByLocation(String location, int numTags){
         return documentDBMan.findMostPopularTagsByLocation(location, numTags);
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
+        return this.graphDBMan.findMostAnsweredTopUserPosts();
     }
 
     public User[] findTopExpertsByTag(String tag, int numExperts){
@@ -51,9 +55,7 @@ public class DBManager {
     }
 
     public User getUserData(String username){
-        User user = documentDBMan.getUserData(username);
-
-        return user;
+        return documentDBMan.getUserData(username);
     }
 
     public User[] getUsersRank(){
@@ -100,7 +102,6 @@ public class DBManager {
 
     public boolean insertRelationContainsTag(String name, String postId){
         graphDBMan.insertRelationContainsTag(name, postId);
-
         return true;
     }
 

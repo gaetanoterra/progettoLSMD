@@ -8,20 +8,20 @@ import java.net.*;
 //classe preposta a ricevere le risposte dal server e passare i risultati ai vari Controller
 public class ClientServerManager extends Thread {
 
-    private ObjectOutputStream oos;
-    private  ObjectInputStream ois;
-    private Socket socket;
-    private static boolean in_attesa = true; //vedo se sto aspettando la risposta del server
+    private ObjectOutputStream messageOutputStream;
+    private  ObjectInputStream messageInputStream;
+    private Socket clientSocket;
+    private static boolean waiting = true; //vedo se sto aspettando la risposta del server
     private boolean last_server_answer = false;
     private  int portNumber;
 
-    public ClientServerManager() {
-    }
-    public ClientServerManager(int porta, InetAddress in, String n) throws IOException{
+    public ClientServerManager() {}
+
+    public ClientServerManager(int porta, InetAddress in) throws IOException{
         portNumber = porta;
-        socket = new Socket(in, porta);
-        oos = new  ObjectOutputStream(socket.getOutputStream());
-        ois = new ObjectInputStream(socket.getInputStream());
+        clientSocket = new Socket(in, porta);
+        messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
+        messageInputStream = new ObjectInputStream(clientSocket.getInputStream());
     }
 
     public void run(){
@@ -47,7 +47,6 @@ public class ClientServerManager extends Thread {
                             Main.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
-                        in_attesa = false;
                         break;
 
                     case Message_Logout:
@@ -61,13 +60,14 @@ public class ClientServerManager extends Thread {
                         if(msgs.getStatus() == StatusCode.Message_Ok)
                             last_server_answer = true;
 
-                        in_attesa = false;
                         break;
 
                     case Message_Get_Experts:
+
                         break;
 
                     case Message_Get_Post_Data:
+
                         break;
 
                     case Message_Get_Post:
@@ -82,35 +82,34 @@ public class ClientServerManager extends Thread {
             }
 
         } catch (EOFException e) {
-            System.out.println("Il server ha rifutato la connessione");
+            System.out.println("Server refused the connection");
             synchronized(this){
-                in_attesa=false;
                 notifyAll();
             }
         }catch (IOException | ClassNotFoundException e) {
-            System.out.println("connessione chiusa");
+            System.out.println("Connection closed, message format not valid");
         }
     }
 
     public Message receive() throws IOException, ClassNotFoundException {
-        return (Message)ois.readObject();
+        return (Message) messageInputStream.readObject();
     }
 
     public void send(Message messaggio) throws IOException {
-        in_attesa = true;
-        oos.writeObject(messaggio);
+        waiting = true;
+        messageOutputStream.writeObject(messaggio);
     }
 
-    public static boolean getInAttesa(){
-        return in_attesa;
+    public static boolean isWaiting(){
+        return waiting;
     }
 
-    public static void setInAttesa(boolean in_attesa) {
-        ClientServerManager.in_attesa = in_attesa;
+    public static void setWaiting(boolean in_attesa) {
+        ClientServerManager.waiting = in_attesa;
     }
 
     public boolean checkLastServerAnswer() throws InterruptedException {
-        while(in_attesa)
+        while(waiting)
             wait();
 
         return last_server_answer;

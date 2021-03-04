@@ -83,6 +83,7 @@ public class ControllerProfileInterface {
 
     //richiedere gli utenti suggeriti
     private void fillSuggestedUsers() {
+
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post

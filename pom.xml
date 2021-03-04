@@ -44,6 +44,7 @@
                     <mainClass>client.NewMain</mainClass>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

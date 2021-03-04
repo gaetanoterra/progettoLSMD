@@ -4,8 +4,7 @@ import org.neo4j.driver.*;
 import java.util.*;
 import static org.neo4j.driver.Values.parameters;
 
-import client.*;
-import middleware.*;
+import org.neo4j.driver.Record;
 
 
 //classe preposta ad effettuare le query del graph database
@@ -17,13 +16,13 @@ public class GraphDBManager {
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
-    public void close() throws Exception
-    {
+    public void close(){
         dbConnection.close();
     }
 
     public Map<User, Post> findMostAnsweredTopUserPosts(){
 
+        return null;
     }
 
     //funzione che effettua la query per trovare i tag più "popolari"

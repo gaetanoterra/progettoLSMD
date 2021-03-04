@@ -15,7 +15,7 @@ public class Post {
     private int views;
 
     public Post(){
-
+        this(null, null, null, null, null, null, null);
     }
 
     public Post(String postId, String title, List<Answer> answers, Date creationDate, String body, String ownerUserId, List<String> tags){

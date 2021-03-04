@@ -15,11 +15,11 @@ public class ClientManager extends Thread{
     private ObjectOutputStream oos;
     private  ObjectInputStream ois;
 
-    public ClientManager(Socket socket) throws IOException{
+    public ClientManager(Socket socket,DBManager dbm) throws IOException{
         this.socket = socket;
+        this.dbManager = dbm;
         ois = new ObjectInputStream(socket.getInputStream());
         oos = new ObjectOutputStream(socket.getOutputStream());
-        dbManager = new DBManager();
     }
 
     public void run(){
@@ -31,14 +31,14 @@ public class ClientManager extends Thread{
 
                     case Message_Login:
                         MessageLogin msgl = (MessageLogin)msg;
-                        String u = msgl.getUser().getDisplayName();
-                        String p = msgl.getUser().getPassword();
+                        String userDisplayName = msgl.getUser().getDisplayName();
+                        String password = msgl.getUser().getPassword();
 
                         //chiedo al db i dati dell'utente corrispondente allo username
-                        User user = dbManager.getUserData(u);
+                        User user = dbManager.getUserData(userDisplayName);
 
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
-                        if(user.getPassword().equals(p)){
+                        if(user.getPassword().equals(password)){
                             loggedUser = user;
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante
                             //loggedUser.setLastAccessDate(new Date());
@@ -50,12 +50,12 @@ public class ClientManager extends Thread{
 
                     case Message_Logout:
                         loggedUser = null;
-                        break;
+                        return;
 
                     case Message_Signup:
-                        MessageSignUp msgs = (MessageSignUp)msg;
+                        MessageSignUp messageSignUp = (MessageSignUp)msg;
 
-                        if(dbManager.insertUser(msgs.getUser())){
+                        if(dbManager.insertUser(messageSignUp.getUser())){
                             send(new MessageSignUp(StatusCode.Message_Ok));
                         }
                         else{
@@ -79,9 +79,10 @@ public class ClientManager extends Thread{
                                 dbManager.removePost(post, loggedUser.getUserId());
                                 break;
                             default:
-                                throw new Exception("You are not supposed to be here");
+                                throw new OpcodeNotValidException("You are not supposed to be here");
                         }
                         break;
+
                     case Message_Answer:
                         MessageAnswer msgAnswer = (MessageAnswer)msg;
                         Answer answer = msgAnswer.getAnswer();
@@ -95,7 +96,7 @@ public class ClientManager extends Thread{
                                 dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 break;
                             default:
-                                throw new Exception("You are not supposed to be here");
+                                throw new OpcodeNotValidException("Opcode of Message_Answer " + msgAnswer.getOperation() + " not valid");
                         }
                         break;
                     case Message_User:
@@ -110,7 +111,7 @@ public class ClientManager extends Thread{
                                 dbManager.removeUser(user);
                                 break;
                             default:
-                                throw new Exception("You are not supposed to be here");
+                                throw new OpcodeNotValidException("Opcode of Message_User " + msgUser.getOperation() + " not valid");
                         }
                         break;
                     case Message_Follow:
@@ -123,7 +124,7 @@ public class ClientManager extends Thread{
                                 dbManager.removeFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
                                 break;
                             default:
-                                throw new Exception("You are not supposed to be here");
+                                throw new OpcodeNotValidException("Opcode of Message_Follow" + msgFollow.getOperation() + " not valid");
                         }
                         break;
                     case Message_Vote:
@@ -138,11 +139,8 @@ public class ClientManager extends Thread{
                                 dbManager.removeRelationVote(loggedUser.getUserId(),answer.getAnswerId());
                                 break;
                             default:
-                                throw new Exception("You are not supposed to be here");
+                                throw new OpcodeNotValidException("Opcode of Message_Vote" + msgVote.getOperation() + " not valid");
                         }
-                        break;
-
-                    case Message_Get_Post_Data:
                         break;
 
                     case Message_Get_Post:
@@ -166,8 +164,8 @@ public class ClientManager extends Thread{
                             case Username:
                                 resultPost = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
+
                         }
-                        
                         send(new MessageGetPostByParameter(null, null, resultPost));
                         break;
 
@@ -182,7 +180,7 @@ public class ClientManager extends Thread{
             }
 
         }
-        catch (Exception e) {e.printStackTrace();}
+        catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
     }
 
     public Message receive() throws IOException, ClassNotFoundException {
