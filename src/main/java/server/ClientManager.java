@@ -5,6 +5,9 @@ import middleware.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 public class ClientManager extends Thread{
@@ -14,6 +17,7 @@ public class ClientManager extends Thread{
     private User loggedUser;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
+    private static final int DEFAULT_NUM_EXPERTS = 10;
 
     public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
         this.socketUser = socketUser;
@@ -38,6 +42,7 @@ public class ClientManager extends Thread{
                         User user = dbManager.getUserData(userDisplayName);
 
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
+                        //TODO: Controllare se la password conservata nel DB è un hash oppure no
                         if(user.getPassword().equals(password)){
                             loggedUser = user;
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante
@@ -64,7 +69,13 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Experts:
-                        //TODO: Completare case switch Message_Get_Experts
+                        MessageGetExpertsByTag msgExperts = (MessageGetExpertsByTag)msg;
+                        User[] expertUsers = dbManager.findTopExpertsByTag(
+                                msgExperts.getTag(),
+                                DEFAULT_NUM_EXPERTS
+                        );
+
+                        send(new MessageGetExpertsByTag(msgExperts.getTag(), (ArrayList<User>)Arrays.asList(expertUsers)));
                         break;
 
                     case Message_Post:
@@ -100,6 +111,7 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_Answer " + msgAnswer.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_User:
                         MessageUser msgUser = (MessageUser)msg;
                         user = msgUser.getUser();
@@ -115,6 +127,7 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_User " + msgUser.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_Follow:
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
@@ -128,6 +141,7 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_Follow" + msgFollow.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_Vote:
                         MessageVote msgVote = (MessageVote)msg;
                         answer = msgVote.getAnswer();
@@ -172,8 +186,37 @@ public class ClientManager extends Thread{
                         send(new MessageGetPostByParameter(null, null, resultPost));
                         break;
 
+                    case Message_Get_User_Data:
+                        MessageGetUserData msgGetUserData = (MessageGetUserData)msg;
+                        User userToSearch = msgGetUserData.getObject().get(0);
+                        String displayName = userToSearch.getDisplayName();
+                        User userWithCompleteData = dbManager.getUserData(displayName);
+                        send(
+                                new MessageGetUserData(
+                                        (ArrayList<User>)Arrays.asList(userWithCompleteData)
+                                )
+                        );
+                        break;
+
+                    case Message_Get_Post_Data:
+                        MessageGetPostData msgGetPostData = (MessageGetPostData)msg;
+                        Post postToSearch = msgGetPostData.getObject().get(0);
+                        String postId = postToSearch.getPostId();
+                        Post postWithCompleteData = dbManager.getPostById(postId);
+                        send(
+                                new MessageGetPostData(
+                                        (ArrayList<Post>)Arrays.asList(postWithCompleteData)
+                                )
+                        );
+                        break;
+
                     case Message_Get_Top_Users_Posts:
-                        //TODO: Completare case switch Message_Get_Top_Users_Posts
+                        HashMap<User, Post[]> mapUsersPosts = (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts();
+                        send(
+                                new MessageGetTopUsersPosts(
+                                        mapUsersPosts
+                                )
+                        );
                         break;
 
                     case Message_Update_User_data:

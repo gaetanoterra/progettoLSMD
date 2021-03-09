@@ -10,17 +10,14 @@ public class DBManager {
 
     public DBManager(){
         documentDBManager = new DocumentDBManager();
-        graphDBManager = new GraphDBManager(
-                "bolt://host-1:7687",
-                "neo4j",
-                "pseudostackoverdb"
-        );
+        graphDBManager = new GraphDBManager();
     }
     public void close(){
         this.documentDBManager.close();
         this.graphDBManager.close();
     }
 
+    //TODO: Non esiste un messaggio per ottenere i tag popolari in una location. Creare un opcode e un messagio per questo
     public String[] findMostPopularTagsByLocation(String location, int numTags){
         return documentDBManager.findMostPopularTagsByLocation(location, numTags);
     }
@@ -33,6 +30,7 @@ public class DBManager {
         return documentDBManager.findTopExpertsByTag(tag, numExperts);
     }
 
+    //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
     public String[] getCorrelatedUsers(String username){
         return graphDBManager.getCorrelatedUsers(username);
@@ -58,6 +56,7 @@ public class DBManager {
         return documentDBManager.getPostsByText(text);
     }
 
+    //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
     public String[] getRecommendedUsers(String username, String tag){
         return graphDBManager.getRecommendedUsers(username, tag);
@@ -67,6 +66,7 @@ public class DBManager {
         return documentDBManager.getUserData(username);
     }
 
+    //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
     public User[] getUsersRank(){
         return documentDBManager.getUsersRank();
     }
@@ -109,12 +109,13 @@ public class DBManager {
         return insertedUser;
     }
 
+    //TODO: Quando viene creato un post, bisogna creare anche la relazione del post che contiene il tag
     public boolean insertRelationContainsTag(String name, String postId){
         graphDBManager.insertRelationContainsTag(name, postId);
         return true;
     }
 
-    //TODO: Definire il metodo insertRelationPostsAnswer (e possibilmente invertire ordine argomenti)
+    //TODO: Quando viene creata una risposta, bisogna creare anche la relazione tra la risposta e l'utente che l'ha creata
     /*
     public boolean insertRelationPostsAnswer(String answerId, User user){
     }
@@ -149,13 +150,14 @@ public class DBManager {
         return postRemoved;
     }
 
+    //TODO: Quando viene rimosso un post, bisogna rimuovere anche la relazione del post che contiene il tag
     public boolean removeRelationContainsTag(String postId, String name){
         graphDBManager.removeRelationContainsTag(postId, name);
 
         return true;
     }
 
-    //TODO: Definire il metodo removeRelationPostsAnswer
+    //TODO: Quando viene rimossa una risposta, bisogna rimuovere anche la relazione dell'utente che ha creato la risposta
     /*public boolean removeRelationPostsAnswer(String userId, String answerId){
 
     }*/

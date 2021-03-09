@@ -32,9 +32,9 @@ public class DocumentDBManager {
     private MongoDatabase mongoDatabase;
 
     public DocumentDBManager(){
-        //TODO: Usare questa connessione quando bisogna testare in locale
-        ////mongoClient = MongoClients.create("mongodb://localhost:27017");
+        //mongoClient = MongoClients.create("mongodb://localhost:27017");
         mongoClient = MongoClients.create("mongodb://host-1:27020, host-2:27020, host-3:27020/?retryWrites=true&w=majority&wtimeout=10000");
+        //TODO: Cambiare il nome del database su mongodb con quello corretto
         mongoDatabase = mongoClient.getDatabase("mydb");
     }
     public void close(){
@@ -47,13 +47,13 @@ public class DocumentDBManager {
         //raggruppo per tag e li conto
         MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
         MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
-        ArrayList<String> tags = new ArrayList<>();
-        ArrayList<User> user = new ArrayList<>();
+        ArrayList<String> tagList = new ArrayList<>();
+        ArrayList<User> userList = new ArrayList<>();
 
         collUser.find(eq("location", location)).forEach(doc -> {
             User u = new User();
             u.setUserId(doc.getString("userId"));
-            user.add(u);
+            userList.add(u);
         });
 
         /*try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
@@ -65,19 +65,19 @@ public class DocumentDBManager {
 
                 //mi interessa solo lo userId
                 u.setId(doc.getString("userId"));
-                user.add(u);
+                userList.add(u);
             }
         }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson m = match(in("owneruserId", user));
-        Bson u = unwind("tags");
-        Bson g = group("$tags", sum("totaleTags",1));
+        Bson m = match(in("ownerUserId", userList));
+        Bson u = unwind("tagList");
+        Bson g = group("$tagList", sum("totaleTags",1));
         Bson s = sort(descending("totaleTags"));
         Bson l = limit(numTags);
 
-        collUser.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc ->
-                tags.add(doc.getString("tags"))
+        collPost.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc ->
+                tagList.add(doc.getString("tagList"))
         );
 
         /*try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
@@ -86,19 +86,19 @@ public class DocumentDBManager {
             {
                 Document doc = cursor.next();
 
-                tags.add(doc.getString("tags"));
+                tagList.add(doc.getString("tagList"));
             }
         }*/
 
-        return (String[]) tags.toArray();
+        return (String[]) tagList.toArray();
     }
 
     //restituisco gli id degli utenti più esperti
     public User[] findTopExpertsByTag(String tag, int num){
         MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
         MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
-        ArrayList<String> usersId = new ArrayList<>();
-        ArrayList<User> user = new ArrayList<>();
+        ArrayList<String> userIdList = new ArrayList<>();
+        ArrayList<User> userList = new ArrayList<>();
 
         Bson m = match(in("tags", tag));
         Bson u = unwind("answers");
@@ -113,12 +113,12 @@ public class DocumentDBManager {
             {
                 Document doc = cursor.next();
 
-                usersId.add(doc.getString("answers.ownerUserId"));
+                userIdList.add(doc.getString("answers.ownerUserId"));
             }
         }
 
-        collUser.find(in("userId", (String[])usersId.toArray())).forEach(document ->{
-            User us = new User()
+        collUser.find(in("userId", (String[])userIdList.toArray())).forEach(document ->{
+            User user = new User()
                     .setUserId(document.getString("userId"))
                     .setDisplayName(document.getString("displayName"))
                     .setPassword(document.getString("password"))
@@ -131,12 +131,13 @@ public class DocumentDBManager {
                     .setLocation(document.getString("location"))
                     .setAboutMe(document.getString("aboutMe"))
                     .setWebsiteURL(document.getString("websiteURL"));
-            user.add(us);
+            userList.add(user);
         });
 
-        return (User[]) user.toArray();
+        return (User[]) userList.toArray();
     }
 
+    //TODO: questa è una query analytics, quindi definire un messaggio e un opcode
     public Map<User, Pair<String,Integer>[]> findHotTopicsForTopUsers(){
         // non riesco a ricordare quale era il metodo per completare questa operazione, quindi lo lascio qui
         /*

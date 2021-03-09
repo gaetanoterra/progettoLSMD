@@ -2,7 +2,7 @@ package server;
 
 import java.io.IOException;
 
-public class Main {
+public class ServerStart {
 
     public static void main(String[] args) {
         if (args.length != 2){

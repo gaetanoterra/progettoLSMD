@@ -12,7 +12,10 @@ public class GraphDBManager {
 
     private Driver dbConnection;
 
-    public GraphDBManager(String uri, String user, String password){
+    public GraphDBManager(){
+        String uri = "bolt://host-1:7687";
+        String user = "neo4j";
+        String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -25,6 +28,7 @@ public class GraphDBManager {
         return null;
     }
 
+    //TODO: Su graphdb la query per cercare i tag più popolari non è utilizzata
     //funzione che effettua la query per trovare i tag più "popolari"
     public void findMostPopularTags(){
         try (Session session = dbConnection.session())
@@ -45,6 +49,7 @@ public class GraphDBManager {
         }
     }
 
+    //TODO: Su graphdb la query per cercare le risposte più votate non è utilizzata
     //funzione che effettua la query per trovare le risposte più votate
     public void findMostVotedAnswers(){
         try (Session session = dbConnection.session())
@@ -211,6 +216,7 @@ public class GraphDBManager {
         }
     }
 
+    //TODO: Su graphdb la query per inserire un tag non è utilizzata
     //funzione che effettua la query per inserire il nodo Tag
     public void insertTag(String name){
         try(Session session = dbConnection.session()){
@@ -324,6 +330,7 @@ public class GraphDBManager {
         }
     }
 
+    //TODO: Su graphdb la query per rimuovere un tag non è utilizzata
     public void removeTag(String name){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
