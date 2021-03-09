@@ -9,26 +9,26 @@ public class Main {
             System.err.println("Please enter port number and backlog");
             return;
         }
-        int p, b;
-        try
-        {
-            p = Integer.parseInt(args[0]);
-            b = Integer.parseInt(args[1]);
-            if(p > 65535 || p < 2000){
-                System.err.println("port number not valid");
-                return;
-            }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Port number and/or backlog not valid");
-            return;
-        }
+        int portNumber, backlogLength;
         try {
-            Server server = new Server(p, b);
+            portNumber = Integer.parseInt(args[0]);
+            backlogLength = Integer.parseInt(args[1]);
+            if (portNumber > 65535 || portNumber < 2000){
+                throw new Exception("Port number is not between 2000 and 65535");
+            }
+            Server server = new Server(portNumber, backlogLength);
             server.waitForConnection();
-        }catch (IOException ioe){ioe.printStackTrace();}
-
+        }
+        catch (NumberFormatException nfe) {
+            System.out.println("Port number and/or backlog are not valid integers");
+        }
+        catch (IOException ioe) {
+            System.out.println("A new server socket cannot be allocated. See stack trace for error details");
+            ioe.printStackTrace();
+        }
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
-
 }

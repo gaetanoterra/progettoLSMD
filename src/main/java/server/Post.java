@@ -29,37 +29,37 @@ public class Post {
     }
 
     public String getPostId(){
-        return postId;
+        return this.postId;
     }
 
     public String getTitle(){
-        return title;
+        return this.title;
     }
 
     public List<Answer> getAnswers(){
-        return answers;
+        return this.answers;
     }
 
     public Date getCreationDate(){
-        return creationDate;
+        return this.creationDate;
     }
 
     public String getBody(){
-        return body;
+        return this.body;
     }
 
     public String getOwnerUserId(){
-        return ownerUserId;
+        return this.ownerUserId;
     }
 
     public List<String> getTags(){
-        return tags;
+        return this.tags;
     }
 
-    public int getViews() { return views; }
+    public int getViews() { return this.views; }
 
-    public Post setPostId(String id){
-        postId = id;
+    public Post setPostId(String postId){
+        this.postId = postId;
         return this;
     }
 
@@ -73,8 +73,8 @@ public class Post {
         return this;
     }
 
-    public Post setCreationDate(Date data){
-        creationDate = data;
+    public Post setCreationDate(Date creationDate){
+        this.creationDate = creationDate;
         return this;
     }
 
@@ -83,8 +83,8 @@ public class Post {
         return this;
     }
 
-    public Post setOwnerUserId(String userId){
-        ownerUserId = userId;
+    public Post setOwnerUserId(String ownerUserId){
+        this.ownerUserId = ownerUserId;
         return this;
     }
 
@@ -93,7 +93,8 @@ public class Post {
         return this;
     }
 
-    public void setViews(int views) {
+    public Post setViews(int views) {
         this.views = views;
+        return this;
     }
 }

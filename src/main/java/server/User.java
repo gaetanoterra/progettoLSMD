@@ -19,64 +19,64 @@ public class User {
 
     public User(){
     }
-    public User(String userId, String displayName, String location, String am, String url){
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
         this.userId = userId;
         this.displayName = displayName;
         this.location = location;
-        this.aboutMe = am;
-        this.websiteURL = url;
+        this.aboutMe = aboutMe;
+        this.websiteURL = websiteURL;
     }
 
     public String getUserId(){
-        return userId;
+        return this.userId;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public int getFollowersNumber() {
-        return followersNumber;
+        return this.followersNumber;
     }
 
     public int getFollowedNumber() {
-        return followedNumber;
+        return this.followedNumber;
     }
 
     public double getReputation() {
-        return reputation;
+        return this.reputation;
     }
 
     public Date getCreationData() {
-        return creationDate;
+        return this.creationDate;
     }
 
     public Date getLastAccessDate() {
-        return lastAccessDate;
+        return this.lastAccessDate;
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public String getDisplayName(){
-        return displayName;
+        return this.displayName;
     }
 
     public String getLocation(){
-        return location;
+        return this.location;
     }
 
     public String getAboutMe(){
-        return aboutMe;
+        return this.aboutMe;
     }
 
     public String getWebsiteURL(){
-        return websiteURL;
+        return this.websiteURL;
     }
 
-    public User setId(String id){
-        this.userId = id;
+    public User setUserId(String userId){
+        this.userId = userId;
         return this;
     }
 
@@ -100,8 +100,8 @@ public class User {
         return this;
     }
 
-    public User setCreationData(Date creationData) {
-        this.creationDate = creationData;
+    public User setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
         return this;
     }
 

@@ -10,16 +10,16 @@ import java.net.*;
 public class ClientManager extends Thread{
 
     private DBManager dbManager;
-    private Socket socket;
+    private Socket socketUser;
     private User loggedUser;
-    private ObjectOutputStream oos;
-    private  ObjectInputStream ois;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
 
-    public ClientManager(Socket socket,DBManager dbm) throws IOException{
-        this.socket = socket;
-        this.dbManager = dbm;
-        ois = new ObjectInputStream(socket.getInputStream());
-        oos = new ObjectOutputStream(socket.getOutputStream());
+    public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
+        this.socketUser = socketUser;
+        this.dbManager = dbManager;
+        inputStream = new ObjectInputStream(socketUser.getInputStream());
+        outputStream = new ObjectOutputStream(socketUser.getOutputStream());
     }
 
     public void run(){
@@ -64,6 +64,7 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Experts:
+                        //TODO: Completare case switch Message_Get_Experts
                         break;
 
                     case Message_Post:
@@ -146,7 +147,7 @@ public class ClientManager extends Thread{
                     case Message_Get_Post:
                         MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
 
-                        Post[] resultPost = new Post[0];
+                        Post[] resultPost;
                         switch (msgParameter.getParameter()){
                             case Date:
                                 resultPost = dbManager.getPostByDate(msgParameter.getValue());
@@ -165,30 +166,45 @@ public class ClientManager extends Thread{
                                 resultPost = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
 
+                            default:
+                                resultPost = null;
                         }
                         send(new MessageGetPostByParameter(null, null, resultPost));
                         break;
 
                     case Message_Get_Top_Users_Posts:
+                        //TODO: Completare case switch Message_Get_Top_Users_Posts
                         break;
 
                     case Message_Update_User_data:
-                        dbManager.updateUserData(((MessageUser)msg).getUser());
-                        Main.setLog(((MessageUser)msg).getUser());
+                        MessageUser messageUser = (MessageUser)msg;
+                        User updatedUser = messageUser.getUser();
+                        dbManager.updateUserData(updatedUser);
+                        Main.setLog(updatedUser);
                         break;
                 }
             }
 
         }
         catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
+        finally {
+            try {
+                if (!this.socketUser.isClosed()) {
+                    this.socketUser.close();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Message receive() throws IOException, ClassNotFoundException {
-        return (Message)ois.readObject();
+        return (Message) inputStream.readObject();
     }
 
     public void send(Message message) throws IOException {
-        oos.writeObject(message);
+        outputStream.writeObject(message);
     }
 
 }
