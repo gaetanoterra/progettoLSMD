@@ -12,11 +12,11 @@ import java.util.HashMap;
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 public class ClientManager extends Thread{
 
-    private DBManager dbManager;
-    private Socket socketUser;
+    private final DBManager dbManager;
+    private final Socket socketUser;
     private User loggedUser;
-    private ObjectOutputStream outputStream;
-    private ObjectInputStream inputStream;
+    private final ObjectOutputStream outputStream;
+    private final ObjectInputStream inputStream;
     private static final int DEFAULT_NUM_EXPERTS = 10;
 
     public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
@@ -88,7 +88,7 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                                 break;
                             case Delete:
-                                dbManager.removePost(post, loggedUser.getUserId());
+                                dbManager.removePost(post);
                                 break;
                             default:
                                 throw new OpcodeNotValidException("You are not supposed to be here");
@@ -148,7 +148,7 @@ public class ClientManager extends Thread{
 
                         switch (msgVote.getOperation()) {
                             case Create:
-                                dbManager.insertRelationVote(answer.getAnswerId(), loggedUser.getUserId(), msgVote.getVoto());
+                                dbManager.insertRelationVote(loggedUser.getUserId(), answer.getAnswerId(), msgVote.getVoto());
                                 break;
                             case Delete:
                                 dbManager.removeRelationVote(loggedUser.getUserId(),answer.getAnswerId());
@@ -193,7 +193,7 @@ public class ClientManager extends Thread{
                         User userWithCompleteData = dbManager.getUserData(displayName);
                         send(
                                 new MessageGetUserData(
-                                        (ArrayList<User>)Arrays.asList(userWithCompleteData)
+                                        new ArrayList<>(Arrays.asList(userWithCompleteData))
                                 )
                         );
                         break;
@@ -205,7 +205,7 @@ public class ClientManager extends Thread{
                         Post postWithCompleteData = dbManager.getPostById(postId);
                         send(
                                 new MessageGetPostData(
-                                        (ArrayList<Post>)Arrays.asList(postWithCompleteData)
+                                        new ArrayList<>(Arrays.asList(postWithCompleteData))
                                 )
                         );
                         break;
