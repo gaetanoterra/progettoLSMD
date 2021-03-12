@@ -25,16 +25,16 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCursor;
 
-
+//TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
 
     public DocumentDBManager(){
-
-        mongoClient = MongoClients.create("mongodb://localhost:27017");
-        // dbConnection = MongoClients.create("mongodb://host-1:27020, host-2:27020, host-3:27020/?retryWrites=true&w=majority&wtimeout=10000");
+        //mongoClient = MongoClients.create("mongodb://localhost:27017");
+        mongoClient = MongoClients.create("mongodb://host-1:27020, host-2:27020, host-3:27020/?retryWrites=true&w=majority&wtimeout=10000");
+        //TODO: Cambiare il nome del database su mongodb con quello corretto
         mongoDatabase = mongoClient.getDatabase("mydb");
     }
     public void close(){
@@ -45,17 +45,15 @@ public class DocumentDBManager {
         //trovo tutti gli utenti relativi ad una locazione
         //scorro tutti i post che hanno ownerUserId tra gli utenti trovati prima
         //raggruppo per tag e li conto
-        MongoCollection<Document> collPost = mongoDatabase.getCollection("server.Post");
-        MongoCollection<Document> collUser = mongoDatabase.getCollection("server.User");
-        ArrayList<String> tags = new ArrayList<>();
-
-
-        ArrayList<User> user = new ArrayList<>();
+        MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
+        MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
+        ArrayList<String> tagList = new ArrayList<>();
+        ArrayList<User> userList = new ArrayList<>();
 
         collUser.find(eq("location", location)).forEach(doc -> {
             User u = new User();
-            u.setId(doc.getString("userId"));
-            user.add(u);
+            u.setUserId(doc.getString("userId"));
+            userList.add(u);
         });
 
         /*try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
@@ -67,20 +65,20 @@ public class DocumentDBManager {
 
                 //mi interessa solo lo userId
                 u.setId(doc.getString("userId"));
-                user.add(u);
+                userList.add(u);
             }
         }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson m = match(in("owneruserId", user));
-        Bson u = unwind("tags");
-        Bson g = group("$tags", sum("totaleTags",1));
+        Bson m = match(in("ownerUserId", userList));
+        Bson u = unwind("tagList");
+        Bson g = group("$tagList", sum("totaleTags",1));
         Bson s = sort(descending("totaleTags"));
         Bson l = limit(numTags);
 
-        collUser.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc -> {
-            tags.add(doc.getString("tags"));
-        });
+        collPost.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc ->
+                tagList.add(doc.getString("tagList"))
+        );
 
         /*try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
         {
@@ -88,19 +86,19 @@ public class DocumentDBManager {
             {
                 Document doc = cursor.next();
 
-                tags.add(doc.getString("tags"));
+                tagList.add(doc.getString("tagList"));
             }
         }*/
 
-        return (String[]) tags.toArray();
+        return (String[]) tagList.toArray();
     }
 
     //restituisco gli id degli utenti più esperti
     public User[] findTopExpertsByTag(String tag, int num){
-        MongoCollection<Document> collPost = mongoDatabase.getCollection("server.Post");
-        MongoCollection<Document> collUser = mongoDatabase.getCollection("server.User");
-        ArrayList<String> usersId = new ArrayList<>();
-        ArrayList<User> user = new ArrayList<>();
+        MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
+        MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
+        ArrayList<String> userIdList = new ArrayList<>();
+        ArrayList<User> userList = new ArrayList<>();
 
         Bson m = match(in("tags", tag));
         Bson u = unwind("answers");
@@ -115,30 +113,31 @@ public class DocumentDBManager {
             {
                 Document doc = cursor.next();
 
-                usersId.add(doc.getString("answers.ownerUserId"));
+                userIdList.add(doc.getString("answers.ownerUserId"));
             }
         }
 
-        collUser.find(in("userId", (String[])usersId.toArray())).forEach(document ->{
-            User us = new User()
-                    .setId(document.getString("userId"))
+        collUser.find(in("userId", (String[])userIdList.toArray())).forEach(document ->{
+            User user = new User()
+                    .setUserId(document.getString("userId"))
                     .setDisplayName(document.getString("displayName"))
                     .setPassword(document.getString("password"))
                     .setFollowersNumber(document.getInteger("followersNumber"))
                     .setFollowedNumber(document.getInteger("followedNumber"))
                     .setReputation(document.getDouble("reputation"))
-                    .setCreationData(document.getDate("creationDate"))
+                    .setCreationDate(document.getDate("creationDate"))
                     .setLastAccessDate(document.getDate("lastAccessDate"))
                     .setType(document.getString("type"))
                     .setLocation(document.getString("location"))
                     .setAboutMe(document.getString("aboutMe"))
                     .setWebsiteURL(document.getString("websiteURL"));
-            user.add(us);
+            userList.add(user);
         });
 
-        return (User[]) user.toArray();
+        return (User[]) userList.toArray();
     }
 
+    //TODO: questa è una query analytics, quindi definire un messaggio e un opcode
     public Map<User, Pair<String,Integer>[]> findHotTopicsForTopUsers(){
         // non riesco a ricordare quale era il metodo per completare questa operazione, quindi lo lascio qui
         /*
@@ -147,8 +146,8 @@ public class DocumentDBManager {
         i 3 tag per cui hanno scritto più risposte
         (a scopo di trovare gli hooooooooooot topics, tag più popolari nella top 3 degli utenti)
          */
-        MongoCollection<Document> collPost = mongoDatabase.getCollection("server.Post");
-        MongoCollection<Document> collUser = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
+        MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
         HashMap<User, Pair<String,Integer>[]> result = new HashMap<>();
         /*
         db.users.aggregate([
@@ -161,13 +160,13 @@ public class DocumentDBManager {
         Bson b = limit(50);
         collUser.aggregate(Arrays.asList(a,b)).forEach(document -> {
             User user = new User()
-                .setId(document.getString("userId"))
+                .setUserId(document.getString("userId"))
                 .setDisplayName(document.getString("displayName"))
                 .setPassword(document.getString("password"))
                 .setFollowersNumber(document.getInteger("followersNumber"))
                 .setFollowedNumber(document.getInteger("followedNumber"))
                 .setReputation(document.getDouble("reputation"))
-                .setCreationData(document.getDate("creationDate"))
+                .setCreationDate(document.getDate("creationDate"))
                 .setLastAccessDate(document.getDate("lastAccessDate"))
                 .setType(document.getString("type"))
                 .setLocation(document.getString("location"))
@@ -217,9 +216,9 @@ public class DocumentDBManager {
         return result;
     }
 
-    //questo va aggiustato
+    //TODO: questo va aggiustato
     public Post[] getPostByDate(String data) {
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
         try (MongoCursor<Document> cursor = coll.find(eq("creationDate", data)).iterator())
@@ -243,21 +242,25 @@ public class DocumentDBManager {
     }
 
     public Post getPostById(String postId){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         Document postDoc = coll.find(eq("postId", postId)).first();
 
-        return new Post(postId,
-                postDoc.getString("title"),
-                (ArrayList<Answer>)postDoc.get("answers"),
-                postDoc.getDate("creationDate"),
-                postDoc.getString("body"),
-                postDoc.getString("ownerUserId"),
-                (ArrayList<String>)postDoc.get("tags"));
+        if (postDoc != null){
+            return new Post(postId,
+                    postDoc.getString("title"),
+                    (ArrayList<Answer>)postDoc.get("answers"),
+                    postDoc.getDate("creationDate"),
+                    postDoc.getString("body"),
+                    postDoc.getString("ownerUserId"),
+                    (ArrayList<String>)postDoc.get("tags"));
+        }
+        else
+            return new Post();
     }
 
     public Post[] getPostByOwnerUsername(String username) {
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
         try (MongoCursor<Document> cursor = coll.find(all("ownerUserId", username)).iterator())
@@ -281,7 +284,7 @@ public class DocumentDBManager {
     }
 
     public Post[] getPostsByTag(String[] tags){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
         try (MongoCursor<Document> cursor = coll.find(all("tags", tags)).iterator())
@@ -306,7 +309,7 @@ public class DocumentDBManager {
 
     public Post[] getPostsByText(String text){
         // controllo il titolo per semplicità (e velocità), si può cambiare ovviamente con il body
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
         ArrayList<Post> list = new ArrayList<>();
         coll.find(new Document("title", new Document("$regex", ".*"+text+".*"))).forEach(doc -> {
             Post p = new Post(doc.getString("postId"),
@@ -322,19 +325,19 @@ public class DocumentDBManager {
     }
 
     public User getUserData(String displayName){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
         Document userDoc = coll.find(eq("displayName", displayName)).first();
         User user = new User();
 
         if(userDoc != null) {
-            user.setId(userDoc.getString("userId"))
+            user.setUserId(userDoc.getString("userId"))
                 .setDisplayName(displayName)
                 .setPassword(userDoc.getString("password"))
                 .setFollowersNumber(userDoc.getInteger("followersNumber"))
                 .setFollowedNumber(userDoc.getInteger("followedNumber"))
                 .setReputation(userDoc.getDouble("reputation"))
-                .setCreationData(userDoc.getDate("creationDate"))
+                .setCreationDate(userDoc.getDate("creationDate"))
                 .setLastAccessDate(userDoc.getDate("lastAccessDate"))
                 .setType(userDoc.getString("type"))
                 .setLocation(userDoc.getString("location"))
@@ -346,7 +349,7 @@ public class DocumentDBManager {
     }
 
     public User[] getUsersRank(){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
         ArrayList<User> user = new ArrayList<>();
         try (MongoCursor<Document> cursor = coll.find().sort(descending("reputation")).limit(10).iterator())
@@ -356,13 +359,13 @@ public class DocumentDBManager {
                 Document doc = cursor.next();
                 User u = new User();
 
-                u.setId(doc.getString("userId"))
+                u.setUserId(doc.getString("userId"))
                     .setDisplayName(doc.getString("displayName"))
                     .setPassword(doc.getString("password"))
                     .setFollowersNumber(doc.getInteger("followersNumber"))
                     .setFollowedNumber(doc.getInteger("followedNumber"))
                     .setReputation(doc.getDouble("reputation"))
-                    .setCreationData(doc.getDate("creationDate"))
+                    .setCreationDate(doc.getDate("creationDate"))
                     .setLastAccessDate(doc.getDate("lastAccessDate"))
                     .setType(doc.getString("type"))
                     .setLocation(doc.getString("location"))
@@ -377,7 +380,7 @@ public class DocumentDBManager {
     }
 
     public boolean insertAnswer(Answer answer, String postId){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         Document doc = new Document("answerId", answer.getAnswerId()).
                                     append("creationDate", answer.getCreationDate()).
@@ -389,17 +392,8 @@ public class DocumentDBManager {
         return true;
     }
 
-    /////////////////////////////////////////////////////////////
-    /////////// da levare ///////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-    /*public boolean insertFollowRelationAndUpdate(String displayNameFollower, String displayNameFollowed){
-        MongoCollection<Document> coll = database.getCollection("server.Post");
-
-
-    }*/
-
     public boolean insertPost(Post post){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         Document doc = new Document("postId", post.getPostId())
                     .append("title", post.getTitle())
@@ -416,7 +410,7 @@ public class DocumentDBManager {
 
     public boolean insertUser(User user){
         boolean res = true;
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
         /* controllo con la checkUser se il displayName è già in uso */
         if(checkUser(user.getDisplayName())){
@@ -438,7 +432,7 @@ public class DocumentDBManager {
     }
 
     private boolean checkUser(String displayName) {
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         boolean res = false;
 
         long count = coll.countDocuments(eq("displayName", displayName));
@@ -449,15 +443,8 @@ public class DocumentDBManager {
         return res;
     }
 
-    /////////////////////////////////////////////////////////////
-    /////////// da levare ///////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-    /*public boolean insertVote(int postId, int answerId, String displayName, int voto){
-
-    }*/
-
     public boolean removeAnswer(Answer answer, String postId){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         /*Document doc = new Document("answerId", answer.getAnswerId()).append("creationDate", answer.getCreationDate()).append("score", answer.getScore()).append("ownerUserId", answer.getOwnerUserId());
 
@@ -471,15 +458,8 @@ public class DocumentDBManager {
         return true;
     }
 
-    /////////////////////////////////////////////////////////////
-    /////////// da levare ///////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-    /*public boolean removeFollowRelationAndUpdate(String displayNameFollower, String displayNameFollowed){
-
-    }*/
-
     public boolean removePost(Post post){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         coll.deleteOne(eq("postId", post.getPostId()));
 
@@ -487,17 +467,16 @@ public class DocumentDBManager {
     }
 
     public boolean removeUser(String displayName){
-        MongoCollection<Document> collUser = mongoDatabase.getCollection("server.User");
-        MongoCollection<Document> collPost = mongoDatabase.getCollection("server.Post");
+        MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
+        MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
 
         collUser.deleteOne(eq("displayName", displayName));
         collPost.deleteMany(eq("ownerUserId", displayName));
-
         return true;
     }
 
     public boolean updateUserData(User user){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("server.User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
         coll.updateOne(eq("userId", user.getUserId()), and(set("password", user.getPassword()),
                                                                     set("location", user.getLocation()),

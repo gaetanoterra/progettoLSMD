@@ -6,6 +6,15 @@ public enum Parameter{
     Username (2),
     Text (3);
 
-    private final byte operation;
-    Parameter(int operation){ this.operation = (byte)operation; }
+    private final byte parameterType;
+    Parameter(int parameterType){ this.parameterType = (byte) parameterType; }
+
+    @Override
+    public String toString() {
+        return Byte.toString(this.parameterType);
+    }
+
+    public byte getParameterType() {
+        return this.parameterType;
+    }
 }

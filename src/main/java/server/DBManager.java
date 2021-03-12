@@ -5,168 +5,206 @@ import java.util.*;
 //classe preposta a ricevere le richieste dal clientManager e a propagarle al documentDB e al graphDB
 public class DBManager {
 
-    private DocumentDBManager documentDBMan;
-    private GraphDBManager graphDBMan;
+    private DocumentDBManager documentDBManager;
+    private GraphDBManager graphDBManager;
 
     public DBManager(){
-        documentDBMan = new DocumentDBManager();
-        //graphDBMan = new server.GraphDBManager();
+        documentDBManager = new DocumentDBManager();
+        graphDBManager = new GraphDBManager();
     }
+
     public void close(){
-        this.documentDBMan.close();
+        this.documentDBManager.close();
+        this.graphDBManager.close();
     }
 
+    /*
+    --------------------------- ANALYTICS ---------------------------
+     */
+    public Map<User, Post[]> findMostAnsweredTopUserPosts(){
+        //TODO: questa query è da fare su mongoDB, definire il metodo
+        return null;
+    }
+
+    public User[] findTopExpertsByTag(String tagName, int numExperts){
+        return documentDBManager.findTopExpertsByTag(tagName, numExperts);
+    }
+
+    //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
     public String[] findMostPopularTagsByLocation(String location, int numTags){
-        return documentDBMan.findMostPopularTagsByLocation(location, numTags);
+        return documentDBManager.findMostPopularTagsByLocation(location, numTags);
+    }
+    //TODO: Non esiste un messaggio per ottenere i tag più popolari in generale. Creare un opcode e un messagio per questo
+    public Map<String, Integer> findMostPopularTags() {
+        return graphDBManager.findMostPopularTags();
     }
 
-    public Map<User, Post> findMostAnsweredTopUserPosts(){
-        return this.graphDBMan.findMostAnsweredTopUserPosts();
+    //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
+    public User[] getUsersRank(){
+        return documentDBManager.getUsersRank();
     }
 
-    public User[] findTopExpertsByTag(String tag, int numExperts){
-        return documentDBMan.findTopExpertsByTag(tag, numExperts);
-    }
-
+    //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
     public String[] getCorrelatedUsers(String username){
-        return graphDBMan.getCorrelatedUsers(username);
+        return graphDBManager.getCorrelatedUsers(username);
     }
 
-    public Post[] getPostByDate(String data) { return documentDBMan.getPostByDate(data);}
-
-    public Post getPostById(String postId){
-        return documentDBMan.getPostById(postId);
-    }
-
-    public Post[] getPostByOwnerUsername(String username) { return documentDBMan.getPostByOwnerUsername(username); }
-
-    public Post[] getPostsByTag(String[] tags){
-        return documentDBMan.getPostsByTag(tags);
-    }
-
-    public Post[] getPostByText(String text){
-        return documentDBMan.getPostsByText(text);
-    }
-
+    //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getRecommendedUsers(String username, String tag){
-        return graphDBMan.getRecommendedUsers(username, tag);
+    public String[] getRecommendedUsers(String username, String tagName){
+        return graphDBManager.getRecommendedUsers(username, tagName);
     }
+
+    /*
+    --------------------------- USERS ---------------------------
+     */
+
 
     public User getUserData(String username){
-        return documentDBMan.getUserData(username);
+        return documentDBManager.getUserData(username);
     }
 
-    public User[] getUsersRank(){
-        return documentDBMan.getUsersRank();
+    public boolean insertUser(User newUser){
+        boolean insertedUser = documentDBManager.insertUser(newUser);
+        if(insertedUser)
+            graphDBManager.insertUser(newUser);
+        return insertedUser;
     }
 
-    public boolean insertAnswer(Answer answer, String postId){
-        //inserisco la risposta el documentDB
-        documentDBMan.insertAnswer(answer, postId);
-        //inserisco il nodo Answer nel graphDB
-        graphDBMan.insertAnswer(answer);
-        //inserisco la relazione tra answer e post
-        graphDBMan.insertRelationAnswerTo(answer.getAnswerId(), postId);
-        //inserisco la relazione tra user e answer
-        graphDBMan.insertRelationUserAnswer(answer.getAnswerId(), answer.getOwnerUserId());
-
-        return true;
-    }
-
-    public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        graphDBMan.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
-        return true;
-    }
-
-    public boolean insertPost(Post post){
-
-        boolean res = documentDBMan.insertPost(post);
-        graphDBMan.insertRelationPostsQuestion(post.getPostId(), post.getOwnerUserId());
-        graphDBMan.insertPost(post);
-
-        return res;
-    }
-
-    public boolean insertUser(User user){
-
-        boolean res = documentDBMan.insertUser(user);
-
-        if(res)
-            graphDBMan.insertUser(user);
-
-        return res;
-    }
-
-    public boolean insertRelationContainsTag(String name, String postId){
-        graphDBMan.insertRelationContainsTag(name, postId);
-        return true;
-    }
-
-    /*public boolean insertRelationPostsAnswer(String answerId, User user){
-    }*/
-
-    public boolean insertRelationVote(String answerId, String userId, int voto){
-        graphDBMan.insertRelationVote(answerId, userId, voto);
-
-        return true;
-    }
-
-    public boolean removeAnswer(Answer answer, String postId){
-        documentDBMan.removeAnswer(answer, postId);
-        graphDBMan.removeAnswer(answer);
-        graphDBMan.removeRelationAnswerTo(postId, answer.getAnswerId());
-        graphDBMan.removeRelationUserAnswer(answer.getOwnerUserId(), answer.getAnswerId());
-
-        return true;
-    }
-
-    public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        graphDBMan.removeFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
-        return true;
-    }
-
-    public boolean removePost(Post post, String userId){
-        boolean res = documentDBMan.removePost(post);
-        graphDBMan.removePost(post);
-        graphDBMan.removeRelationPostsQuestion(userId, post.getPostId());
-        //devo eliminare tutte le risposte relative a questo post, aggiungere una query su graphDBManager (dato un post, eliminare tutte le risposte)
-
-        return res;
-    }
-
-    public boolean removeRelationContainsTag(String postId, String name){
-        graphDBMan.removeRelationContainsTag(postId, name);
-
-        return true;
-    }
-
-    /*public boolean removeRelationPostsAnswer(String userId, String answerId){
-
-    }*/
-
-
-    public boolean removeRelationVote(String userId, String answerId){
-        graphDBMan.removeRelationVote(userId, answerId);
-
-        return true;
-    }
-
+    //TODO: Definire il metodo removeUser nella sua completezza (relazioni, post, e answer dell'utente)
     public boolean removeUser(User user){
-        documentDBMan.removeUser(user.getUserId());
-        graphDBMan.removeUser(user.getUserId());
-        //rimuovere tutte le relazioni tra user e Answer
-        //rimuovere tutte le relazioni tra user e Post
-        //rimuovere tutti i Post dell'utente
-        //rimuovere tutte le Answer dell'utente
+        documentDBManager.removeUser(user.getUserId());
+        graphDBManager.removeUser(user.getUserId());
 
         return true;
     }
 
     public boolean updateUserData(User user){
-        return documentDBMan.updateUserData(user);
+        return documentDBManager.updateUserData(user);
     }
+
+    /*
+    --------------------------- POSTS ---------------------------
+     */
+
+    public Post[] getPostByDate(String postCreationDateString) {
+        return documentDBManager.getPostByDate(postCreationDateString);
+    }
+
+    public Post getPostById(String postIdString){
+        return documentDBManager.getPostById(postIdString);
+    }
+
+    public Post[] getPostByOwnerUsername(String ownerPostUsername) {
+        return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
+    }
+
+    public Post[] getPostsByTag(String[] tags){
+        return documentDBManager.getPostsByTag(tags);
+    }
+
+    public Post[] getPostByText(String text){
+        return documentDBManager.getPostsByText(text);
+    }
+
+    //TODO: Inserire un metodo updatePost, se il post può essere modificato, altrimenti rimuovere questo messaggio
+
+    public boolean insertPost(Post newPost){
+        boolean insertedPost = documentDBManager.insertPost(newPost);
+        graphDBManager.insertPost(newPost);
+        return insertedPost;
+    }
+
+    public boolean removePost(Post post){
+        boolean postRemoved = documentDBManager.removePost(post);
+        graphDBManager.removePost(post);
+        return postRemoved;
+    }
+
+    /*
+    --------------------------- ANSWERS ---------------------------
+     */
+
+    public boolean insertAnswer(Answer answer, String postIdString){
+        documentDBManager.insertAnswer(answer, postIdString);
+        graphDBManager.insertAnswer(answer, postIdString);
+        return true;
+    }
+
+    public boolean removeAnswer(Answer answer, String postIdString){
+        documentDBManager.removeAnswer(answer, postIdString);
+        graphDBManager.removeAnswer(answer, postIdString);
+        return true;
+    }
+
+    /*
+    --------------------------- VOTES ---------------------------
+     */
+
+    public boolean insertRelationVote(String userIdString, String answerIdString, int voteAnswer){
+        graphDBManager.insertRelationVote(userIdString, answerIdString, voteAnswer);
+        return true;
+    }
+    public boolean removeRelationVote(String userIdString, String answerIdString){
+        graphDBManager.removeRelationVote(userIdString, answerIdString);
+        return true;
+    }
+
+    /*
+    --------------------------- TAGS ---------------------------
+     */
+
+    //TODO: [modifica_tag] Non ricordo se i tag si possono modificare oppure no. Se no, rimuovere i due metodi successivi
+    public boolean insertTag(String tagName) {
+        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
+        graphDBManager.insertTag(tagName);
+        return true;
+    }
+    public boolean removeTag(String tagName) {
+        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
+        graphDBManager.removeTag(tagName);
+        return true;
+    }
+
+    /*
+    --------------------------- FOLLOWs ---------------------------
+     */
+
+    public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+        graphDBManager.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
+
+        return true;
+    }
+    public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+        graphDBManager.removeFollowRelationAndUpdate(usernameFollower, usernameFollowed);
+
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

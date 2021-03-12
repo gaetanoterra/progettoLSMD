@@ -5,21 +5,25 @@ import middleware.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 public class ClientManager extends Thread{
 
-    private DBManager dbManager;
-    private Socket socket;
+    private final DBManager dbManager;
+    private final Socket socketUser;
     private User loggedUser;
-    private ObjectOutputStream oos;
-    private  ObjectInputStream ois;
+    private final ObjectOutputStream outputStream;
+    private final ObjectInputStream inputStream;
+    private static final int DEFAULT_NUM_EXPERTS = 10;
 
-    public ClientManager(Socket socket,DBManager dbm) throws IOException{
-        this.socket = socket;
-        this.dbManager = dbm;
-        ois = new ObjectInputStream(socket.getInputStream());
-        oos = new ObjectOutputStream(socket.getOutputStream());
+    public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
+        this.socketUser = socketUser;
+        this.dbManager = dbManager;
+        inputStream = new ObjectInputStream(socketUser.getInputStream());
+        outputStream = new ObjectOutputStream(socketUser.getOutputStream());
     }
 
     public void run(){
@@ -38,6 +42,7 @@ public class ClientManager extends Thread{
                         User user = dbManager.getUserData(userDisplayName);
 
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
+                        //TODO: Controllare se la password conservata nel DB è un hash oppure no
                         if(user.getPassword().equals(password)){
                             loggedUser = user;
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante
@@ -64,6 +69,13 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Experts:
+                        MessageGetExpertsByTag msgExperts = (MessageGetExpertsByTag)msg;
+                        User[] expertUsers = dbManager.findTopExpertsByTag(
+                                msgExperts.getTag(),
+                                DEFAULT_NUM_EXPERTS
+                        );
+
+                        send(new MessageGetExpertsByTag(msgExperts.getTag(), (ArrayList<User>)Arrays.asList(expertUsers)));
                         break;
 
                     case Message_Post:
@@ -76,7 +88,7 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                                 break;
                             case Delete:
-                                dbManager.removePost(post, loggedUser.getUserId());
+                                dbManager.removePost(post);
                                 break;
                             default:
                                 throw new OpcodeNotValidException("You are not supposed to be here");
@@ -99,6 +111,7 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_Answer " + msgAnswer.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_User:
                         MessageUser msgUser = (MessageUser)msg;
                         user = msgUser.getUser();
@@ -114,6 +127,7 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_User " + msgUser.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_Follow:
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
@@ -127,13 +141,14 @@ public class ClientManager extends Thread{
                                 throw new OpcodeNotValidException("Opcode of Message_Follow" + msgFollow.getOperation() + " not valid");
                         }
                         break;
+
                     case Message_Vote:
                         MessageVote msgVote = (MessageVote)msg;
                         answer = msgVote.getAnswer();
 
                         switch (msgVote.getOperation()) {
                             case Create:
-                                dbManager.insertRelationVote(answer.getAnswerId(), loggedUser.getUserId(), msgVote.getVoto());
+                                dbManager.insertRelationVote(loggedUser.getUserId(), answer.getAnswerId(), msgVote.getVoto());
                                 break;
                             case Delete:
                                 dbManager.removeRelationVote(loggedUser.getUserId(),answer.getAnswerId());
@@ -146,7 +161,7 @@ public class ClientManager extends Thread{
                     case Message_Get_Post:
                         MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
 
-                        Post[] resultPost = new Post[0];
+                        Post[] resultPost;
                         switch (msgParameter.getParameter()){
                             case Date:
                                 resultPost = dbManager.getPostByDate(msgParameter.getValue());
@@ -165,30 +180,74 @@ public class ClientManager extends Thread{
                                 resultPost = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
 
+                            default:
+                                resultPost = null;
                         }
                         send(new MessageGetPostByParameter(null, null, resultPost));
                         break;
 
+                    case Message_Get_User_Data:
+                        MessageGetUserData msgGetUserData = (MessageGetUserData)msg;
+                        User userToSearch = msgGetUserData.getObject().get(0);
+                        String displayName = userToSearch.getDisplayName();
+                        User userWithCompleteData = dbManager.getUserData(displayName);
+                        send(
+                                new MessageGetUserData(
+                                        new ArrayList<>(Arrays.asList(userWithCompleteData))
+                                )
+                        );
+                        break;
+
+                    case Message_Get_Post_Data:
+                        MessageGetPostData msgGetPostData = (MessageGetPostData)msg;
+                        Post postToSearch = msgGetPostData.getObject().get(0);
+                        String postId = postToSearch.getPostId();
+                        Post postWithCompleteData = dbManager.getPostById(postId);
+                        send(
+                                new MessageGetPostData(
+                                        new ArrayList<>(Arrays.asList(postWithCompleteData))
+                                )
+                        );
+                        break;
+
                     case Message_Get_Top_Users_Posts:
+                        HashMap<User, Post[]> mapUsersPosts = (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts();
+                        send(
+                                new MessageGetTopUsersPosts(
+                                        mapUsersPosts
+                                )
+                        );
                         break;
 
                     case Message_Update_User_data:
-                        dbManager.updateUserData(((MessageUser)msg).getUser());
-                        Main.setLog(((MessageUser)msg).getUser());
+                        MessageUser messageUser = (MessageUser)msg;
+                        User updatedUser = messageUser.getUser();
+                        dbManager.updateUserData(updatedUser);
+                        Main.setLog(updatedUser);
                         break;
                 }
             }
 
         }
         catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
+        finally {
+            try {
+                if (!this.socketUser.isClosed()) {
+                    this.socketUser.close();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Message receive() throws IOException, ClassNotFoundException {
-        return (Message)ois.readObject();
+        return (Message) inputStream.readObject();
     }
 
     public void send(Message message) throws IOException {
-        oos.writeObject(message);
+        outputStream.writeObject(message);
     }
 
 }

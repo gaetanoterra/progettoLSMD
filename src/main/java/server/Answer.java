@@ -13,30 +13,30 @@ public class Answer {
     }
 
     public String getAnswerId(){
-        return answerId;
+        return this.answerId;
     }
 
     public String getCreationDate(){
-        return creationDate;
+        return this.creationDate;
     }
 
     public double getScore(){
-        return score;
+        return this.score;
     }
 
     public String getOwnerUserId(){
-        return ownerUserId;
+        return this.ownerUserId;
     }
 
-    public String getBody() { return body; }
+    public String getBody() { return this.body; }
 
     public Answer setAnswerId(String answerId){
         this.answerId = answerId;
         return this;
     }
 
-    public Answer setCreationDate(String data){
-        creationDate = data;
+    public Answer setCreationDate(String creationDate){
+        this.creationDate = creationDate;
         return this;
     }
 
@@ -45,8 +45,8 @@ public class Answer {
         return this;
     }
 
-    public Answer setOwnerUserId(String userId){
-        ownerUserId = userId;
+    public Answer setOwnerUserId(String ownerUserId){
+        this.ownerUserId = ownerUserId;
         return this;
     }
 

@@ -8,4 +8,13 @@ public enum OperationCD {
     OperationCD(int operation){
         this.operation = (byte)operation;
     }
+
+    @Override
+    public String toString() {
+        return Byte.toString(this.operation);
+    }
+
+    public byte getOperation() {
+        return this.operation;
+    }
 }
