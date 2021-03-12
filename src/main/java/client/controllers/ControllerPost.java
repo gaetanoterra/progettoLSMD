@@ -17,12 +17,12 @@ public class ControllerPost {
     private ScrollPane scrollpane_body_post, scrollpane_answers_post;
 
     public void eventAnswerPostInterface(ActionEvent actionEvent) {
-        Main.switchScene(PageType.CREATE_ANSWER);
+        ClientInterface.switchScene(PageType.CREATE_ANSWER);
     }
 
     //quando faccio back posso tornare sia in anonymousInterface sia in profileInterface, a seconda che il post aperto sia scritto da me o meno, aggiustare la funzione
     public void eventBackPostInterface(ActionEvent actionEvent) {
-        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 
     public void setPost(Post post){

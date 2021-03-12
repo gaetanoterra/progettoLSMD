@@ -12,7 +12,7 @@ import java.io.IOException;
 //classe preposta a gestire l'interfaccia del login
 public class ControllerSignIn {
 
-    ClientServerManager clm = Main.getClientServerManager();
+    ClientServerManager clm = ClientInterface.getClientServerManager();
 
     @FXML
     private Label label_error_message_signin;
@@ -36,8 +36,8 @@ public class ControllerSignIn {
             // (utente qualsiasi, in questo caso sarà dell'utente loggato ma se clicco sul profilo di un altro utente lo visualizzo nellos tesso modo)
 
             //switch della pagina
-            Main.switchScene(PageType.PROFILE_INTERFACE);
-            Main.getControllerProfileInterface().lockTextArea();
+            ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+            ClientInterface.getControllerProfileInterface().lockTextArea();
         }
         else{
             label_error_message_signin.setText("*Username o password errate");
@@ -49,13 +49,13 @@ public class ControllerSignIn {
     public void eventButtonSignUpSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
-        Main.switchScene(PageType.SIGN_UP);
+        ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
     //annullo la signin e torno dove ero
     public void eventButtonCancelSignIn(ActionEvent actionEvent) {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
-        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }

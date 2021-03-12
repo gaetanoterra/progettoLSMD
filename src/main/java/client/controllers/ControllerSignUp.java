@@ -14,7 +14,7 @@ import middleware.*;
 //classe preposta a gestire l'interfaccia della registrazione utente
 public class ControllerSignUp {
 
-    ClientServerManager clm = Main.getClientServerManager();
+    ClientServerManager clientServerManager;
 
     @FXML
     private Label label_error_message_signup;
@@ -23,25 +23,28 @@ public class ControllerSignUp {
     @FXML
     private PasswordField passwordfield_signup_password;
 
+    public ControllerSignUp(){
+        this.clientServerManager = ClientInterface.getClientServerManager();
+
+    }
     public void eventButtonConfirmSignUp(ActionEvent actionEvent) throws IOException, InterruptedException {
 
         User user = new User();
         user.setDisplayName(textfield_signup_username.getText());
         user.setPassword(passwordfield_signup_password.getText());
+        this.clientServerManager.send(new MessageSignUp(user));
 
-        clm.send(new MessageSignUp(user));
-
-        if(clm.checkLastServerAnswer()){
+        if(clientServerManager.checkLastServerAnswer()){
             label_error_message_signup.setText("");
             ControllerMessage.setTextArea("Registrazione avvenuta con successo!");
-            Main.switchScene(PageType.MESSAGE);
+            ClientInterface.switchScene(PageType.MESSAGE);
         }
         else{
-            label_error_message_signup.setText("*Username già in uso");
+            label_error_message_signup.setText("Username già in uso");
         }
     }
 
     public void eventButtonCloseSignup(ActionEvent actionEvent) {
-        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }

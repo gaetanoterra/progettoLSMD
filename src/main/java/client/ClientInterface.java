@@ -14,7 +14,7 @@ import java.util.List;
 import server.*;
 import middleware.*;
 
-public class Main extends Application{
+public class ClientMain extends Application{
 
     private static User logged_user = null;
 
@@ -33,8 +33,8 @@ public class Main extends Application{
 
             root = FXMLLoader.load(getClass().getResource("/anchor.fxml"));
 
-            grid.add(FXMLLoader.load(getClass().getResource("/anonymousInterface.fxml")));
-            grid.add(FXMLLoader.load(getClass().getResource("/signin.fxml")));
+            // grid.add(FXMLLoader.load(getClass().getResource("/anonymousInterface.fxml")));
+            //grid.add(FXMLLoader.load(getClass().getResource("/signin.fxml")));
             grid.add(FXMLLoader.load(getClass().getResource("/signup.fxml")));
             // grid.add(FXMLLoader.load(getClass().getResource("/profileInterface.fxml")));
             grid.add(FXMLLoader.load(getClass().getResource("/write.fxml")));
@@ -48,19 +48,18 @@ public class Main extends Application{
 
             primaryStage.setScene(scene);
             primaryStage.show();
-        }catch(Exception e){e.printStackTrace();}
+        }catch(Exception e){e.printStackTrace(); return;}
 
         //creo un'istanza di client.ClientServerManager per connettermi al server.Server
         clientServerManager = new ClientServerManager(8080, InetAddress.getLocalHost());
-        clientServerManager.run();
-
         controllerAnonymousInterface = new ControllerAnonymousInterface(clientServerManager);
         controllerProfileInterface = new ControllerProfileInterface(clientServerManager);
+        clientServerManager.start();
+
     }
 
     //rischio loop con la pagina answer e post
     public static void switchScene(PageType idx){
-
         root.getChildren().remove(grid.get(idx_cur.ordinal()));
         root.getChildren().add(grid.get(idx.ordinal()));
         last_page_seen = idx_cur;

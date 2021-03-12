@@ -15,7 +15,7 @@ import java.io.IOException;
 public class ControllerProfileInterface {
 
     private boolean modificable = false;
-    private static ClientServerManager clm;
+    private static ClientServerManager clientServerManager;
     private User[] suggestedUsers;
     private Post[] usersPosts;
 
@@ -34,12 +34,12 @@ public class ControllerProfileInterface {
     @FXML
     private ChoiceBox choicebox_filters;
 
-    public ControllerProfileInterface(ClientServerManager clientServerManager) {
-        clm = clientServerManager;
+    public ControllerProfileInterface() {
+        this.clientServerManager = ClientInterface.getClientServerManager();
     }
 
     public void eventButtonLogout(ActionEvent actionEvent) {
-        Main.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 
     public String getAboutMe(){
@@ -78,7 +78,7 @@ public class ControllerProfileInterface {
 
     //funzione che riempie i campi del pannello dei post
     private void fillPosts() throws IOException {
-        clm.send(new MessageGetPostByParameter(Parameter.Username, Main.getLog().getDisplayName(), null));
+        clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, ClientInterface.getLog().getDisplayName(), null));
     }
 
     //richiedere gli utenti suggeriti
@@ -87,10 +87,10 @@ public class ControllerProfileInterface {
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post
-    public void eventButtonBrowse(ActionEvent actionEvent){ Main.switchScene(PageType.ANONYMOUS_INTERFACE); }
+    public void eventButtonBrowse(ActionEvent actionEvent){ ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE); }
 
     //funzione che mi porta all'interfaccia dove scrivere un nuovo post
-    public void eventButtonWrite(ActionEvent actionEvent) { Main.switchScene(PageType.WRITE); }
+    public void eventButtonWrite(ActionEvent actionEvent) { ClientInterface.switchScene(PageType.WRITE); }
 
     //funzione per rendere non editabili i textfield
     public void lockTextArea(){
@@ -114,7 +114,7 @@ public class ControllerProfileInterface {
         }
         else{
             modificable = false;
-            User user = Main.getLog();
+            User user = ClientInterface.getLog();
             user.setAboutMe(textarea_aboutme.getText());
             user.setLocation(textfield_location.getText());
             user.setWebsiteURL(textfield_url.getText());
@@ -123,7 +123,7 @@ public class ControllerProfileInterface {
 
             button_modify.setText("Modify");
 
-            clm.send(new MessageUser(Opcode.Message_Update_User_data, null, user));
+            clientServerManager.send(new MessageUser(Opcode.Message_Update_User_data, null, user));
         }
     }
 }

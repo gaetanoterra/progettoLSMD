@@ -15,7 +15,7 @@ import middleware.*;
 //classe per gestire l'interfaccia dove scrivere un nuovo post
 public class ControllerWrite {
 
-    ClientServerManager clm = Main.getClientServerManager();
+    ClientServerManager clm = ClientInterface.getClientServerManager();
 
     @FXML
     private TextField textfield_titolo_post;
@@ -39,10 +39,10 @@ public class ControllerWrite {
 
         clm.send(new MessagePost(OperationCD.Create, post));
 
-        Main.switchScene(PageType.PROFILE_INTERFACE);
+        ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 
     public void eventButtonCloseWrite(ActionEvent actionEvent) {
-        Main.switchScene(PageType.PROFILE_INTERFACE);
+        ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 }

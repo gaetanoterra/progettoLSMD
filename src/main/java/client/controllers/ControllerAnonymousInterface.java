@@ -17,7 +17,7 @@ import java.io.IOException;
 //classe preposta a gestire l'interfaccia da cui si visualizzano i Post
 public class ControllerAnonymousInterface {
 
-    private ClientServerManager clm;
+    private ClientServerManager clientServerManager;
 
     private static Parameter searchMethod = Parameter.Date;
     private static String filter = "interesting";
@@ -35,9 +35,11 @@ public class ControllerAnonymousInterface {
     @FXML
     private ScrollPane scrollpane_posts;
 
-    public ControllerAnonymousInterface(ClientServerManager clm){
-        this.clm = clm;
+    public ControllerAnonymousInterface(){
+        this.clientServerManager = ClientInterface.getClientServerManager();
     }
+    @FXML
+    private void initialize(){}
 
     //imposto cosa posso utilizzare e cosa no a seconda che l'utente sia loggato o meno
     public void setLoggedInterface(String username){
@@ -159,16 +161,16 @@ public class ControllerAnonymousInterface {
     }
 
     public void eventButtonSignIn(ActionEvent event){
-        Main.switchScene(PageType.SIGN_IN);
+        ClientInterface.switchScene(PageType.SIGN_IN);
     }
 
     public void eventButtonSignUp(ActionEvent event){
-        Main.switchScene(PageType.SIGN_UP);
+        ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
     public void eventButtonProfile(ActionEvent actionEvent) {
-        Main.switchScene(PageType.PROFILE_INTERFACE);
-        Main.getControllerProfileInterface().lockTextArea();
+        ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+        //ClientInterface.getControllerProfileInterface().lockTextArea();
     }
 
     public void eventSetSearchMethod(ActionEvent actionEvent) {
@@ -180,25 +182,25 @@ public class ControllerAnonymousInterface {
             searchMethod = Parameter.Text;
         if(radio_button_username.isSelected())
             searchMethod = Parameter.Username;
-
     }
 
     //event che invia la richiesta al ClientManager in base al parametro di ricerca
     public void eventButtonSearch(ActionEvent actionEvent) throws IOException, InterruptedException {
         if(searchMethod == Parameter.Date)
-            clm.send(new MessageGetPostByParameter(Parameter.Date, textfield_search.getText(), null));
+            clientServerManager.send(new MessageGetPostByParameter(Parameter.Date, textfield_search.getText(), null));
 
         else if(searchMethod == Parameter.Tags)
-            clm.send(new MessageGetPostByParameter(Parameter.Tags, textfield_search.getText(), null));
+            clientServerManager.send(new MessageGetPostByParameter(Parameter.Tags, textfield_search.getText(), null));
 
         else if(searchMethod == Parameter.Text)
-            clm.send(new MessageGetPostByParameter(Parameter.Text, textfield_search.getText(), null));
+            clientServerManager.send(new MessageGetPostByParameter(Parameter.Text, textfield_search.getText(), null));
 
         else if(searchMethod == Parameter.Username)
-            clm.send(new MessageGetPostByParameter(Parameter.Username, textfield_search.getText(), null));
+            clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, textfield_search.getText(), null));
 
-        while(ClientServerManager.isWaiting())
+       /* while(ClientServerManager.isWaiting())
             wait();
+        */
 
         fillPostPane();
         ClientServerManager.setWaiting(true);
