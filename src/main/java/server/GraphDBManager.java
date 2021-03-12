@@ -173,21 +173,6 @@ public class GraphDBManager {
         }
     }
 
-
-    //funzione che effettua la query per inserire la relazione Contains_tag tra Post e Tag
-    public void insertRelationContainsTag(String postId, String name){
-        try(Session session = dbConnection.session()){
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (t:Tag {name: $name}), " +
-                                "(q:Question {questionId: $questionId}) " +
-                                "CREATE (q)-[:CONTAINS_TAG]->(t); ",
-                        parameters("postId", postId, "name", name));
-                return null;
-            });
-        }
-    }
-
-
     //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
     public void insertRelationVote(String userIdString, String answerIdString, int voteAnswer){
         try(Session session = dbConnection.session()){
@@ -196,18 +181,6 @@ public class GraphDBManager {
                                 "(a:Answer {answerId: $answerId}) " +
                                 "CREATE (u)-[:VOTES {voteTypeId: $voteTypeId}]->(a); ",
                         parameters("userId", userIdString, "answerId", answerIdString, "voteTypeId", voteAnswer));
-                return null;
-            });
-        }
-    }
-
-    //TODO: Su graphdb la query per inserire un tag non è utilizzata
-    //funzione che effettua la query per inserire il nodo Tag
-    public void insertTag(String name){
-        try(Session session = dbConnection.session()){
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("CREATE (t:Tag {name: $name}); ",
-                        parameters("name", name));
                 return null;
             });
         }
@@ -291,17 +264,6 @@ public class GraphDBManager {
         }
     }
 
-    public void removeRelationContainsTag(String postId, String name){
-        try(Session session = dbConnection.session()){
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:Question {questionId = $questionId})-[r:CONTAINS_TAG]->(:Tag {name = $name})" +
-                                "DELETE r",
-                        parameters("questionId", postId, "name", name));
-                return null;
-            });
-        }
-    }
-
     public void removeRelationVote(String userId, String answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -312,18 +274,6 @@ public class GraphDBManager {
             });
         }
     }
-
-    public void removeTag(String name){
-        try(Session session = dbConnection.session()){
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (t:Tag {name: $name})" +
-                                "DETACH DELETE t",
-                        parameters("name", name));
-                return null;
-            });
-        }
-    }
-
 
     public void removeUser(String userId){
         try(Session session = dbConnection.session()){

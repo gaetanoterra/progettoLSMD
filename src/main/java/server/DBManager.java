@@ -108,8 +108,6 @@ public class DBManager {
         return documentDBManager.getPostsByText(text);
     }
 
-    //TODO: Inserire un metodo updatePost, se il post può essere modificato, altrimenti rimuovere questo messaggio
-
     public boolean insertPost(Post newPost){
         boolean insertedPost = documentDBManager.insertPost(newPost);
         graphDBManager.insertPost(newPost);
@@ -148,22 +146,6 @@ public class DBManager {
     }
     public boolean removeRelationVote(String userIdString, String answerIdString){
         graphDBManager.removeRelationVote(userIdString, answerIdString);
-        return true;
-    }
-
-    /*
-    --------------------------- TAGS ---------------------------
-     */
-
-    //TODO: [modifica_tag] Non ricordo se i tag si possono modificare oppure no. Se no, rimuovere i due metodi successivi
-    public boolean insertTag(String tagName) {
-        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
-        graphDBManager.insertTag(tagName);
-        return true;
-    }
-    public boolean removeTag(String tagName) {
-        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
-        graphDBManager.removeTag(tagName);
         return true;
     }
 
