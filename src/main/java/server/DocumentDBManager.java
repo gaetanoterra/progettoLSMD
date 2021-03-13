@@ -4,17 +4,13 @@ import javafx.util.Pair;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Indexes.descending;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Updates.set;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Projections;
@@ -23,7 +19,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoCursor;
 
 //TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
@@ -39,6 +34,89 @@ public class DocumentDBManager {
     }
     public void close(){
         this.mongoClient.close();
+    }
+
+    public Map<User, Post[]> findMostAnsweredTopUserPosts(){
+        /*
+        Find 50 most followed users, and for each of them show the 3 posts they wrote that contains the largest number of answers
+         */
+        MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
+        MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
+        final int MAX_NUMBER_USERS = 50;
+        final int MAX_NUMBER_POSTS = 3;
+
+        ArrayList<String> userIdList = new ArrayList<>();
+        Bson projectStage = project(
+                fields(
+                        include(
+                                "$UserId",
+                                "$FollowerNumber"
+                        )
+                )
+        );
+        //TODO: Non ricordo se followerNumber indica quanti utenti seguono uno specifico utente
+        Bson sortStage = sort(descending("FollowerNumber"));
+        Bson limitStage = limit(MAX_NUMBER_USERS);
+        collUser.aggregate(
+                Arrays.asList(
+                        projectStage,
+                        sortStage,
+                        limitStage
+                )
+        ).forEach(doc ->
+                userIdList.add(doc.getString("UserId"))
+        );
+
+        // adesso devo trovare i loro post
+        Map<User, Post[]> utentiSeguitiPost = new HashMap<>();
+
+        Bson matchStage = match(in("OwnerUserId", userIdList));
+        Bson projectStage2 = new Document(
+                "$project",
+                new Document(
+                        "OwnerUserId", 1
+                ).append(
+                        "PostId", 1
+                ).append(
+                        "NumeroRisposte",
+                        new Document(
+                                "$size", "$Answers"
+                        )
+                )
+        );
+        Bson groupByUserId = group(
+                "$OwnerUserId",
+                push("listaPostId","$PostId"),
+                push("listaNumeroRisposte","$NumeroRisposte")
+        );
+        collPost.aggregate(
+                Arrays.asList(
+                        matchStage,
+                        projectStage2,
+                        groupByUserId
+                )
+        ).forEach(document -> {
+            String ownerUserId = document.getString("ownerUserId");
+            //listaPostId e listaNumeroRisposte hanno stessa dimensione
+            ArrayList<String> listaPostId = (ArrayList<String>)document.get("listaPostId");
+            ArrayList<Integer> listaNumeroRisposte = (ArrayList<Integer>)document.get("listaNumeroRisposte");
+            ArrayList<Post> finalResult = new ArrayList<>();
+            final int sizeArray = Math.min(listaNumeroRisposte.size(), MAX_NUMBER_POSTS);
+            // trova i sizeArray valori più alti
+            for (int i = 0; i < sizeArray; ++i) {
+                Integer maxNumeroRisposte = listaNumeroRisposte
+                        .stream()
+                        .max(Comparator.naturalOrder())
+                        .get();
+                int indexToRemove = listaNumeroRisposte.indexOf(maxNumeroRisposte);
+                String postId = listaPostId.get(indexToRemove);
+                listaNumeroRisposte.remove(indexToRemove);
+                listaPostId.remove(indexToRemove);
+                finalResult.add(getPostById(postId));
+            }
+            utentiSeguitiPost.put(getUserById(ownerUserId), (Post[])finalResult.toArray());
+        });
+        return utentiSeguitiPost;
     }
 
     public String[] findMostPopularTagsByLocation(String location, int numTags){
@@ -320,6 +398,30 @@ public class DocumentDBManager {
             list.add(p);
         });
         return (Post[]) list.toArray();
+    }
+
+    public User getUserById(String userId) {
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
+
+        Document userDoc = coll.find(eq("UserId", userId)).first();
+        User user = new User();
+
+        if(userDoc != null) {
+            user.setUserId(userId)
+                    .setDisplayName(userDoc.getString("DisplayName"))
+                    .setPassword(userDoc.getString("Password"))
+                    .setFollowersNumber(userDoc.getInteger("FollowersNumber"))
+                    .setFollowedNumber(userDoc.getInteger("FollowedNumber"))
+                    .setReputation(userDoc.getDouble("Reputation"))
+                    .setCreationDate(userDoc.getDate("CreationDate"))
+                    .setLastAccessDate(userDoc.getDate("LastAccessDate"))
+                    .setType(userDoc.getString("Type"))
+                    .setLocation(userDoc.getString("Location"))
+                    .setAboutMe(userDoc.getString("AboutMe"))
+                    .setWebsiteURL(userDoc.getString("WebsiteURL"));
+        }
+
+        return user;
     }
 
     public User getUserData(String displayName){

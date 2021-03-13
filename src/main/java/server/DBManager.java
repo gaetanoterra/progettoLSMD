@@ -22,8 +22,7 @@ public class DBManager {
     --------------------------- ANALYTICS ---------------------------
      */
     public Map<User, Post[]> findMostAnsweredTopUserPosts(){
-        //TODO: questa query è da fare su mongoDB, definire il metodo
-        return null;
+        return documentDBManager.findMostAnsweredTopUserPosts();
     }
 
     public User[] findTopExpertsByTag(String tagName, int numExperts){
@@ -154,13 +153,13 @@ public class DBManager {
      */
 
     public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+        //TODO: aggiornare numero di utenti seguiti e da seguire anche su mongodb
         graphDBManager.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
         return true;
     }
     public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
+        //TODO: aggiornare numero di utenti seguiti e da seguire anche su mongodb
         graphDBManager.removeFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
         return true;
     }
 
