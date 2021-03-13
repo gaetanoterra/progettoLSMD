@@ -48,15 +48,13 @@ public class DocumentDBManager {
         MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
         MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
         ArrayList<String> tagList = new ArrayList<>();
-        ArrayList<User> userList = new ArrayList<>();
+        ArrayList<String> userIdList = new ArrayList<>();
 
-        collUser.find(eq("location", location)).forEach(doc -> {
-            User u = new User();
-            u.setUserId(doc.getString("userId"));
-            userList.add(u);
+        collUser.find(eq("Location", location)).forEach(document -> {
+            userIdList.add(document.getString("UserId"));
         });
 
-        /*try (MongoCursor<Document> cursor = collUser.find(eq("location", location)).iterator())
+        /*try (MongoCursor<Document> cursor = collUser.find(eq("Location", location)).iterator())
         {
             while (cursor.hasNext())
             {
@@ -64,20 +62,29 @@ public class DocumentDBManager {
                 User u = new User();
 
                 //mi interessa solo lo userId
-                u.setId(doc.getString("userId"));
+                u.setId(doc.getString("UserId"));
                 userList.add(u);
             }
         }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson m = match(in("ownerUserId", userList));
-        Bson u = unwind("tagList");
-        Bson g = group("$tagList", sum("totaleTags",1));
-        Bson s = sort(descending("totaleTags"));
-        Bson l = limit(numTags);
+        Bson matchStage = match(in("OwnerUserId", (String[])userIdList.toArray()));
+        Bson unwindStage = unwind("Tags");
+        //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
+        Bson groupStage = group("$Tags", sum("totaleTags",1));
+        Bson sortStage = sort(descending("totaleTags"));
+        Bson limitStage = limit(numTags);
 
-        collPost.aggregate(Arrays.asList(m, u, g, s, l)).forEach(doc ->
-                tagList.add(doc.getString("tagList"))
+        collPost.aggregate(
+                Arrays.asList(
+                        matchStage,
+                        unwindStage,
+                        groupStage,
+                        sortStage,
+                        limitStage
+                )
+        ).forEach(doc ->
+                tagList.add(doc.getString("_id"))
         );
 
         /*try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
@@ -100,37 +107,41 @@ public class DocumentDBManager {
         ArrayList<String> userIdList = new ArrayList<>();
         ArrayList<User> userList = new ArrayList<>();
 
-        Bson m = match(in("tags", tag));
-        Bson u = unwind("answers");
-        Bson g = group("$answers.ownerUserId", sum("totaleRisposteUtente",1));
-        Bson s = sort(descending("totaleTags"));
-        Bson l = limit(num);
-        //Bson p = project(fields(include("$answers.ownerUserId")));
+        Bson matchTag = match(eq("Tags", tag));
+        Bson unwindAnswers = unwind("Answers");
+        //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
+        Bson groupByOwnerUserId = group("$Answers.OwnerUserId", sum("totaleRisposteUtente",1));
+        Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
+        Bson limitStage = limit(num);
 
-        try (MongoCursor<Document> cursor = collPost.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
+        //Bson projectStage = project(fields(include("$Answers.OwnerUserId")));
 
-                userIdList.add(doc.getString("answers.ownerUserId"));
-            }
-        }
+        collPost.aggregate(
+                Arrays.asList(
+                        matchTag,
+                        unwindAnswers,
+                        groupByOwnerUserId,
+                        sortByCountDesc,
+                        limitStage
+                )
+        ).forEach(doc ->
+                userIdList.add(doc.getString("_id"))
+        );
 
-        collUser.find(in("userId", (String[])userIdList.toArray())).forEach(document ->{
+        collUser.find(in("UserId", (String[])userIdList.toArray())).forEach(document -> {
             User user = new User()
-                    .setUserId(document.getString("userId"))
-                    .setDisplayName(document.getString("displayName"))
-                    .setPassword(document.getString("password"))
-                    .setFollowersNumber(document.getInteger("followersNumber"))
-                    .setFollowedNumber(document.getInteger("followedNumber"))
-                    .setReputation(document.getDouble("reputation"))
-                    .setCreationDate(document.getDate("creationDate"))
-                    .setLastAccessDate(document.getDate("lastAccessDate"))
-                    .setType(document.getString("type"))
-                    .setLocation(document.getString("location"))
-                    .setAboutMe(document.getString("aboutMe"))
-                    .setWebsiteURL(document.getString("websiteURL"));
+                    .setUserId(document.getString("UserId"))
+                    .setDisplayName(document.getString("DisplayName"))
+                    .setPassword(document.getString("Password"))
+                    .setFollowersNumber(document.getInteger("FollowersNumber"))
+                    .setFollowedNumber(document.getInteger("FollowedNumber"))
+                    .setReputation(document.getDouble("Reputation"))
+                    .setCreationDate(document.getDate("CreationDate"))
+                    .setLastAccessDate(document.getDate("LastAccessDate"))
+                    .setType(document.getString("Type"))
+                    .setLocation(document.getString("Location"))
+                    .setAboutMe(document.getString("AboutMe"))
+                    .setWebsiteURL(document.getString("WebsiteURL"));
             userList.add(user);
         });
 
@@ -156,38 +167,43 @@ public class DocumentDBManager {
         ])
         //50 at most users, the most followed ones
         */
-        Bson a = sort(descending("FollowersNumber"));
-        Bson b = limit(50);
-        collUser.aggregate(Arrays.asList(a,b)).forEach(document -> {
+        Bson sortByFollowersDesc = sort(descending("FollowersNumber"));
+        Bson limitUsers = limit(50);
+        collUser.aggregate(
+                Arrays.asList(
+                        sortByFollowersDesc,
+                        limitUsers
+                )
+        ).forEach(document -> {
             User user = new User()
-                .setUserId(document.getString("userId"))
-                .setDisplayName(document.getString("displayName"))
-                .setPassword(document.getString("password"))
-                .setFollowersNumber(document.getInteger("followersNumber"))
-                .setFollowedNumber(document.getInteger("followedNumber"))
-                .setReputation(document.getDouble("reputation"))
-                .setCreationDate(document.getDate("creationDate"))
-                .setLastAccessDate(document.getDate("lastAccessDate"))
-                .setType(document.getString("type"))
-                .setLocation(document.getString("location"))
-                .setAboutMe(document.getString("aboutMe"))
-                .setWebsiteURL(document.getString("websiteURL"));
+                .setUserId(document.getString("UserId"))
+                .setDisplayName(document.getString("DisplayName"))
+                .setPassword(document.getString("Password"))
+                .setFollowersNumber(document.getInteger("FollowersNumber"))
+                .setFollowedNumber(document.getInteger("FollowedNumber"))
+                .setReputation(document.getDouble("Reputation"))
+                .setCreationDate(document.getDate("CreationDate"))
+                .setLastAccessDate(document.getDate("LastAccessDate"))
+                .setType(document.getString("Type"))
+                .setLocation(document.getString("Location"))
+                .setAboutMe(document.getString("AboutMe"))
+                .setWebsiteURL(document.getString("WebsiteURL"));
             // user done, now the three posts
             // for each user id ($userId)
             int userId = Integer.parseInt(user.getUserId());
-            Bson c = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
-            Bson d = unwind("$Answers");
-            Bson e = unwind("$Tags");
-            Bson f = new Document("$group",
+            Bson matchOwnerUserId = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
+            Bson unwindAnswers = unwind("$Answers");
+            Bson unwindTags = unwind("$Tags");
+            Bson groupByTag = new Document("$group",
                     new Document("_id", "$Tags").append("count",
                             new Document("$sum", 1)));
-            Bson g = sort(descending("count"));
-            Bson h = limit(3);
-            Bson i = project(fields(Projections.computed("tag","_id"), include("count")));
+            Bson sortByCountDesc = sort(descending("count"));
+            Bson limitTags = limit(3);
+            Bson projectTagCount = project(fields(Projections.computed("tag","_id"), include("count")));
                 /*
                 db.posts.aggregate([
                         {$match:
-                {'Answers.OwnerUserId' : $userId}
+                {'answers.ownerUserId' : $userId}
             },
                 {$unwind: "$Answers"},
                 {$unwind: "$Tags"},
@@ -208,7 +224,7 @@ public class DocumentDBManager {
         ])
          */
             ArrayList<Pair<String, Integer>> list = new ArrayList<>();
-            collPost.aggregate(Arrays.asList(c, d, e, f, g, h, i)).forEach(doc ->
+            collPost.aggregate(Arrays.asList(matchOwnerUserId, unwindAnswers, unwindTags, groupByTag, sortByCountDesc, limitTags, projectTagCount)).forEach(doc ->
                 list.add(new Pair<>(doc.getString("tag"), doc.getInteger("count")))
             );
             result.put(user, (Pair<String, Integer>[]) list.toArray());
@@ -216,44 +232,36 @@ public class DocumentDBManager {
         return result;
     }
 
-    //TODO: questo va aggiustato
     public Post[] getPostByDate(String data) {
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
-        try (MongoCursor<Document> cursor = coll.find(eq("creationDate", data)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                Post p = new Post(doc.getString("postId"),
-                        doc.getString("title"),
-                        (ArrayList<Answer>)doc.get("answers"),
-                        doc.getDate("creationDate"),
-                        doc.getString("body"),
-                        doc.getString("ownerUserId"),
-                        (ArrayList<String>)doc.get("tags"));
-
-                posts.add(p);
-            }
-        }
-
+        coll.find(eq("CreationDate", data)).forEach(doc -> {
+            Post p = new Post(doc.getString("PostId"),
+                    doc.getString("Title"),
+                    (ArrayList<Answer>)doc.get("Answers"),
+                    doc.getDate("CreationDate"),
+                    doc.getString("Body"),
+                    doc.getString("OwnerUserId"),
+                    (ArrayList<String>)doc.get("Tags"));
+            posts.add(p);
+        });
         return (Post[]) posts.toArray();
     }
 
     public Post getPostById(String postId){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
-        Document postDoc = coll.find(eq("postId", postId)).first();
+        Document postDoc = coll.find(eq("PostId", postId)).first();
 
         if (postDoc != null){
             return new Post(postId,
-                    postDoc.getString("title"),
-                    (ArrayList<Answer>)postDoc.get("answers"),
-                    postDoc.getDate("creationDate"),
-                    postDoc.getString("body"),
-                    postDoc.getString("ownerUserId"),
-                    (ArrayList<String>)postDoc.get("tags"));
+                    postDoc.getString("Title"),
+                    (ArrayList<Answer>)postDoc.get("Answers"),
+                    postDoc.getDate("CreationDate"),
+                    postDoc.getString("Body"),
+                    postDoc.getString("OwnerUserId"),
+                    (ArrayList<String>)postDoc.get("Tags"));
         }
         else
             return new Post();
@@ -263,22 +271,17 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
-        try (MongoCursor<Document> cursor = coll.find(all("ownerUserId", username)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                Post p = new Post(doc.getString("postId"),
-                        doc.getString("title"),
-                        (ArrayList<Answer>)doc.get("answers"),
-                        doc.getDate("creationDate"),
-                        doc.getString("body"),
-                        doc.getString("ownerUserId"),
-                        (ArrayList<String>)doc.get("tags"));
+        coll.find(all("OwnerUserId", username)).forEach(doc -> {
+            Post p = new Post(doc.getString("PostId"),
+                    doc.getString("Title"),
+                    (ArrayList<Answer>)doc.get("Answers"),
+                    doc.getDate("CreationDate"),
+                    doc.getString("Body"),
+                    doc.getString("OwnerUserId"),
+                    (ArrayList<String>)doc.get("Tags"));
 
-                posts.add(p);
-            }
-        }
+            posts.add(p);
+        });
 
         return (Post[]) posts.toArray();
     }
@@ -287,22 +290,17 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
-        try (MongoCursor<Document> cursor = coll.find(all("tags", tags)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                Post p = new Post(doc.getString("postId"),
-                                  doc.getString("title"),
-                                  (ArrayList<Answer>)doc.get("answers"),
-                                  doc.getDate("creationDate"),
-                                  doc.getString("body"),
-                                  doc.getString("ownerUserId"),
-                                  (ArrayList<String>)doc.get("tags"));
+        coll.find(all("Tags", tags)).forEach(doc -> {
+            Post p = new Post(doc.getString("PostId"),
+                    doc.getString("Title"),
+                    (ArrayList<Answer>)doc.get("Answers"),
+                    doc.getDate("CreationDate"),
+                    doc.getString("Body"),
+                    doc.getString("OwnerUserId"),
+                    (ArrayList<String>)doc.get("Tags"));
 
-                posts.add(p);
-            }
-        }
+            posts.add(p);
+        });
 
         return (Post[]) posts.toArray();
     }
@@ -311,14 +309,14 @@ public class DocumentDBManager {
         // controllo il titolo per semplicità (e velocità), si può cambiare ovviamente con il body
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
         ArrayList<Post> list = new ArrayList<>();
-        coll.find(new Document("title", new Document("$regex", ".*"+text+".*"))).forEach(doc -> {
-            Post p = new Post(doc.getString("postId"),
-                    doc.getString("title"),
-                    (ArrayList<Answer>)doc.get("answers"),
-                    doc.getDate("creationDate"),
-                    doc.getString("body"),
-                    doc.getString("ownerUserId"),
-                    (ArrayList<String>)doc.get("tags"));
+        coll.find(new Document("Title", new Document("$regex", ".*"+text+".*"))).forEach(doc -> {
+            Post p = new Post(doc.getString("PostId"),
+                    doc.getString("Title"),
+                    (ArrayList<Answer>)doc.get("Answers"),
+                    doc.getDate("CreationDate"),
+                    doc.getString("Body"),
+                    doc.getString("OwnerUserId"),
+                    (ArrayList<String>)doc.get("Tags"));
             list.add(p);
         });
         return (Post[]) list.toArray();
@@ -327,22 +325,22 @@ public class DocumentDBManager {
     public User getUserData(String displayName){
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
-        Document userDoc = coll.find(eq("displayName", displayName)).first();
+        Document userDoc = coll.find(eq("DisplayName", displayName)).first();
         User user = new User();
 
         if(userDoc != null) {
-            user.setUserId(userDoc.getString("userId"))
+            user.setUserId(userDoc.getString("UserId"))
                 .setDisplayName(displayName)
-                .setPassword(userDoc.getString("password"))
-                .setFollowersNumber(userDoc.getInteger("followersNumber"))
-                .setFollowedNumber(userDoc.getInteger("followedNumber"))
-                .setReputation(userDoc.getDouble("reputation"))
-                .setCreationDate(userDoc.getDate("creationDate"))
-                .setLastAccessDate(userDoc.getDate("lastAccessDate"))
-                .setType(userDoc.getString("type"))
-                .setLocation(userDoc.getString("location"))
-                .setAboutMe(userDoc.getString("aboutMe"))
-                .setWebsiteURL(userDoc.getString("websiteURL"));
+                .setPassword(userDoc.getString("Password"))
+                .setFollowersNumber(userDoc.getInteger("FollowersNumber"))
+                .setFollowedNumber(userDoc.getInteger("FollowedNumber"))
+                .setReputation(userDoc.getDouble("Reputation"))
+                .setCreationDate(userDoc.getDate("CreationDate"))
+                .setLastAccessDate(userDoc.getDate("LastAccessDate"))
+                .setType(userDoc.getString("Type"))
+                .setLocation(userDoc.getString("Location"))
+                .setAboutMe(userDoc.getString("AboutMe"))
+                .setWebsiteURL(userDoc.getString("WebsiteURL"));
         }
 
         return user;
@@ -352,29 +350,23 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
         ArrayList<User> user = new ArrayList<>();
-        try (MongoCursor<Document> cursor = coll.find().sort(descending("reputation")).limit(10).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                User u = new User();
+        coll.find().sort(descending("Reputation")).limit(10).forEach(doc -> {
+            User u = new User()
+                    .setUserId(doc.getString("UserId"))
+                    .setDisplayName(doc.getString("DisplayName"))
+                    .setPassword(doc.getString("Password"))
+                    .setFollowersNumber(doc.getInteger("FollowersNumber"))
+                    .setFollowedNumber(doc.getInteger("FollowedNumber"))
+                    .setReputation(doc.getDouble("Reputation"))
+                    .setCreationDate(doc.getDate("CreationDate"))
+                    .setLastAccessDate(doc.getDate("LastAccessDate"))
+                    .setType(doc.getString("Type"))
+                    .setLocation(doc.getString("Location"))
+                    .setAboutMe(doc.getString("AboutMe"))
+                    .setWebsiteURL(doc.getString("WebsiteURL"));
 
-                u.setUserId(doc.getString("userId"))
-                    .setDisplayName(doc.getString("displayName"))
-                    .setPassword(doc.getString("password"))
-                    .setFollowersNumber(doc.getInteger("followersNumber"))
-                    .setFollowedNumber(doc.getInteger("followedNumber"))
-                    .setReputation(doc.getDouble("reputation"))
-                    .setCreationDate(doc.getDate("creationDate"))
-                    .setLastAccessDate(doc.getDate("lastAccessDate"))
-                    .setType(doc.getString("type"))
-                    .setLocation(doc.getString("location"))
-                    .setAboutMe(doc.getString("aboutMe"))
-                    .setWebsiteURL(doc.getString("websiteURL"));
-
-                user.add(u);
-            }
-        }
+            user.add(u);
+        });
 
         return (User[]) user.toArray();
     }
@@ -382,12 +374,12 @@ public class DocumentDBManager {
     public boolean insertAnswer(Answer answer, String postId){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
-        Document doc = new Document("answerId", answer.getAnswerId()).
-                                    append("creationDate", answer.getCreationDate()).
-                                    append("score", answer.getScore()).
-                                    append("ownerUserId", answer.getOwnerUserId());
+        Document doc = new Document("AnswerId", answer.getAnswerId())
+                .append("CreationDate", answer.getCreationDate())
+                .append("Score", answer.getScore())
+                .append("OwnerUserId", answer.getOwnerUserId());
 
-        coll.updateOne(eq("postId", postId), Updates.push("answers", doc));
+        coll.updateOne(eq("PostId", postId), Updates.push("Answers", doc));
 
         return true;
     }
@@ -395,13 +387,13 @@ public class DocumentDBManager {
     public boolean insertPost(Post post){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
-        Document doc = new Document("postId", post.getPostId())
-                    .append("title", post.getTitle())
-                    .append("answers", post.getAnswers())
-                    .append("creationDate", post.getCreationDate())
-                    .append("body", post.getBody())
-                    .append("ownerUserId", post.getOwnerUserId())
-                    .append("tags", post.getTags());
+        Document doc = new Document("PostId", post.getPostId())
+                    .append("Title", post.getTitle())
+                    .append("Answers", post.getAnswers())
+                    .append("CreationDate", post.getCreationDate())
+                    .append("Body", post.getBody())
+                    .append("OwnerUserId", post.getOwnerUserId())
+                    .append("Tags", post.getTags());
 
         coll.insertOne(doc);
 
@@ -418,13 +410,13 @@ public class DocumentDBManager {
             System.out.println("displayName presente");
         }
         else {
-            Document us = new Document("userId", user.getUserId())
-                    .append("displayName", user.getDisplayName())
-                    .append("password", user.getPassword())
-                    .append("creationDate", user.getCreationData())
-                    .append("location", user.getLocation())
-                    .append("aboutMe", user.getAboutMe())
-                    .append("websiteURL", user.getWebsiteURL());
+            Document us = new Document("UserId", user.getUserId())
+                    .append("DisplayName", user.getDisplayName())
+                    .append("Password", user.getPassword())
+                    .append("CreationDate", user.getCreationData())
+                    .append("Location", user.getLocation())
+                    .append("AboutMe", user.getAboutMe())
+                    .append("WebsiteURL", user.getWebsiteURL());
 
             coll.insertOne(us);
         }
@@ -435,7 +427,7 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         boolean res = false;
 
-        long count = coll.countDocuments(eq("displayName", displayName));
+        long count = coll.countDocuments(eq("DisplayName", displayName));
 
         if(count > 0)
             res = true;
@@ -446,13 +438,13 @@ public class DocumentDBManager {
     public boolean removeAnswer(Answer answer, String postId){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
-        /*Document doc = new Document("answerId", answer.getAnswerId()).append("creationDate", answer.getCreationDate()).append("score", answer.getScore()).append("ownerUserId", answer.getOwnerUserId());
+        /*Document doc = new Document("AnswerId", answer.getAnswerId()).append("CreationDate", answer.getCreationDate()).append("Score", answer.getScore()).append("OwnerUserId", answer.getOwnerUserId());
 
-        coll.updateOne(eq("postId", postId), Updates.pull("answers", doc));*/
+        coll.updateOne(eq("PostId", postId), Updates.pull("Answers", doc));*/
 
         //provare uno dei due
-        BasicDBObject match = new BasicDBObject("postId", postId);
-        BasicDBObject update = new BasicDBObject("answers", new BasicDBObject("answerId", answer.getAnswerId()));
+        BasicDBObject match = new BasicDBObject("PostId", postId);
+        BasicDBObject update = new BasicDBObject("Answers", new BasicDBObject("AnswerId", answer.getAnswerId()));
         coll.updateOne(match, new BasicDBObject("$pull", update));
 
         return true;
@@ -461,7 +453,7 @@ public class DocumentDBManager {
     public boolean removePost(Post post){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
-        coll.deleteOne(eq("postId", post.getPostId()));
+        coll.deleteOne(eq("PostId", post.getPostId()));
 
         return true;
     }
@@ -470,18 +462,22 @@ public class DocumentDBManager {
         MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
         MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
 
-        collUser.deleteOne(eq("displayName", displayName));
-        collPost.deleteMany(eq("ownerUserId", displayName));
+        collUser.deleteOne(eq("DisplayName", displayName));
+        collPost.deleteMany(eq("OwnerUserId", displayName));
         return true;
     }
 
     public boolean updateUserData(User user){
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
-
-        coll.updateOne(eq("userId", user.getUserId()), and(set("password", user.getPassword()),
-                                                                    set("location", user.getLocation()),
-                                                                    set("aboutMe", user.getAboutMe()),
-                                                                    set("websiteURL", user.getWebsiteURL())));
+        coll.updateOne(
+                eq("UserId", user.getUserId()),
+                and(
+                        set("Password", user.getPassword()),
+                        set("Location", user.getLocation()),
+                        set("AboutMe", user.getAboutMe()),
+                        set("WebsiteURL", user.getWebsiteURL())
+                )
+        );
 
         return true;
     }

@@ -1,6 +1,6 @@
 package server;
 
-import client.Main;
+//import client.clientInterface;
 import middleware.*;
 
 import java.io.*;
@@ -223,7 +223,8 @@ public class ClientManager extends Thread{
                         MessageUser messageUser = (MessageUser)msg;
                         User updatedUser = messageUser.getUser();
                         dbManager.updateUserData(updatedUser);
-                        Main.setLog(updatedUser);
+                        //TODO: Questo metodo si rifà al package client, qua non dovrebbe starci. Commento per sicurezza
+                        // Main.setLog(updatedUser);
                         break;
                 }
             }
