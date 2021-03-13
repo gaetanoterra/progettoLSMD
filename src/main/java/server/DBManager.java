@@ -71,12 +71,22 @@ public class DBManager {
         return insertedUser;
     }
 
-    //TODO: Definire il metodo removeUser nella sua completezza (relazioni, post, e answer dell'utente)
     public boolean removeUser(User user){
-        documentDBManager.removeUser(user.getUserId());
-        graphDBManager.removeUser(user.getUserId());
-
-        return true;
+        //prima aggiorno gli attributi ridondanti follower e followed su mongodb
+        ArrayList<String> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
+        ArrayList<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
+        for (String userIdFollower: userIdsFollower) {
+            documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, user.getUserId());
+        }
+        for (String userIdFollowed: userIdsFollowed) {
+            documentDBManager.removeUserFollowerAndFollowedRelation(user.getUserId(), userIdFollowed);
+        }
+        //ora posso rimuovere l'utente
+        boolean deletedUser = documentDBManager.removeUser(user.getUserId());
+        if (deletedUser) {
+            graphDBManager.removeUser(user.getUserId());
+        }
+        return deletedUser;
     }
 
     public boolean updateUserData(User user){
@@ -152,14 +162,14 @@ public class DBManager {
     --------------------------- FOLLOWs ---------------------------
      */
 
-    public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        //TODO: aggiornare numero di utenti seguiti e da seguire anche su mongodb
-        graphDBManager.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
+    public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+        graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
     }
-    public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        //TODO: aggiornare numero di utenti seguiti e da seguire anche su mongodb
-        graphDBManager.removeFollowRelationAndUpdate(usernameFollower, usernameFollowed);
+    public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+        graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
     }
 

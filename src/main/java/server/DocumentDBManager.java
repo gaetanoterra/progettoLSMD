@@ -11,6 +11,7 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Indexes.descending;
 import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Projections;
@@ -20,7 +21,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-//TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
+//TODO: Controllare se tutti gli attributi di User vengono gestiti correttamente (anche se non presenti quando si fa una get)
 public class DocumentDBManager {
 
     private MongoClient mongoClient;
@@ -49,13 +50,12 @@ public class DocumentDBManager {
         Bson projectStage = project(
                 fields(
                         include(
-                                "$UserId",
-                                "$FollowerNumber"
+                                "$Id",
+                                "$followerNumber"
                         )
                 )
         );
-        //TODO: Non ricordo se followerNumber indica quanti utenti seguono uno specifico utente
-        Bson sortStage = sort(descending("FollowerNumber"));
+        Bson sortStage = sort(descending("followedNumber"));
         Bson limitStage = limit(MAX_NUMBER_USERS);
         collUser.aggregate(
                 Arrays.asList(
@@ -64,7 +64,7 @@ public class DocumentDBManager {
                         limitStage
                 )
         ).forEach(doc ->
-                userIdList.add(doc.getString("UserId"))
+                userIdList.add(doc.getString("Id"))
         );
 
         // adesso devo trovare i loro post
@@ -129,7 +129,7 @@ public class DocumentDBManager {
         ArrayList<String> userIdList = new ArrayList<>();
 
         collUser.find(eq("Location", location)).forEach(document -> {
-            userIdList.add(document.getString("UserId"));
+            userIdList.add(document.getString("Id"));
         });
 
         /*try (MongoCursor<Document> cursor = collUser.find(eq("Location", location)).iterator())
@@ -140,7 +140,7 @@ public class DocumentDBManager {
                 User u = new User();
 
                 //mi interessa solo lo userId
-                u.setId(doc.getString("UserId"));
+                u.setId(doc.getString("Id"));
                 userList.add(u);
             }
         }*/
@@ -206,17 +206,17 @@ public class DocumentDBManager {
                 userIdList.add(doc.getString("_id"))
         );
 
-        collUser.find(in("UserId", (String[])userIdList.toArray())).forEach(document -> {
+        collUser.find(in("Id", (String[])userIdList.toArray())).forEach(document -> {
             User user = new User()
-                    .setUserId(document.getString("UserId"))
+                    .setUserId(document.getString("Id"))
                     .setDisplayName(document.getString("DisplayName"))
                     .setPassword(document.getString("Password"))
-                    .setFollowersNumber(document.getInteger("FollowersNumber"))
-                    .setFollowedNumber(document.getInteger("FollowedNumber"))
+                    .setFollowersNumber(document.getInteger("followerNumber"))
+                    .setFollowedNumber(document.getInteger("followedNumber"))
                     .setReputation(document.getDouble("Reputation"))
                     .setCreationDate(document.getDate("CreationDate"))
                     .setLastAccessDate(document.getDate("LastAccessDate"))
-                    .setType(document.getString("Type"))
+                    .setType(document.getString("type"))
                     .setLocation(document.getString("Location"))
                     .setAboutMe(document.getString("AboutMe"))
                     .setWebsiteURL(document.getString("WebsiteURL"));
@@ -245,7 +245,7 @@ public class DocumentDBManager {
         ])
         //50 at most users, the most followed ones
         */
-        Bson sortByFollowersDesc = sort(descending("FollowersNumber"));
+        Bson sortByFollowersDesc = sort(descending("followerNumber"));
         Bson limitUsers = limit(50);
         collUser.aggregate(
                 Arrays.asList(
@@ -254,20 +254,20 @@ public class DocumentDBManager {
                 )
         ).forEach(document -> {
             User user = new User()
-                .setUserId(document.getString("UserId"))
+                .setUserId(document.getString("Id"))
                 .setDisplayName(document.getString("DisplayName"))
                 .setPassword(document.getString("Password"))
-                .setFollowersNumber(document.getInteger("FollowersNumber"))
-                .setFollowedNumber(document.getInteger("FollowedNumber"))
+                .setFollowersNumber(document.getInteger("followerNumber"))
+                .setFollowedNumber(document.getInteger("followedNumber"))
                 .setReputation(document.getDouble("Reputation"))
                 .setCreationDate(document.getDate("CreationDate"))
                 .setLastAccessDate(document.getDate("LastAccessDate"))
-                .setType(document.getString("Type"))
+                .setType(document.getString("type"))
                 .setLocation(document.getString("Location"))
                 .setAboutMe(document.getString("AboutMe"))
                 .setWebsiteURL(document.getString("WebsiteURL"));
             // user done, now the three posts
-            // for each user id ($userId)
+            // for each user id ($Id)
             int userId = Integer.parseInt(user.getUserId());
             Bson matchOwnerUserId = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
             Bson unwindAnswers = unwind("$Answers");
@@ -281,7 +281,7 @@ public class DocumentDBManager {
                 /*
                 db.posts.aggregate([
                         {$match:
-                {'answers.ownerUserId' : $userId}
+                {'answers.ownerUserId' : $Id}
             },
                 {$unwind: "$Answers"},
                 {$unwind: "$Tags"},
@@ -403,19 +403,19 @@ public class DocumentDBManager {
     public User getUserById(String userId) {
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
-        Document userDoc = coll.find(eq("UserId", userId)).first();
+        Document userDoc = coll.find(eq("Id", userId)).first();
         User user = new User();
 
         if(userDoc != null) {
             user.setUserId(userId)
                     .setDisplayName(userDoc.getString("DisplayName"))
                     .setPassword(userDoc.getString("Password"))
-                    .setFollowersNumber(userDoc.getInteger("FollowersNumber"))
-                    .setFollowedNumber(userDoc.getInteger("FollowedNumber"))
+                    .setFollowersNumber(userDoc.getInteger("followerNumber"))
+                    .setFollowedNumber(userDoc.getInteger("followedNumber"))
                     .setReputation(userDoc.getDouble("Reputation"))
                     .setCreationDate(userDoc.getDate("CreationDate"))
                     .setLastAccessDate(userDoc.getDate("LastAccessDate"))
-                    .setType(userDoc.getString("Type"))
+                    .setType(userDoc.getString("type"))
                     .setLocation(userDoc.getString("Location"))
                     .setAboutMe(userDoc.getString("AboutMe"))
                     .setWebsiteURL(userDoc.getString("WebsiteURL"));
@@ -431,15 +431,15 @@ public class DocumentDBManager {
         User user = new User();
 
         if(userDoc != null) {
-            user.setUserId(userDoc.getString("UserId"))
+            user.setUserId(userDoc.getString("Id"))
                 .setDisplayName(displayName)
                 .setPassword(userDoc.getString("Password"))
-                .setFollowersNumber(userDoc.getInteger("FollowersNumber"))
-                .setFollowedNumber(userDoc.getInteger("FollowedNumber"))
+                .setFollowersNumber(userDoc.getInteger("followerNumber"))
+                .setFollowedNumber(userDoc.getInteger("followedNumber"))
                 .setReputation(userDoc.getDouble("Reputation"))
                 .setCreationDate(userDoc.getDate("CreationDate"))
                 .setLastAccessDate(userDoc.getDate("LastAccessDate"))
-                .setType(userDoc.getString("Type"))
+                .setType(userDoc.getString("type"))
                 .setLocation(userDoc.getString("Location"))
                 .setAboutMe(userDoc.getString("AboutMe"))
                 .setWebsiteURL(userDoc.getString("WebsiteURL"));
@@ -454,15 +454,15 @@ public class DocumentDBManager {
         ArrayList<User> user = new ArrayList<>();
         coll.find().sort(descending("Reputation")).limit(10).forEach(doc -> {
             User u = new User()
-                    .setUserId(doc.getString("UserId"))
+                    .setUserId(doc.getString("Id"))
                     .setDisplayName(doc.getString("DisplayName"))
                     .setPassword(doc.getString("Password"))
-                    .setFollowersNumber(doc.getInteger("FollowersNumber"))
-                    .setFollowedNumber(doc.getInteger("FollowedNumber"))
+                    .setFollowersNumber(doc.getInteger("followerNumber"))
+                    .setFollowedNumber(doc.getInteger("followedNumber"))
                     .setReputation(doc.getDouble("Reputation"))
                     .setCreationDate(doc.getDate("CreationDate"))
                     .setLastAccessDate(doc.getDate("LastAccessDate"))
-                    .setType(doc.getString("Type"))
+                    .setType(doc.getString("type"))
                     .setLocation(doc.getString("Location"))
                     .setAboutMe(doc.getString("AboutMe"))
                     .setWebsiteURL(doc.getString("WebsiteURL"));
@@ -512,7 +512,8 @@ public class DocumentDBManager {
             System.out.println("displayName presente");
         }
         else {
-            Document us = new Document("UserId", user.getUserId())
+
+            Document us = new Document("Id", user.getUserId())
                     .append("DisplayName", user.getDisplayName())
                     .append("Password", user.getPassword())
                     .append("CreationDate", user.getCreationData())
@@ -560,19 +561,33 @@ public class DocumentDBManager {
         return true;
     }
 
-    public boolean removeUser(String displayName){
+    public boolean removeUser(String userIdString){
         MongoCollection<Document> collUser = mongoDatabase.getCollection("User");
         MongoCollection<Document> collPost = mongoDatabase.getCollection("Post");
 
-        collUser.deleteOne(eq("DisplayName", displayName));
-        collPost.deleteMany(eq("OwnerUserId", displayName));
+        //addio utente
+        collUser.deleteOne(eq("Id", userIdString));
+        //addio post scritti da lui
+        collPost.deleteMany(eq("OwnerUserId", userIdString));
+        //addio risposte scritte da lui
+        //TODO: cosa fare con risposte che erano accettate?
+        collPost.updateMany(
+                new Document("Answers.OwnerUserId", userIdString),
+                new Document(
+                        "$pull",
+                        new Document(
+                                "Answers",
+                                new Document("OwnerUserId", userIdString)
+                        )
+                )
+        );
         return true;
     }
 
     public boolean updateUserData(User user){
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         coll.updateOne(
-                eq("UserId", user.getUserId()),
+                eq("Id", user.getUserId()),
                 and(
                         set("Password", user.getPassword()),
                         set("Location", user.getLocation()),
@@ -582,5 +597,19 @@ public class DocumentDBManager {
         );
 
         return true;
+    }
+
+    public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
+        //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
+        coll.updateOne(eq("Id", userIdFollower), inc("followerNumber", 1));
+        coll.updateOne(eq("Id", userIdFollowed), inc("followedNumber", 1));
+    }
+
+    public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
+        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
+        //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
+        coll.updateOne(eq("Id", userIdFollower), inc("followerNumber", -1));
+        coll.updateOne(eq("Id", userIdFollowed), inc("followedNumber", -1));
     }
 }
