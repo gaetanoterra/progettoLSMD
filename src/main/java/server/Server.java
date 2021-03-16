@@ -1,5 +1,8 @@
 package server;
 
+import server.databaseDriver.DBExecutionMode;
+import server.databaseDriver.DBManager;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,6 +21,9 @@ public class Server {
     private int counter = 0;
 
     public Server(int portNumber, int backlogLength) throws IOException{
+        this(portNumber, backlogLength, DBExecutionMode.LOCAL);
+    }
+    public Server(int portNumber, int backlogLength, DBExecutionMode dbe) throws IOException{
         this.portNumber = portNumber;
         this.backlogLength = backlogLength;
         this.dbManager = new DBManager();

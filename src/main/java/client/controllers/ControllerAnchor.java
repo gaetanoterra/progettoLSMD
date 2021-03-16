@@ -1,7 +1,6 @@
-package client;
-
-import server.*;
-import middleware.*;
+package client.controllers;
 
 public class ControllerAnchor {
+
+
 }

@@ -1,5 +1,10 @@
-package client;
+package client.controllers;
 
+import Libraries.Messages.MessagePost;
+import Libraries.Messages.OperationCD;
+import Libraries.Post;
+import client.ClientInterface;
+import client.ClientServerManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -8,9 +13,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import server.*;
-import middleware.*;
 
 //classe per gestire l'interfaccia dove scrivere un nuovo post
 public class ControllerWrite {
@@ -42,7 +44,7 @@ public class ControllerWrite {
         ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 
-    public void eventButtonCloseWrite(ActionEvent actionEvent) {
+    public void eventButtonCloseWrite(ActionEvent actionEvent) throws IOException {
         ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 }

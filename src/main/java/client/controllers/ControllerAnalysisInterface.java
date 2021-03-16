@@ -1,7 +1,5 @@
-package client;
+package client.controllers;
 
-
-import middleware.*;
 
 public class ControllerAnalysisInterface {
 

@@ -1,11 +1,12 @@
-package client;
+package client.controllers;
 
+import Libraries.Messages.MessageLogin;
+import Libraries.User;
+import client.ClientInterface;
+import client.ClientServerManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
-
-import middleware.*;
-import server.*;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ public class ControllerSignIn {
 
             //switch della pagina
             ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
-            ClientInterface.getControllerProfileInterface().lockTextArea();
+            // ClientInterface.getControllerProfileInterface().lockTextArea();
         }
         else{
             label_error_message_signin.setText("*Username o password errate");
@@ -46,14 +47,14 @@ public class ControllerSignIn {
     }
 
     //mi sposto sull'interfaccia della signup
-    public void eventButtonSignUpSignIn(ActionEvent actionEvent) {
+    public void eventButtonSignUpSignIn(ActionEvent actionEvent) throws IOException {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
         ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
     //annullo la signin e torno dove ero
-    public void eventButtonCancelSignIn(ActionEvent actionEvent) {
+    public void eventButtonCancelSignIn(ActionEvent actionEvent) throws IOException {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
         ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);

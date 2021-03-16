@@ -1,5 +1,9 @@
-package client;
+package client.controllers;
 
+import Libraries.Messages.MessageGetPostByParameter;
+import Libraries.Messages.Parameter;
+import client.ClientInterface;
+import client.ClientServerManager;
 import javafx.event.ActionEvent;
 
 import javafx.fxml.FXML;
@@ -9,8 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import server.*;
-import middleware.*;
+import Libraries.*;
 
 import java.io.IOException;
 
@@ -60,7 +63,7 @@ public class ControllerAnonymousInterface {
     //metodo per inserire i post nel panello
     public void fillPostPane() {
         //ordino i post in base al sort
-        ordinaPost();
+        //ordinaPost();
 
         VBox vbox = new VBox(1);
 
@@ -71,7 +74,7 @@ public class ControllerAnonymousInterface {
             HBox hboxTotale = new HBox(60);
             VBox vboxTitoloTags = new VBox(20);
 
-            //Label labelNumVoti = new Label(posts[i].get + " Voti");
+            //Label labelNumVoti = new Label(posts[i].get + " Votes");
             Label labelNumAnswer = new Label(posts[i].getAnswers().size() + " Answer");
             Label labelNumViews = new Label(posts[i].getViews() + " View");
 
@@ -160,17 +163,17 @@ public class ControllerAnonymousInterface {
         fillPostPane();
     }
 
-    public void eventButtonSignIn(ActionEvent event){
+    public void eventButtonSignIn(ActionEvent event) throws IOException {
         ClientInterface.switchScene(PageType.SIGN_IN);
     }
 
-    public void eventButtonSignUp(ActionEvent event){
+    public void eventButtonSignUp(ActionEvent event) throws IOException {
         ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
     public void eventButtonProfile(ActionEvent actionEvent) {
-        ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
-        //ClientInterface.getControllerProfileInterface().lockTextArea();
+        // ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+        // ClientInterface.getControllerProfileInterface().lockTextArea();
     }
 
     public void eventSetSearchMethod(ActionEvent actionEvent) {
@@ -185,7 +188,7 @@ public class ControllerAnonymousInterface {
     }
 
     //event che invia la richiesta al ClientManager in base al parametro di ricerca
-    public void eventButtonSearch(ActionEvent actionEvent) throws IOException, InterruptedException {
+    public void eventButtonSearch(ActionEvent actionEvent) throws IOException {
         if(searchMethod == Parameter.Date)
             clientServerManager.send(new MessageGetPostByParameter(Parameter.Date, textfield_search.getText(), null));
 
@@ -198,12 +201,6 @@ public class ControllerAnonymousInterface {
         else if(searchMethod == Parameter.Username)
             clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, textfield_search.getText(), null));
 
-       /* while(ClientServerManager.isWaiting())
-            wait();
-        */
-
-        fillPostPane();
-        ClientServerManager.setWaiting(true);
     }
 
     //event per impostare il valore del filtro

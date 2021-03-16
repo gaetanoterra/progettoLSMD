@@ -1,12 +1,17 @@
-package client;
+package client.controllers;
 
+import Libraries.Messages.MessageGetPostByParameter;
+import Libraries.Messages.MessageUser;
+import Libraries.Messages.Opcode;
+import Libraries.Messages.Parameter;
+import client.ClientInterface;
+import client.ClientServerManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 
-import server.*;
-import middleware.*;
+import Libraries.*;
 
 import javax.swing.text.html.ImageView;
 import java.io.IOException;
@@ -38,7 +43,7 @@ public class ControllerProfileInterface {
         this.clientServerManager = ClientInterface.getClientServerManager();
     }
 
-    public void eventButtonLogout(ActionEvent actionEvent) {
+    public void eventButtonLogout(ActionEvent actionEvent) throws IOException {
         ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 
@@ -87,10 +92,10 @@ public class ControllerProfileInterface {
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post
-    public void eventButtonBrowse(ActionEvent actionEvent){ ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE); }
+    public void eventButtonBrowse(ActionEvent actionEvent) throws IOException { ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE); }
 
     //funzione che mi porta all'interfaccia dove scrivere un nuovo post
-    public void eventButtonWrite(ActionEvent actionEvent) { ClientInterface.switchScene(PageType.WRITE); }
+    public void eventButtonWrite(ActionEvent actionEvent) throws IOException { ClientInterface.switchScene(PageType.WRITE); }
 
     //funzione per rendere non editabili i textfield
     public void lockTextArea(){

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ControllerPost">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ControllerPost">
    <children>
       <Separator layoutX="29.0" layoutY="86.0" prefHeight="0.0" prefWidth="743.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="28.0" />
       <ScrollPane fx:id="scrollpane_body_post" layoutX="29.0" layoutY="102.0" prefHeight="262.0" prefWidth="683.0" />

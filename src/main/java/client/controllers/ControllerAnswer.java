@@ -1,11 +1,12 @@
-package client;
+package client.controllers;
 
+import client.ClientInterface;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import middleware.MessageAnswer;
-import middleware.OperationCD;
-import server.Answer;
+import Libraries.Messages.MessageAnswer;
+import Libraries.Messages.OperationCD;
+import Libraries.Answer;
 
 import java.io.IOException;
 
@@ -20,10 +21,10 @@ public class ControllerAnswer {
         answer.setBody(textarea_answer.getText());
         //inserire gli altri set di answer
         ClientInterface.getClientServerManager().send(new MessageAnswer(OperationCD.Create, answer, ControllerAnonymousInterface.lastPostSeen().getPostId()));
-        ClientInterface.switchScene(ClientInterface.getLastPageSeen());
+        //ClientInterface.switchScene(ClientInterface.getLastPageSeen());
     }
 
     public void eventCloseAnswer(ActionEvent actionEvent) {
-        ClientInterface.switchScene(ClientInterface.getLastPageSeen());
+        //ClientInterface.switchScene(ClientInterface.getLastPageSeen());
     }
 }

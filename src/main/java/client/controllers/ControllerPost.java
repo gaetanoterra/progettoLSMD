@@ -1,5 +1,8 @@
-package client;
+package client.controllers;
 
+import Libraries.Answer;
+import Libraries.Post;
+import client.ClientInterface;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -7,7 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import server.*;
+
+import java.io.IOException;
 
 public class ControllerPost {
 
@@ -16,12 +20,12 @@ public class ControllerPost {
     @FXML
     private ScrollPane scrollpane_body_post, scrollpane_answers_post;
 
-    public void eventAnswerPostInterface(ActionEvent actionEvent) {
+    public void eventAnswerPostInterface(ActionEvent actionEvent) throws IOException {
         ClientInterface.switchScene(PageType.CREATE_ANSWER);
     }
 
     //quando faccio back posso tornare sia in anonymousInterface sia in profileInterface, a seconda che il post aperto sia scritto da me o meno, aggiustare la funzione
-    public void eventBackPostInterface(ActionEvent actionEvent) {
+    public void eventBackPostInterface(ActionEvent actionEvent) throws IOException {
         ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 

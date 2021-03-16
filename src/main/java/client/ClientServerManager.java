@@ -1,6 +1,6 @@
 package client;
 
-import middleware.*;
+import Libraries.Messages.*;
 
 import java.io.*;
 import java.net.*;
@@ -15,15 +15,19 @@ public class ClientServerManager extends Thread {
     private boolean last_server_answer = false;
     private  int portNumber;
 
-    public ClientServerManager() {}
-
     public ClientServerManager(int porta, InetAddress in) throws IOException{
+        portNumber = porta;
+        clientSocket = new Socket(in, porta);
+        messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
+        messageInputStream  = new  ObjectInputStream(clientSocket.getInputStream());
+    }
+
+    public ClientServerManager(int porta, InetAddress in, ClientInterface cl) throws IOException{
         portNumber = porta;
         clientSocket = new Socket(in, porta);
         messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
         messageInputStream = new ObjectInputStream(clientSocket.getInputStream());
     }
-
     public void run(){
 
         try {
@@ -42,16 +46,16 @@ public class ClientServerManager extends Thread {
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
-                            Main.getControllerProfileInterface().fillProfileInterface(msgl.getUser());
-                            Main.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
-                            Main.setLog(msgl.getUser());
+                            // ClientInterface.getControllerProfileInterface().fillProfileInterface(msgl.getUser());
+                            //ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
+                            // ClientInterface.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
                         break;
 
                     case Message_Logout:
-                        Main.resetLog();
-                        Main.getControllerAnonymousInterface().resetInterface();
+                        ClientInterface.resetLog();
+                        // ClientInterface.getControllerAnonymousInterface().resetInterface();
                         break;
 
                     case Message_Signup:
@@ -72,7 +76,7 @@ public class ClientServerManager extends Thread {
 
                     case Message_Get_Post:
                         //chiamo una funzione dell'istanza di ControllerAnonymousInterface per popolare il pane con i Post
-                        Main.getControllerAnonymousInterface().setPosts(((MessageGetPostByParameter)msg).getPost());
+                        // ClientInterface.getControllerAnonymousInterface().setPosts(((MessageGetPostByParameter)msg).getPost());
                         break;
 
                     case Message_Get_Top_Users_Posts:
@@ -81,11 +85,6 @@ public class ClientServerManager extends Thread {
 
             }
 
-        } catch (EOFException e) {
-            System.out.println("Server refused the connection");
-            synchronized(this){
-                notifyAll();
-            }
         }catch (IOException | ClassNotFoundException e) {
             System.out.println("Connection closed, message format not valid");
         }

@@ -1,5 +1,9 @@
-package client;
+package client.controllers;
 
+import Libraries.Messages.MessageSignUp;
+import Libraries.User;
+import client.ClientInterface;
+import client.ClientServerManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -7,9 +11,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-
-import server.*;
-import middleware.*;
 
 //classe preposta a gestire l'interfaccia della registrazione utente
 public class ControllerSignUp {
@@ -44,7 +45,7 @@ public class ControllerSignUp {
         }
     }
 
-    public void eventButtonCloseSignup(ActionEvent actionEvent) {
+    public void eventButtonCloseSignup(ActionEvent actionEvent) throws IOException {
         ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
     }
 }
