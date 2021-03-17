@@ -29,8 +29,7 @@ public class DBManager {
     --------------------------- ANALYTICS ---------------------------
      */
     public Map<User, Post[]> findMostAnsweredTopUserPosts(){
-        //TODO: questa query è da fare su mongoDB, definire il metodo
-        return null;
+        return documentDBManager.findMostAnsweredTopUserPosts();
     }
 
     public User[] findTopExpertsByTag(String tagName, int numExperts){
@@ -79,12 +78,22 @@ public class DBManager {
         return insertedUser;
     }
 
-    //TODO: Definire il metodo removeUser nella sua completezza (relazioni, post, e answer dell'utente)
     public boolean removeUser(User user){
-        documentDBManager.removeUser(user.getUserId());
-        graphDBManager.removeUser(user.getUserId());
-
-        return true;
+        //prima aggiorno gli attributi ridondanti follower e followed su mongodb
+        ArrayList<String> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
+        ArrayList<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
+        for (String userIdFollower: userIdsFollower) {
+            documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, user.getUserId());
+        }
+        for (String userIdFollowed: userIdsFollowed) {
+            documentDBManager.removeUserFollowerAndFollowedRelation(user.getUserId(), userIdFollowed);
+        }
+        //ora posso rimuovere l'utente
+        boolean deletedUser = documentDBManager.removeUser(user.getUserId());
+        if (deletedUser) {
+            graphDBManager.removeUser(user.getUserId());
+        }
+        return deletedUser;
     }
 
     public boolean updateUserData(User user){
@@ -114,8 +123,6 @@ public class DBManager {
     public Post[] getPostByText(String text){
         return documentDBManager.getPostsByText(text);
     }
-
-    //TODO: Inserire un metodo updatePost, se il post può essere modificato, altrimenti rimuovere questo messaggio
 
     public boolean insertPost(Post newPost){
         boolean insertedPost = documentDBManager.insertPost(newPost);
@@ -159,33 +166,17 @@ public class DBManager {
     }
 
     /*
-    --------------------------- TAGS ---------------------------
-     */
-
-    //TODO: [modifica_tag] Non ricordo se i tag si possono modificare oppure no. Se no, rimuovere i due metodi successivi
-    public boolean insertTag(String tagName) {
-        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
-        graphDBManager.insertTag(tagName);
-        return true;
-    }
-    public boolean removeTag(String tagName) {
-        //TODO: [modifica_tag] Modificare anche la lista di tag nel document DB
-        graphDBManager.removeTag(tagName);
-        return true;
-    }
-
-    /*
     --------------------------- FOLLOWs ---------------------------
      */
 
-    public boolean insertFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        graphDBManager.insertFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
+    public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+        graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
     }
-    public boolean removeFollowRelationAndUpdate(String usernameFollower, String usernameFollowed){
-        graphDBManager.removeFollowRelationAndUpdate(usernameFollower, usernameFollowed);
-
+    public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+        graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
     }
 
