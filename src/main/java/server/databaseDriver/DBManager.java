@@ -112,7 +112,7 @@ public class DBManager {
         return documentDBManager.getPostById(postIdString);
     }
 
-    public Post[] getPostByOwnerUsername(String ownerPostUsername) {
+    public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
         return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
     }
 

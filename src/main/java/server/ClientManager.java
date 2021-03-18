@@ -57,6 +57,9 @@ public class ClientManager extends Thread{
 
                     case Message_Logout:
                         loggedUser = null;
+                        this.socketUser.close();
+                        this.inputStream.close();
+                        this.outputStream.close();
                         return;
 
                     case Message_Signup:
@@ -134,10 +137,9 @@ public class ClientManager extends Thread{
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
                             case Create:
-                                dbManager.insertFollowRelationAndUpdate(loggedUser.getDisplayName(),msgFollow.getUser().getDisplayName());
-                                break;
+                                dbManager.insertFollowRelationAndUpdate(loggedUser.getUserId(),msgFollow.getUser().getUserId());                                break;
                             case Delete:
-                                dbManager.removeFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                                dbManager.removeFollowRelationAndUpdate(loggedUser.getUserId(), msgFollow.getUser().getUserId());
                                 break;
                             default:
                                 throw new OpcodeNotValidException("Opcode of Message_Follow" + msgFollow.getOperation() + " not valid");
@@ -164,6 +166,7 @@ public class ClientManager extends Thread{
                         MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
 
                         Post[] resultPost;
+                        ArrayList<Post> postArrayList = new ArrayList<>();
                         switch (msgParameter.getParameter()){
                             case Date:
                                 resultPost = dbManager.getPostByDate(msgParameter.getValue());
@@ -179,13 +182,13 @@ public class ClientManager extends Thread{
                                 break;
 
                             case Username:
-                                resultPost = dbManager.getPostByOwnerUsername(msgParameter.getValue());
+                                postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
 
                             default:
                                 resultPost = null;
                         }
-                        send(new MessageGetPostByParameter(null, null, resultPost));
+                        send(new MessageGetPostByParameter(null, null,  (postArrayList.toArray(new Post[0]))));
                         break;
 
                     case Message_Get_User_Data:
@@ -230,18 +233,10 @@ public class ClientManager extends Thread{
                 }
             }
 
-        }
-        catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
-        finally {
-            try {
-                if (!this.socketUser.isClosed()) {
-                    this.socketUser.close();
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        }catch (SocketException soe) {
+            System.out.println( (this.loggedUser == null)? "Anonymous user": this.loggedUser +" just disconnected" );
+        }catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
+
     }
 
     public Message receive() throws IOException, ClassNotFoundException {

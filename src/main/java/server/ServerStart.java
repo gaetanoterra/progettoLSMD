@@ -32,7 +32,6 @@ public class ServerStart {
         options.addOption(backlogOpt);
 
         CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
 
         try {
@@ -59,7 +58,7 @@ public class ServerStart {
                 backlogLength = 8;
             }
 
-            Server server = new Server(portNumber, backlogLength);
+            Server server = new Server(portNumber, backlogLength, dbExecutionMode);
             server.waitForConnection();
 
         }catch (NumberFormatException nfe) {
