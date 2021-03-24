@@ -5,7 +5,7 @@ import Libraries.Messages.MessageUser;
 import Libraries.Messages.Opcode;
 import Libraries.Messages.Parameter;
 import client.ClientInterface;
-import client.ClientServerManager;
+import client.ServerConnectionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class ControllerProfileInterface {
 
     private boolean modificable = false;
-    private static ClientServerManager clientServerManager;
+    private static ServerConnectionManager clientServerManager;
     private User[] suggestedUsers;
     private Post[] usersPosts;
 
@@ -40,7 +40,7 @@ public class ControllerProfileInterface {
     private ChoiceBox choicebox_filters;
 
     public ControllerProfileInterface() {
-        this.clientServerManager = ClientInterface.getClientServerManager();
+        this.clientServerManager = ClientInterface.getServerConnectionManager();
     }
 
     public void eventButtonLogout(ActionEvent actionEvent) throws IOException {
@@ -83,7 +83,7 @@ public class ControllerProfileInterface {
 
     //funzione che riempie i campi del pannello dei post
     private void fillPosts() throws IOException {
-        clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, ClientInterface.getLog().getDisplayName(), null));
+        clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, ClientInterface.getLog().getDisplayName()));
     }
 
     //richiedere gli utenti suggeriti

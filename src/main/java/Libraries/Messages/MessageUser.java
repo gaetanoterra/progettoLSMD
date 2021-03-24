@@ -31,4 +31,11 @@ public class MessageUser extends MessageCreateDelete{
     public Object getObject() {
         return getUser();
     }
+
+    @Override
+    public String toString() {
+        return "MessageUser{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

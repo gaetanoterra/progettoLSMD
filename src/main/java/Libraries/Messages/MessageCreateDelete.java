@@ -7,4 +7,11 @@ public abstract class MessageCreateDelete extends Message {
         return operation;
     }
     public abstract Object getObject();
+
+    @Override
+    public String toString() {
+        return "MessageCreateDelete{" +
+                "CREATE_DELETE"+
+                '}';
+    }
 }

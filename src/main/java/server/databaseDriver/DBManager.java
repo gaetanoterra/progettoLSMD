@@ -104,7 +104,7 @@ public class DBManager {
     --------------------------- POSTS ---------------------------
      */
 
-    public Post[] getPostByDate(String postCreationDateString) {
+    public ArrayList<Post> getPostByDate(String postCreationDateString) {
         return documentDBManager.getPostByDate(postCreationDateString);
     }
 
@@ -116,11 +116,11 @@ public class DBManager {
         return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
     }
 
-    public Post[] getPostsByTag(String[] tags){
+    public ArrayList<Post> getPostsByTag(String[] tags){
         return documentDBManager.getPostsByTag(tags);
     }
 
-    public Post[] getPostByText(String text){
+    public ArrayList<Post> getPostByText(String text){
         return documentDBManager.getPostsByText(text);
     }
 

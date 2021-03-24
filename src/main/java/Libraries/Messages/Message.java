@@ -9,4 +9,6 @@ public abstract class Message implements Serializable{
     public Opcode getOpcode() {
         return opcode;
     }
+
+
 }

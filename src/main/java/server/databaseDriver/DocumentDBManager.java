@@ -324,7 +324,7 @@ public class DocumentDBManager {
         return result;
     }
 
-    public Post[] getPostByDate(String data) {
+    public ArrayList<Post> getPostByDate(String data) {
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> posts = new ArrayList<>();
@@ -339,7 +339,7 @@ public class DocumentDBManager {
             posts.add(p);
         });
         System.out.println("found " + posts.size() + " posts matching the date given as input");
-        return (Post[]) posts.toArray();
+        return posts;
     }
 
     public Post getPostById(String postId){
@@ -380,7 +380,7 @@ public class DocumentDBManager {
         return posts;
     }
 
-    public Post[] getPostsByTag(String[] tags){
+    public ArrayList<Post> getPostsByTag(String[] tags){
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         ArrayList<Post> postArrayList = new ArrayList<>();
@@ -396,26 +396,32 @@ public class DocumentDBManager {
             postArrayList.add(p);
         });
         System.out.println("found " + postArrayList.size() + " posts matching the tag given as input");
-        return (Post[]) ((postArrayList.toArray().length == 0)? null : postArrayList.toArray());
+        return postArrayList;
     }
 
-    public Post[] getPostsByText(String text){
+    public ArrayList<Post> getPostsByText(String text){
         // controllo il titolo per semplicità (e velocità), si può cambiare ovviamente con il body
-        MongoCollection<Document> coll = mongoDatabase.getCollection("Posts");
+        MongoCollection<Document> collection = mongoDatabase.getCollection("Posts");
         ArrayList<Post> postArrayList = new ArrayList<>();
-        coll.find(Filters.text(text)).sort(Sorts.descending("viewCount")).limit(20).forEach(doc -> {
-            Post p = new Post(doc.getString("PostId"),
-                    doc.getString("Title"),
-                    (ArrayList<Answer>)doc.get("Answers"),
-                    new Date(doc.getLong("CreationDate")*1000),
-                    doc.getString("Body"),
-                    doc.getString("OwnerUserId"),
-                    (ArrayList<String>)doc.get("Tags"));
-            postArrayList.add(p);
-        });
+        collection.find(and(
+                            Filters.text(text),
+                            or(
+                               regex("Title",".*" +text +".*","i"),
+                               regex("Body" ,".*" +text +".*","i")
+                            ))).forEach(doc -> {
+                                                Post p = new Post(doc.getString("PostId"),
+                                                                  doc.getString("Title"),
+                                                                  (ArrayList<Answer>)doc.get("Answers"),
+                                                                  new Date(doc.getLong("CreationDate")*1000),
+                                                                  doc.getString("Body"),
+                                                                  doc.getString("OwnerUserId"),
+                                                                  (ArrayList<String>)doc.get("Tags"));
+                                                postArrayList.add(p);
+                            }
+        );
 
         System.out.println("found " + postArrayList.size() + " posts matching the text given as input");
-        return (postArrayList.toArray().length == 0)? null : postArrayList.toArray(new Post[0]);
+        return postArrayList;
     }
 
     public User getUserById(String userId) {

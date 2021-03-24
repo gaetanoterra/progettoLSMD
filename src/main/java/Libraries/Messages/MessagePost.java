@@ -25,4 +25,11 @@ public class MessagePost extends MessageCreateDelete{
     public Object getObject() {
         return getPost();
     }
+
+    @Override
+    public String toString() {
+        return "MessagePost{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

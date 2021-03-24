@@ -22,4 +22,11 @@ public class MessageGetUserData extends MessageReadObjectQuery {
     public ArrayList<User> getObject() {
         return this.userList;
     }
+
+    @Override
+    public String toString() {
+        return "MessageGetUserData{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

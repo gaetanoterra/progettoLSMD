@@ -24,4 +24,11 @@ public class MessageLogin extends Message {
     public StatusCode getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return "MessageLogin{" +
+                "username=" + user +
+                '}';
+    }
 }

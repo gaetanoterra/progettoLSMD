@@ -1,8 +1,8 @@
 package Libraries.Messages;
 
 public enum StatusCode {
-    Message_Ok  (0),
-    Message_Fail  (1);
+    Message_Ok   (0),
+    Message_Fail (1);
 
     private final byte statusCode;
     StatusCode(int statusCode){
@@ -11,7 +11,7 @@ public enum StatusCode {
 
     @Override
     public String toString() {
-        return Byte.toString(this.statusCode);
+        return (this.statusCode==0)? "OK":"FAIL";
     }
 
     public byte getStatusCode() {

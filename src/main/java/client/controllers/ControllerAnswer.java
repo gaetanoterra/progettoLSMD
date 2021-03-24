@@ -20,7 +20,7 @@ public class ControllerAnswer {
 
         answer.setBody(textarea_answer.getText());
         //inserire gli altri set di answer
-        ClientInterface.getClientServerManager().send(new MessageAnswer(OperationCD.Create, answer, ControllerAnonymousInterface.lastPostSeen().getPostId()));
+        ClientInterface.getServerConnectionManager().send(new MessageAnswer(OperationCD.Create, answer, ControllerAnonymousInterface.lastPostSeen().getPostId()));
         //ClientInterface.switchScene(ClientInterface.getLastPageSeen());
     }
 

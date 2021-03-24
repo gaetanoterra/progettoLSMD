@@ -1,6 +1,8 @@
 package Libraries.Messages;
 
-public enum Parameter{
+import java.io.Serializable;
+
+public enum Parameter implements Serializable {
     Date  (0),
     Tags  (1),
     Username (2),
@@ -11,10 +13,22 @@ public enum Parameter{
 
     @Override
     public String toString() {
-        return Byte.toString(this.parameterType);
+        switch (this.parameterType) {
+            case 0:
+                return "DATE";
+            case 1:
+                return "TAGS";
+            case 2:
+                return "USERNAME";
+            default:
+                return "TEXT";
+        }
     }
 
     public byte getParameterType() {
         return this.parameterType;
     }
+
+
+
 }

@@ -31,4 +31,11 @@ public class MessageAnswer extends MessageCreateDelete{
     public Object getObject() {
         return getAnswer();
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "ANSWER" +
+                '}';
+    }
 }

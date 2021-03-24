@@ -31,4 +31,11 @@ public class MessageVote extends MessageCreateDelete{
     public Object getObject() {
         return getAnswer();
     }
+
+    @Override
+    public String toString() {
+        return "MessageVote{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

@@ -3,12 +3,14 @@ package client.controllers;
 import Libraries.Messages.MessageGetPostByParameter;
 import Libraries.Messages.Parameter;
 import client.ClientInterface;
-import client.ClientServerManager;
+import client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -16,13 +18,14 @@ import javafx.scene.text.Font;
 import Libraries.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 //classe preposta a gestire l'interfaccia da cui si visualizzano i Post
 public class ControllerAnonymousInterface {
 
-    private ClientServerManager clientServerManager;
+    private ServerConnectionManager clientServerManager;
 
-    private static Parameter searchMethod = Parameter.Date;
+    private static Parameter searchMethod;
     private static String filter = "interesting";
     private static Post[] posts;
     private static Post last_post_seen;
@@ -30,19 +33,25 @@ public class ControllerAnonymousInterface {
     @FXML
     private Label label_username_anonymous_interface;
     @FXML
-    private Button signin_button, signup_button, profile_button, sort_interesting, sort_hot, sort_week, sort_month;
+    private Button signin_button, signup_button, search_button, profile_button, sort_interesting, sort_hot, sort_week, sort_month;
     @FXML
     private RadioButton radio_button_date, radio_button_tags, radio_button_username, radio_button_text;
     @FXML
     private TextField textfield_search;
     @FXML
     private ScrollPane scrollpane_posts;
+    @FXML
+    private ToggleGroup radioButtonsGroup;
 
     public ControllerAnonymousInterface(){
-        this.clientServerManager = ClientInterface.getClientServerManager();
+        this.clientServerManager = ClientInterface.getServerConnectionManager();
     }
     @FXML
-    private void initialize(){}
+    private void initialize(){
+        radio_button_text.setSelected(true);
+        searchMethod = Parameter.Text;
+        textfield_search.requestFocus();
+    }
 
     //imposto cosa posso utilizzare e cosa no a seconda che l'utente sia loggato o meno
     public void setLoggedInterface(String username){
@@ -61,107 +70,49 @@ public class ControllerAnonymousInterface {
     }
 
     //metodo per inserire i post nel panello
-    public void fillPostPane() {
-        //ordino i post in base al sort
-        //ordinaPost();
+    public void fillPostPane(ArrayList<Post> postArrayList) {
+        VBox vBoxPosts = new VBox();
+        vBoxPosts.setId("vboxPosts");
 
-        VBox vbox = new VBox(1);
+        for(Post post:postArrayList){
+            HBox postLineHBox    = new HBox();
+            Label labelNumAnswer = new Label(post.getAnswers().size() + "\nAnswers");
+            Label labelNumViews  = new Label(post.getViews() + "\nViews");
+            Label titleLabel     = new Label(post.getTitle());
+            titleLabel.setFont(Font.font("Verdana", 20));
 
-        for(int i = 0; i < posts.length; i++){
-
-            HBox hboxVoti = new HBox(10);
-            HBox hboxTags = new HBox(20);
-            HBox hboxTotale = new HBox(60);
-            VBox vboxTitoloTags = new VBox(20);
-
-            //Label labelNumVoti = new Label(posts[i].get + " Votes");
-            Label labelNumAnswer = new Label(posts[i].getAnswers().size() + " Answer");
-            Label labelNumViews = new Label(posts[i].getViews() + " View");
-
-            Label labelTag1 = new Label("");
-            Label labelTag2 = new Label("");
-            Label labelTag3 = new Label("");
-            Label labelTag4 = new Label("");
-            Label labelTag5 = new Label("");
-
-            if(posts[i].getTags().get(0) != null)
-                 labelTag1.setText(posts[i].getTags().get(0));
-            if(posts[i].getTags().get(1) != null)
-                labelTag2.setText(posts[i].getTags().get(1));
-            if(posts[i].getTags().get(2) != null)
-                labelTag3.setText(posts[i].getTags().get(2));
-            if(posts[i].getTags().get(3) != null)
-                labelTag4.setText(posts[i].getTags().get(3));
-            if(posts[i].getTags().get(4) != null)
-                labelTag5.setText(posts[i].getTags().get(4));
-
-            Separator separator = new Separator();
-
-            Label labelStats = new Label("asked " + posts[i].getCreationDate() + " by " + posts[i].getOwnerUserId());
-            labelStats.setPrefWidth(150);
-
-            Label labelTitolo = new Label(posts[i].getTitle());
-            labelTitolo.setId("titolo_post:" + i);
-            labelTitolo.setFont(Font.font("Courier", 20));
-            labelTitolo.setPrefWidth(320);
-            labelTitolo.setAlignment(Pos.CENTER);
-            labelTitolo.setOnMouseEntered(event -> {
-                labelTitolo.setCursor(Cursor.HAND);
-                labelTitolo.setTextFill(Color.BLUE);
-            });
-            labelTitolo.setOnMouseExited(event -> {
-                labelTitolo.setTextFill(Color.BLACK);
-            });
-            labelTitolo.setOnMouseClicked(event -> {
-                String titolo = labelTitolo.getId();
-                String[] t = titolo.split(":");
-                last_post_seen = posts[Integer.parseInt(t[1])];
-            });
-
-            hboxTags.setPrefWidth(320);
-            hboxTags.setAlignment(Pos.CENTER);
-
-            hboxVoti.setAlignment(Pos.CENTER_RIGHT);
-            hboxVoti.setPrefWidth(150);
-
-            hboxTotale.setAlignment(Pos.CENTER);
-
-            vboxTitoloTags.setPrefWidth(320);
-            vboxTitoloTags.setAlignment(Pos.CENTER);
-
-            hboxVoti.getChildren().addAll(labelNumAnswer, labelNumViews);
-            hboxTags.getChildren().addAll(labelTag1, labelTag2, labelTag3, labelTag4, labelTag5);
-            vboxTitoloTags.getChildren().addAll(labelTitolo, hboxTags);
-            hboxTotale.getChildren().addAll(hboxVoti, vboxTitoloTags, labelStats);
-
-            vbox.getChildren().addAll(hboxTotale, separator);
-            vbox.setAlignment(Pos.CENTER);
-
+            HBox tagList = new HBox();
+            for(String tag:post.getTags()){
+                tagList.getChildren().add(new Label(tag));
+            }
+            VBox titlePlusTagsVBox = new VBox(titleLabel, tagList);
+            postLineHBox.getChildren().addAll(labelNumAnswer, labelNumViews,
+                                                                titlePlusTagsVBox);
+            vBoxPosts.getChildren().add(postLineHBox);
         }
-        scrollpane_posts.setContent(vbox);
+
+        Platform.runLater(() -> scrollpane_posts.setContent(vBoxPosts));
     }
+
 
     //ordino i post in base al sort
     private void ordinaPost() {
-        if(filter.equals("interesting")){
+        switch (filter) {
+            case "interesting":
 
-        }
-        else if(filter.equals("hot")){
+                break;
+            case "hot":
 
-        }
-        else if(filter.equals("week")){
+                break;
+            case "week":
 
-        }
-        else if(filter.equals("month")){
+                break;
+            case "month":
 
+                break;
         }
     }
 
-    //funzione chiamata da ClientServerManager per fornire i post da visualizzare
-    public void setPosts(Post[] post) {
-        posts = post;
-        fillPostPane();
-    }
 
     public void eventButtonSignIn(ActionEvent event) throws IOException {
         ClientInterface.switchScene(PageType.SIGN_IN);
@@ -177,29 +128,35 @@ public class ControllerAnonymousInterface {
     }
 
     public void eventSetSearchMethod(ActionEvent actionEvent) {
-        if(radio_button_date.isSelected())
-            searchMethod = Parameter.Date;
-        if(radio_button_tags.isSelected())
-            searchMethod = Parameter.Tags;
-        if(radio_button_text.isSelected())
+        if(radio_button_text.isSelected()) {
             searchMethod = Parameter.Text;
-        if(radio_button_username.isSelected())
+            return;
+        }
+        if(radio_button_date.isSelected()) {
+            searchMethod = Parameter.Date;
+            return;
+        }
+        if(radio_button_tags.isSelected()) {
+            searchMethod = Parameter.Tags;
+            return;
+        }
+        if(radio_button_username.isSelected()) {
             searchMethod = Parameter.Username;
+        }
     }
 
     //event che invia la richiesta al ClientManager in base al parametro di ricerca
     public void eventButtonSearch(ActionEvent actionEvent) throws IOException {
-        if(searchMethod == Parameter.Date)
-            clientServerManager.send(new MessageGetPostByParameter(Parameter.Date, textfield_search.getText(), null));
-
-        else if(searchMethod == Parameter.Tags)
-            clientServerManager.send(new MessageGetPostByParameter(Parameter.Tags, textfield_search.getText(), null));
-
-        else if(searchMethod == Parameter.Text)
-            clientServerManager.send(new MessageGetPostByParameter(Parameter.Text, textfield_search.getText(), null));
-
-        else if(searchMethod == Parameter.Username)
-            clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, textfield_search.getText(), null));
+        switch (searchMethod) {
+            case Date -> clientServerManager.send(new MessageGetPostByParameter(Parameter.Date,
+                                                                                            textfield_search.getText()));
+            case Tags -> clientServerManager.send(new MessageGetPostByParameter(Parameter.Tags,
+                                                                                            textfield_search.getText()));
+            case Text -> clientServerManager.send(new MessageGetPostByParameter(Parameter.Text,
+                                                                                            textfield_search.getText()));
+            case Username -> clientServerManager.send(new MessageGetPostByParameter(Parameter.Username,
+                                                                                            textfield_search.getText()));
+        }
 
     }
 

@@ -21,4 +21,10 @@ public class MessageGetTopUsersPosts extends Message {
         return mostAnsweredTopUsersPostsMap;
     }
 
+    @Override
+    public String toString() {
+        return "MessageGetTopUsersPosts{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

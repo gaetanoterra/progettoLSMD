@@ -24,4 +24,11 @@ public class MessageGetPostData extends MessageReadObjectQuery {
     public ArrayList<Post> getObject() {
         return this.postList;
     }
+
+    @Override
+    public String toString() {
+        return "MessageGetPostData{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

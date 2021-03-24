@@ -25,4 +25,11 @@ public class MessageFollow extends MessageCreateDelete{
     public Object getObject() {
         return getUser();
     }
+
+    @Override
+    public String toString() {
+        return "MessageFollow{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

@@ -9,7 +9,7 @@
    <children>
       <ImageView fx:id="imageview_profile" fitHeight="118.0" fitWidth="142.0" layoutX="65.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@client/resources/anonymous_user.png" />
+            <Image url="@../../java/client/resources/anonymous_user.png" />
          </image></ImageView>
       <Label fx:id="label_displayname" layoutX="100.0" layoutY="175.0" text="Username">
          <font>

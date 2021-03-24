@@ -30,4 +30,10 @@ public class MessageGetExpertsByTag extends Message {
         return tag;
     }
 
+    @Override
+    public String toString() {
+        return "MessageGetExpertsByTag{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }

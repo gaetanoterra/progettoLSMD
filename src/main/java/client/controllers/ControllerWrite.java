@@ -4,7 +4,7 @@ import Libraries.Messages.MessagePost;
 import Libraries.Messages.OperationCD;
 import Libraries.Post;
 import client.ClientInterface;
-import client.ClientServerManager;
+import client.ServerConnectionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,7 +17,7 @@ import java.util.List;
 //classe per gestire l'interfaccia dove scrivere un nuovo post
 public class ControllerWrite {
 
-    ClientServerManager clm = ClientInterface.getClientServerManager();
+    ServerConnectionManager clm = ClientInterface.getServerConnectionManager();
 
     @FXML
     private TextField textfield_titolo_post;

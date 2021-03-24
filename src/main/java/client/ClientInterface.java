@@ -2,32 +2,33 @@ package client;
 
 import client.controllers.*;
 import Libraries.User;
+import Libraries.Post;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import server.Server;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 
 public class ClientInterface extends Application{
 
     private static User loggedUser;
-    private static ClientServerManager clientServerManager;
+    private static ServerConnectionManager serverConnectionManager;
     private static Scene[] scenes;
     private static Stage mainStage;
+    private static ControllerAnonymousInterface controllerAnonymousInterface;
+    private static ControllerSignInInterface controllerSignInInterface;
+    private static ControllerSignUpInterface controllerSignUpInterface;
 
     @Override
     public void start (Stage primaryStage) throws Exception{
-        initInterfacesList();
+        initScenesArray();
         mainStage = primaryStage;
         switchScene(PageType.ANONYMOUS_INTERFACE);
-        //creo un'istanza di client.ClientServerManager per connettermi al server.Server
-
     }
 
     //rischio loop con la pagina answer e post
@@ -36,14 +37,22 @@ public class ClientInterface extends Application{
         mainStage.show();
     }
 
-    private static boolean hasAlreadyBeenLoaded(PageType idx){ return (scenes[idx.ordinal()] != null); }
 
-    private void initInterfacesList() throws IOException  {
+    private void initScenesArray() throws IOException  {
         scenes = new Scene[PageType.values().length];
 
-        scenes[PageType.ANONYMOUS_INTERFACE.ordinal()] = new Scene((new FXMLLoader(getClass().getResource("/anonymousInterface.fxml"))).load());
-        scenes[PageType.SIGN_IN.ordinal()]             = new Scene((new FXMLLoader(getClass().getResource("/signin.fxml"))).load());
-        scenes[PageType.SIGN_UP.ordinal()]             = new Scene((new FXMLLoader(getClass().getResource("/signup.fxml"))).load());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/XMLStructures/anonymousInterface.fxml"));
+        scenes[PageType.ANONYMOUS_INTERFACE.ordinal()] = new Scene(loader.load());
+        controllerAnonymousInterface = loader.<ControllerAnonymousInterface>getController();
+
+        loader = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
+        scenes[PageType.SIGN_IN.ordinal()] = new Scene(loader.load());
+        controllerSignInInterface = loader.<ControllerSignInInterface>getController();
+
+        loader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
+        scenes[PageType.SIGN_UP.ordinal()] = new Scene(loader.load());
+        controllerSignUpInterface = loader.<ControllerSignUpInterface>getController();
+        
    /*   interfaces[PageType.PROFILE_INTERFACE.ordinal()]    = new FXMLLoader(getClass().getResource("/profileInterface.fxml.fxml"));
         interfaces[PageType.WRITE.ordinal()]                = new FXMLLoader(getClass().getResource("/write.fxml"));
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
@@ -53,8 +62,20 @@ public class ClientInterface extends Application{
 
      */
     }
-    public static ClientServerManager getClientServerManager() {
-        return clientServerManager;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                          ANONYMOUS INTERFACE API'S                                             //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static void fillAnonymousInterfacePostsPanel(ArrayList<Post> postArrayList){
+        controllerAnonymousInterface.fillPostPane(postArrayList);
+    }
+
+
+    public static ServerConnectionManager getServerConnectionManager() {
+        return serverConnectionManager;
     }
 
     public static void setLog(User user){
@@ -82,7 +103,9 @@ public class ClientInterface extends Application{
             if (portNumber > 65535 || portNumber < 2000){
                 throw new Exception("Port number is not between 2000 and 65535");
             }
-            clientServerManager = new ClientServerManager(portNumber, InetAddress.getByName(serverIPAddress));
+            serverConnectionManager = new ServerConnectionManager(portNumber, InetAddress.getByName(serverIPAddress));
+            serverConnectionManager.setDaemon(true);
+            serverConnectionManager.start();
         }
         catch (NumberFormatException nfe) {
             System.out.println("Port number and/or backlog are not valid integers");

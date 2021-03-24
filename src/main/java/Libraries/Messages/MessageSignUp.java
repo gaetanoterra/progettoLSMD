@@ -29,4 +29,11 @@ public class MessageSignUp extends Message {
     public StatusCode getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return "MessageSignUp{" +
+                "user=" + user.getDisplayName() +
+                '}';
+    }
 }

@@ -3,7 +3,7 @@ package client.controllers;
 import Libraries.Messages.MessageSignUp;
 import Libraries.User;
 import client.ClientInterface;
-import client.ClientServerManager;
+import client.ServerConnectionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,9 +13,9 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 
 //classe preposta a gestire l'interfaccia della registrazione utente
-public class ControllerSignUp {
+public class ControllerSignUpInterface {
 
-    ClientServerManager clientServerManager;
+    ServerConnectionManager clientServerManager;
 
     @FXML
     private Label label_error_message_signup;
@@ -24,8 +24,8 @@ public class ControllerSignUp {
     @FXML
     private PasswordField passwordfield_signup_password;
 
-    public ControllerSignUp(){
-        this.clientServerManager = ClientInterface.getClientServerManager();
+    public ControllerSignUpInterface(){
+        this.clientServerManager = ClientInterface.getServerConnectionManager();
 
     }
     public void eventButtonConfirmSignUp(ActionEvent actionEvent) throws IOException, InterruptedException {

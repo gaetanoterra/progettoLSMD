@@ -3,7 +3,7 @@ package client.controllers;
 import Libraries.Messages.MessageLogin;
 import Libraries.User;
 import client.ClientInterface;
-import client.ClientServerManager;
+import client.ServerConnectionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import java.io.IOException;
 
 //classe preposta a gestire l'interfaccia del login
-public class ControllerSignIn {
+public class ControllerSignInInterface {
 
-    ClientServerManager clm = ClientInterface.getClientServerManager();
+    ServerConnectionManager clm = ClientInterface.getServerConnectionManager();
 
     @FXML
     private Label label_error_message_signin;

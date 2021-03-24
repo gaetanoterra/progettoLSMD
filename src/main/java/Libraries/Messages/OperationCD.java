@@ -17,7 +17,7 @@ public enum OperationCD {
     @Override
     public String toString() {
         return "OperationCD{" +
-                "operation=" + operation +
+                "operation=" + ((operation == 0)? "CREATE":"DELETE") +
                 '}';
     }
 }

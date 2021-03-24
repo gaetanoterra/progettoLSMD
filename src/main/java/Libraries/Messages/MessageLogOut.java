@@ -13,4 +13,11 @@ public class MessageLogOut extends Message {
     public String getUsername() {
         return username;
     }
+
+    @Override
+    public String toString() {
+        return "MessageLogOut{" +
+                "user=" + username +
+                '}';
+    }
 }

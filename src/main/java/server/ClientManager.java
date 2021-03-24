@@ -17,21 +17,22 @@ public class ClientManager extends Thread{
     private final DBManager dbManager;
     private final Socket socketUser;
     private User loggedUser;
-    private final ObjectOutputStream outputStream;
-    private final ObjectInputStream inputStream;
+    private final ObjectOutputStream clientOutputStream;
+    private final ObjectInputStream clientInputStream;
     private static final int DEFAULT_NUM_EXPERTS = 10;
 
     public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
         this.socketUser = socketUser;
         this.dbManager = dbManager;
-        inputStream = new ObjectInputStream(socketUser.getInputStream());
-        outputStream = new ObjectOutputStream(socketUser.getOutputStream());
+        clientInputStream = new ObjectInputStream(socketUser.getInputStream());
+        clientOutputStream = new ObjectOutputStream(socketUser.getOutputStream());
     }
 
     public void run(){
         try{
             while(true) {
                 Message msg = receive();
+                System.out.println("received " + msg);
 
                 switch (msg.getOpcode()){
 
@@ -58,8 +59,8 @@ public class ClientManager extends Thread{
                     case Message_Logout:
                         loggedUser = null;
                         this.socketUser.close();
-                        this.inputStream.close();
-                        this.outputStream.close();
+                        this.clientInputStream.close();
+                        this.clientOutputStream.close();
                         return;
 
                     case Message_Signup:
@@ -162,33 +163,30 @@ public class ClientManager extends Thread{
                         }
                         break;
 
-                    case Message_Get_Post:
+                    case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
 
-                        Post[] resultPost;
-                        ArrayList<Post> postArrayList = new ArrayList<>();
+                        ArrayList<Post>  postArrayList = new ArrayList<>();
+
                         switch (msgParameter.getParameter()){
                             case Date:
-                                resultPost = dbManager.getPostByDate(msgParameter.getValue());
+                                postArrayList = dbManager.getPostByDate(msgParameter.getValue());
                                 break;
 
                             case Tags:
                                 String[] tags = msgParameter.getValue().split(";");
-                                resultPost = dbManager.getPostsByTag(tags);
+                                postArrayList = dbManager.getPostsByTag(tags);
                                 break;
 
                             case Text:
-                                resultPost = dbManager.getPostByText(msgParameter.getValue());
+                                postArrayList = dbManager.getPostByText(msgParameter.getValue());
                                 break;
 
                             case Username:
                                 postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                                 break;
-
-                            default:
-                                resultPost = null;
                         }
-                        send(new MessageGetPostByParameter(null, null,  (postArrayList.toArray(new Post[0]))));
+                        send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
                         break;
 
                     case Message_Get_User_Data:
@@ -240,11 +238,11 @@ public class ClientManager extends Thread{
     }
 
     public Message receive() throws IOException, ClassNotFoundException {
-        return (Message) inputStream.readObject();
+        return (Message) clientInputStream.readObject();
     }
 
     public void send(Message message) throws IOException {
-        outputStream.writeObject(message);
+        clientOutputStream.writeObject(message);
     }
 
 }

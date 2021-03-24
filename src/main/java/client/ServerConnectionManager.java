@@ -6,7 +6,7 @@ import java.io.*;
 import java.net.*;
 
 //classe preposta a ricevere le risposte dal server e passare i risultati ai vari Controller
-public class ClientServerManager extends Thread {
+public class ServerConnectionManager extends Thread {
 
     private ObjectOutputStream messageOutputStream;
     private  ObjectInputStream messageInputStream;
@@ -15,14 +15,14 @@ public class ClientServerManager extends Thread {
     private boolean last_server_answer = false;
     private  int portNumber;
 
-    public ClientServerManager(int porta, InetAddress in) throws IOException{
+    public ServerConnectionManager(int porta, InetAddress in) throws IOException{
         portNumber = porta;
         clientSocket = new Socket(in, porta);
         messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
         messageInputStream  = new  ObjectInputStream(clientSocket.getInputStream());
     }
 
-    public ClientServerManager(int porta, InetAddress in, ClientInterface cl) throws IOException{
+    public ServerConnectionManager(int porta, InetAddress in, ClientInterface cl) throws IOException{
         portNumber = porta;
         clientSocket = new Socket(in, porta);
         messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
@@ -31,18 +31,16 @@ public class ClientServerManager extends Thread {
     public void run(){
 
         try {
-            //richiedo al client di mostrarmi i post più recenti da visualizzare sulla schermata iniziale
-            send(new MessageGetPostData());
             System.out.println("richiesta connessione inviata al server");
 
             while(true){
-                Message msg = receive();
-                System.out.println("ricevuto messaggio dal server di tipo:" + msg.getOpcode());
+                Message message = receive();
+                System.out.println("ricevuto messaggio dal server di tipo:" + message);
 
-                switch (msg.getOpcode()){
+                switch (message.getOpcode()){
 
                     case Message_Login:
-                        MessageLogin msgl = (MessageLogin) msg;
+                        MessageLogin msgl = (MessageLogin) message;
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
@@ -59,9 +57,9 @@ public class ClientServerManager extends Thread {
                         break;
 
                     case Message_Signup:
-                        MessageSignUp msgs = (MessageSignUp)msg;
+                        MessageSignUp messageSignUp = (MessageSignUp)message;
 
-                        if(msgs.getStatus() == StatusCode.Message_Ok)
+                        if(messageSignUp.getStatus() == StatusCode.Message_Ok)
                             last_server_answer = true;
 
                         break;
@@ -74,9 +72,9 @@ public class ClientServerManager extends Thread {
 
                         break;
 
-                    case Message_Get_Post:
-                        //chiamo una funzione dell'istanza di ControllerAnonymousInterface per popolare il pane con i Post
-                        // ClientInterface.getControllerAnonymousInterface().setPosts(((MessageGetPostByParameter)msg).getPost());
+                    case Message_Get_Posts_By_Parameter:
+                        MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
+                        ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
                         break;
 
                     case Message_Get_Top_Users_Posts:
@@ -104,7 +102,7 @@ public class ClientServerManager extends Thread {
     }
 
     public static void setWaiting(boolean in_attesa) {
-        ClientServerManager.waiting = in_attesa;
+        ServerConnectionManager.waiting = in_attesa;
     }
 
     public boolean checkLastServerAnswer() throws InterruptedException {
