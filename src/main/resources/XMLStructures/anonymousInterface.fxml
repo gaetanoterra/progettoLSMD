@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0"  prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="client.controllers.ControllerAnonymousInterface">
+<AnchorPane prefHeight="700.0"  prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerAnonymousInterface">
    <fx:define>
       <ToggleGroup fx:id="radioButtonsGroup"/>
    </fx:define>
@@ -51,6 +51,8 @@
             <Font name="Courier New" size="14.0" />
          </font>
       </Button>
-      <ScrollPane fx:id="scrollpane_posts" stylesheets="/Style/SearchInterfaceStyle.css" layoutX="24.0" layoutY="205.0" prefHeight="480.0" prefWidth="752.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" />
+      <ScrollPane fx:id="scrollpane_posts" stylesheets="/Style/SearchInterfaceStyle.css" layoutX="24.0" layoutY="205.0" prefHeight="480.0" prefWidth="752.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" >
+         <ListView fx:id="postsListView"/>
+      </ScrollPane>
    </children>
 </AnchorPane>

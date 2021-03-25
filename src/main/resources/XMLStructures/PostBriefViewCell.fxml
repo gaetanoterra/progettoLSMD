@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="176.0" prefWidth="824.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerPostBriefViewCell">
+   <children>
+      <HBox prefHeight="400.0" prefWidth="824.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="answersTextLabel" alignment="CENTER" prefHeight="87.0" prefWidth="103.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <font>
+                  <Font name="SansSerif Regular" size="20.0" />
+               </font>
+            </TextField>
+            <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="400.0" prefWidth="0.0" />
+            <TextField fx:id="viewsTextLabel" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="87.0" prefWidth="99.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <font>
+                  <Font name="SansSerif Regular" size="20.0" />
+               </font>
+            </TextField>
+            <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="400.0" prefWidth="0.0" />
+            <VBox alignment="TOP_RIGHT" prefHeight="400.0" prefWidth="0.0">
+               <children>
+                  <TextField prefHeight="84.0" prefWidth="265.0" />
+                  <TextArea prefHeight="37.0" prefWidth="47.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
