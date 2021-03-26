@@ -73,6 +73,7 @@ public class ClientInterface extends Application{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void fillAnonymousInterfacePostsPanel(ArrayList<Post> postArrayList){
+        controllerAnonymousInterface.resetInterface();
         controllerAnonymousInterface.fillPostPane(postArrayList);
     }
 

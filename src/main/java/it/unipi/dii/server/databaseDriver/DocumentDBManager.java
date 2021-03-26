@@ -512,7 +512,7 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
 
         Document doc = new Document("PostId", post.getPostId())
-                .append("Title", post.getTitle())
+                .append("Title", post.gettitle())
                 .append("Answers", post.getAnswers())
                 .append("CreationDate", post.getCreationDate())
                 .append("Body", post.getBody())

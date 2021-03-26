@@ -85,6 +85,7 @@ public class ServerConnectionManager extends Thread {
 
         }catch (IOException | ClassNotFoundException e) {
             System.out.println("Connection closed, message format not valid");
+            e.printStackTrace();
         }
     }
 

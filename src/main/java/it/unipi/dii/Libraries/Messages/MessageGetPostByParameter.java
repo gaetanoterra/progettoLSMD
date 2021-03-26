@@ -36,8 +36,6 @@ public class MessageGetPostByParameter extends Message{
 
     public String getValue() { return value; }
 
-    public Post[] getPostArray() { return this.postArrayList.toArray(new Post[0]); }
-
     public ArrayList<Post> getPostArrayList(){ return this.postArrayList;}
 
     @Override

@@ -198,6 +198,8 @@ public class ClientManager extends Thread{
                 }
             }
 
+        }catch( SocketException eof) {
+            System.out.println((this.loggedUser != null) ? this.loggedUser : "Anoymous user " + "just closed the connection");
         }catch(EOFException eof){
             System.out.println((this.loggedUser != null)?this.loggedUser: "Anoymous user " + "just closed the connection");
         }catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}

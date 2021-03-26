@@ -5,17 +5,17 @@ import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
-import javafx.application.Platform;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-
 import javafx.fxml.FXML;
-
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 //classe preposta a gestire l'interfaccia da cui si visualizzano i Post
 public class ControllerAnonymousInterface {
@@ -27,6 +27,8 @@ public class ControllerAnonymousInterface {
     private static Post[] posts;
     private static Post last_post_seen;
 
+    private ObservableList<Post> postObservableList;
+
     @FXML
     private Label label_username_anonymous_interface;
     @FXML
@@ -36,18 +38,22 @@ public class ControllerAnonymousInterface {
     @FXML
     private TextField textfield_search;
     @FXML
-    private ScrollPane scrollpane_posts;
-    @FXML
-    private ToggleGroup radioButtonsGroup;
+    private ListView<Post> postsListView;
 
     public ControllerAnonymousInterface(){
+        this.postObservableList = FXCollections.observableArrayList();
         this.clientServerManager = ClientInterface.getServerConnectionManager();
     }
+
     @FXML
     private void initialize(){
         radio_button_text.setSelected(true);
         searchMethod = Parameter.Text;
         textfield_search.requestFocus();
+
+        postsListView.setItems(this.postObservableList);
+        postsListView.setCellFactory(plv->new PostBriefViewCell());
+
     }
 
     //imposto cosa posso utilizzare e cosa no a seconda che l'utente sia loggato o meno
@@ -60,35 +66,12 @@ public class ControllerAnonymousInterface {
 
     //rendo di nuovo disponibili i bottoni e scollego l'interfaccia dall'utente
     public void resetInterface(){
-        label_username_anonymous_interface.setText("Anonymous");
-        signin_button.setDisable(false);
-        signup_button.setDisable(false);
-        profile_button.setDisable(true);
+        this.postObservableList.removeAll();
     }
 
     //metodo per inserire i post nel panello
     public void fillPostPane(ArrayList<Post> postArrayList) {
-        VBox vBoxPosts = new VBox();
-        vBoxPosts.setId("vboxPosts");
-
-        for(Post post:postArrayList){
-            HBox postLineHBox    = new HBox();
-            Label labelNumAnswer = new Label(post.getAnswers().size() + "\nAnswers");
-            Label labelNumViews  = new Label(post.getViews() + "\nViews");
-            Label titleLabel     = new Label(post.getTitle());
-            titleLabel.setFont(Font.font("Verdana", 20));
-
-            HBox tagList = new HBox();
-            for(String tag:post.getTags()){
-                tagList.getChildren().add(new Label(tag));
-            }
-            VBox titlePlusTagsVBox = new VBox(titleLabel, tagList);
-            postLineHBox.getChildren().addAll(labelNumAnswer, labelNumViews,
-                                                                titlePlusTagsVBox);
-            vBoxPosts.getChildren().add(postLineHBox);
-        }
-
-        Platform.runLater(() -> scrollpane_posts.setContent(vBoxPosts));
+        this.postObservableList.addAll(postArrayList);
     }
 
 

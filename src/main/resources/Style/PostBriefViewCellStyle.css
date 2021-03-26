@@ -1,0 +1,8 @@
+.label{
+    -fx-text-alignment: center;
+    -fx-spacing: 5px;
+    -fx-border-color: black;
+   /*-fx-background-color: light grey;*/
+    -fx-background-radius: 5px;
+
+}
