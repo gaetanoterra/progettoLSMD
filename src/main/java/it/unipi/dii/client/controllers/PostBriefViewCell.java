@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
@@ -48,7 +47,8 @@ public class PostBriefViewCell  extends ListCell<Post> {
                     e.printStackTrace();
                 }
             }
-            answersNumberTextLabel.setText(post.getAnswers().size() + "\nAnswers");
+
+            answersNumberTextLabel.setText(post.getAnswersNumber() + "\nAnswers");
             viewsNumberTextLabel.setText(post.getViews() + "\nViews");
             titleTextLabel.setText(post.gettitle());
             for(String tag:post.getTags()){tagsListHBox.getChildren().add(new Label(tag));}

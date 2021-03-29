@@ -18,13 +18,15 @@ import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
-import com.mongodb.BasicDBObject;
+
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
+import com.mongodb.BasicDBObject;
 
 //TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
@@ -397,6 +399,23 @@ public class DocumentDBManager {
         return postArrayList;
     }
 
+    /*
+        db.Posts.find(
+            {
+                $text: {$search: "??"},
+                $or:[
+                    {Title: {$regex: /.*??.* /i}},
+                    {Body:{$regex: /.*parse a string.* /i}}
+                ]
+            },
+            {
+                Title:1,
+                Tags:1,
+                numberOfAnswers: { $size: "$Answers" },
+                Views:1
+            }
+        );
+    */
     public ArrayList<Post> getPostsByText(String text){
         // controllo il titolo per semplicità (e velocità), si può cambiare ovviamente con il body
         MongoCollection<Document> collection = mongoDatabase.getCollection("Posts");
@@ -406,16 +425,22 @@ public class DocumentDBManager {
                             or(
                                regex("Title",".*" +text +".*","i"),
                                regex("Body" ,".*" +text +".*","i")
-                            ))).forEach(doc -> {
-                                                Post p = new Post(doc.getString("PostId"),
-                                                                  doc.getString("Title"),
-                                                                  (ArrayList<Answer>)doc.get("Answers"),
-                                                                  new Date(doc.getLong("CreationDate")*1000),
-                                                                  doc.getString("Body"),
-                                                                  doc.getString("OwnerUserId"),
-                                                                  (ArrayList<String>)doc.get("Tags"));
-                                                postArrayList.add(p);
-                            }
+                            ))
+                        )
+                        .projection(new Document("Title",1)
+                                    .append("Views", 1)
+                                    .append("Title", 1)
+                                    .append("Tags" , 1)
+                                    .append("AnswersNumber",new BasicDBObject("$size","$Answers"))
+                        )
+                        .forEach(doc -> {
+                            Post p = new Post(doc.getString("PostId"),
+                                              doc.getString("Title"),
+                                              doc.getInteger("AnswersNumber"),
+                                              doc.getString("OwnerUserId"),
+                                              doc.getList("Tags", String.class));
+                            postArrayList.add(p);
+                        }
         );
 
         System.out.println("found " + postArrayList.size() + " posts matching the text given as input");

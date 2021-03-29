@@ -18,11 +18,11 @@ public class ServerStart {
         portNumberOpt.setRequired(false);
         options.addOption(portNumberOpt);
 
-        Option dbModeOpt = new Option("d", "dbmode", true, "Database connection mode(default LOCAL):\n" +
-                "\tLOCAL(local)->the application connects to a" +
-                "local deployment.\n\tREMOTE(remote)->the application connects to " +
-                "a remote instance of the db.\n\tCLUSTER(cluster)->" +
-                "the application connects to a remote cluster of dbs");
+        Option dbModeOpt = new Option("d", "dbmode", true, """
+                Database connection mode(default LOCAL):
+                \tLOCAL(local)->the application connects to a local deployment.
+                \tREMOTE(remote)->the application connects to a remote instance of the db.
+                \tCLUSTER(cluster)->the application connects to a remote cluster of dbs""");
 
         dbModeOpt.setRequired(false);
         options.addOption(dbModeOpt);
@@ -40,7 +40,7 @@ public class ServerStart {
             if(cmd.hasOption("p")) {
                 portNumber = Integer.parseInt(cmd.getOptionValue("c"));
                 if (portNumber > 65535 || portNumber < 2000){
-                    throw new Exception("Port number is not between 2000 and 65535");
+                    throw new Exception("Port number must be between 2000 and 65535");
                 }
             }
             else {
@@ -56,7 +56,7 @@ public class ServerStart {
             if(cmd.hasOption("b")){
                 backlogLength = Integer.parseInt(cmd.getOptionValue("b"));
             }else{
-                backlogLength = 8;
+                backlogLength = 4;
             }
 
             Server server = new Server(portNumber, backlogLength, dbExecutionMode);

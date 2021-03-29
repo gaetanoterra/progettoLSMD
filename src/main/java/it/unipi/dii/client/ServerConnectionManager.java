@@ -45,7 +45,7 @@ public class ServerConnectionManager extends Thread {
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
                             // ClientInterface.getControllerProfileInterface().fillProfileInterface(msgl.getUser());
-                            //ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
+                            // ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
                             // ClientInterface.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
@@ -54,7 +54,7 @@ public class ServerConnectionManager extends Thread {
                     case Message_Logout:
                         ClientInterface.resetLog();
                         // ClientInterface.getControllerAnonymousInterface().resetInterface();
-                        break;
+                        return;
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)message;

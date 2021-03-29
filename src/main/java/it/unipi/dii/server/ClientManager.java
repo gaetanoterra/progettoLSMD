@@ -46,7 +46,6 @@ public class ClientManager extends Thread{
                         User user = dbManager.getUserData(userDisplayName);
 
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
-                        //TODO: Controllare se la password conservata nel DB è un hash oppure no
                         if(user.getPassword().equals(password)){
                             loggedUser = user;
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerPost">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerPost">
    <children>
-      <Separator layoutX="29.0" layoutY="86.0" prefHeight="0.0" prefWidth="743.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="28.0" />
-      <ScrollPane fx:id="scrollpane_body_post" layoutX="29.0" layoutY="102.0" prefHeight="262.0" prefWidth="683.0" />
+      <Separator layoutX="28.0" layoutY="82.0" prefHeight="0.0" prefWidth="743.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="29.0" />
+      <ScrollPane fx:id="scrollpane_body_post" layoutX="28.0" layoutY="99.0" prefHeight="262.0" prefWidth="745.0" />
       <Separator layoutX="29.0" layoutY="378.0" prefHeight="3.0" prefWidth="743.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="28.0" />
       <Label layoutX="29.0" layoutY="391.0" text="Answers" />
       <ScrollPane fx:id="scrollpane_answers_post" layoutX="29.0" layoutY="408.0" prefHeight="275.0" prefWidth="743.0" />
-      <Button layoutX="717.0" layoutY="338.0" mnemonicParsing="false" onAction="#eventAnswerPostInterface" text="Answer" />
       <Button layoutX="752.0" layoutY="2.0" mnemonicParsing="false" onAction="#eventBackPostInterface" text="Back" />
-      <Text fx:id="text_title" layoutX="15.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="772.0" />
+      <Text fx:id="text_title" layoutX="29.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="745.0" />
    </children>
 </AnchorPane>

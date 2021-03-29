@@ -14,6 +14,7 @@ public class Post  implements Serializable {
     private String ownerUserId;
     private List<String> tags;
     private int views;
+    private int answersNumber;
 
     public Post(){
         this(null, null, null, null, null, null, null);
@@ -29,6 +30,13 @@ public class Post  implements Serializable {
         this.tags = tags;
     }
 
+    public Post(String postId, String title, int answersNumber, String ownerUserId, List<String> tags){
+        this.postId = postId;
+        this.title = title;
+        this.answersNumber = answersNumber;
+        this.ownerUserId = ownerUserId;
+        this.tags = tags;
+    }
     public String getPostId(){
         return this.postId;
     }
@@ -62,6 +70,10 @@ public class Post  implements Serializable {
     public Post setPostId(String postId){
         this.postId = postId;
         return this;
+    }
+
+    public int getAnswersNumber() {
+        return answersNumber;
     }
 
     public Post setTitle(String title){
