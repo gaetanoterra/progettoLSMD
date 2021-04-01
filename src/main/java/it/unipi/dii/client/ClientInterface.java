@@ -102,8 +102,8 @@ public class ClientInterface extends Application{
         int portNumber;
         String serverIPAddress;
         try {
-            portNumber = Integer.parseInt(args[0]);
-            serverIPAddress = args[1];
+            portNumber = Integer.parseInt(args[1]);
+            serverIPAddress = args[0];
             if (portNumber > 65535 || portNumber < 2000){
                 throw new Exception("Port number is not between 2000 and 65535");
             }
