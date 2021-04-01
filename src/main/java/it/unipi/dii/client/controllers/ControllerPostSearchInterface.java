@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 //classe preposta a gestire l'interfaccia da cui si visualizzano i Post
-public class ControllerAnonymousInterface {
+public class ControllerPostSearchInterface {
 
     private ServerConnectionManager clientServerManager;
 
@@ -40,7 +40,7 @@ public class ControllerAnonymousInterface {
     @FXML
     private ListView<Post> postsListView;
 
-    public ControllerAnonymousInterface(){
+    public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.clientServerManager = ClientInterface.getServerConnectionManager();
     }

@@ -20,9 +20,9 @@ public class ServerStart {
 
         Option dbModeOpt = new Option("d", "dbmode", true, """
                 Database connection mode(default LOCAL):
-                \tLOCAL(local)->the application connects to a local deployment.
-                \tREMOTE(remote)->the application connects to a remote instance of the db.
-                \tCLUSTER(cluster)->the application connects to a remote cluster of dbs""");
+                \tLOCAL(--local)\t->the application connects to a local deployment.
+                \tREMOTE(--remote)\t->the application connects to a remote instance of the db.
+                \tCLUSTER(--cluster)->the application connects to a remote cluster of dbs""");
 
         dbModeOpt.setRequired(false);
         options.addOption(dbModeOpt);

@@ -44,7 +44,7 @@ public class ControllerProfileInterface {
     }
 
     public void eventButtonLogout(ActionEvent actionEvent) throws IOException {
-        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE);
     }
 
     public String getAboutMe(){
@@ -92,7 +92,7 @@ public class ControllerProfileInterface {
     }
 
     //funzione che mi porta all'interfaccia dove vedere i post
-    public void eventButtonBrowse(ActionEvent actionEvent) throws IOException { ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE); }
+    public void eventButtonBrowse(ActionEvent actionEvent) throws IOException { ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE); }
 
     //funzione che mi porta all'interfaccia dove scrivere un nuovo post
     public void eventButtonWrite(ActionEvent actionEvent) throws IOException { ClientInterface.switchScene(PageType.WRITE); }

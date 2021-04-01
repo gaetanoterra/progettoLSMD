@@ -57,6 +57,6 @@ public class ControllerSignInInterface {
     public void eventButtonCancelSignIn(ActionEvent actionEvent) throws IOException {
         textfield_signin_username.setText("");
         passwordfield_signin_password.setText("");
-        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE);
     }
 }

@@ -3,7 +3,7 @@ package it.unipi.dii.client;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
 
-import it.unipi.dii.client.controllers.ControllerAnonymousInterface;
+import it.unipi.dii.client.controllers.ControllerPostSearchInterface;
 import it.unipi.dii.client.controllers.ControllerSignInInterface;
 import it.unipi.dii.client.controllers.ControllerSignUpInterface;
 import it.unipi.dii.client.controllers.PageType;
@@ -23,7 +23,7 @@ public class ClientInterface extends Application{
     private static ServerConnectionManager serverConnectionManager;
     private static Scene[] scenes;
     private static Stage mainStage;
-    private static ControllerAnonymousInterface controllerAnonymousInterface;
+    private static ControllerPostSearchInterface controllerPostSearchInterface;
     private static ControllerSignInInterface controllerSignInInterface;
     private static ControllerSignUpInterface controllerSignUpInterface;
 
@@ -31,7 +31,7 @@ public class ClientInterface extends Application{
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
         mainStage = primaryStage;
-        switchScene(PageType.ANONYMOUS_INTERFACE);
+        switchScene(PageType.POSTSEARCH_INTERFACE);
     }
 
     //rischio loop con la pagina answer e post
@@ -44,9 +44,9 @@ public class ClientInterface extends Application{
     private void initScenesArray() throws IOException  {
         scenes = new Scene[PageType.values().length];
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/XMLStructures/anonymousInterface.fxml"));
-        scenes[PageType.ANONYMOUS_INTERFACE.ordinal()] = new Scene(loader.load());
-        controllerAnonymousInterface = loader.getController();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
+        scenes[PageType.POSTSEARCH_INTERFACE.ordinal()] = new Scene(loader.load());
+        controllerPostSearchInterface = loader.getController();
 
         loader = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
         scenes[PageType.SIGN_IN.ordinal()] = new Scene(loader.load());
@@ -73,8 +73,8 @@ public class ClientInterface extends Application{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void fillAnonymousInterfacePostsPanel(ArrayList<Post> postArrayList){
-        controllerAnonymousInterface.resetInterface();
-        controllerAnonymousInterface.fillPostPane(postArrayList);
+        controllerPostSearchInterface.resetInterface();
+        controllerPostSearchInterface.fillPostPane(postArrayList);
     }
 
 

@@ -26,7 +26,7 @@ public class ControllerPost {
 
     //quando faccio back posso tornare sia in anonymousInterface sia in profileInterface, a seconda che il post aperto sia scritto da me o meno, aggiustare la funzione
     public void eventBackPostInterface(ActionEvent actionEvent) throws IOException {
-        ClientInterface.switchScene(PageType.ANONYMOUS_INTERFACE);
+        ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE);
     }
 
     public void setPost(Post post){

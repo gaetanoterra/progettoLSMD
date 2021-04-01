@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerAnonymousInterface">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerPostSearchInterface">
 
    <children>
       <Label fx:id="label_username_anonymous_interface" alignment="CENTER" prefHeight="75.0" prefWidth="134.0" text="Anonymous">

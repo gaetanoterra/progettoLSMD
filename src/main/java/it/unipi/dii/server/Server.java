@@ -47,7 +47,6 @@ public class Server {
                 System.out.println("Received new connection request");
                 try {
                     //creo una nuova istanza di server.ClientManager
-                    //TODO: se necessario creare una nuova istanza di DBManager per ogni client
                     ClientManager clientManager = new ClientManager(pendingRequestSocket, this.dbManager);
                     this.counter++;
                     if (this.counter > this.numberThreadsToCheck) {

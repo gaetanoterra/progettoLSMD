@@ -1,7 +1,7 @@
 package it.unipi.dii.client.controllers;
 
 public enum PageType {
-    ANONYMOUS_INTERFACE (0),
+    POSTSEARCH_INTERFACE(0),
     SIGN_IN (1),
     SIGN_UP (2),
     PROFILE_INTERFACE (3),
