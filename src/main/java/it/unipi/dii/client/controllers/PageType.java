@@ -9,7 +9,8 @@ public enum PageType {
     ANALYSIS_INTERFACE (5),
     MESSAGE (6),
     READ_POST (7),
-    CREATE_ANSWER(8);
+    CREATE_ANSWER(8),
+    FULL_POST(9);
     private final int pagetype;
 
     PageType (int pagetype){

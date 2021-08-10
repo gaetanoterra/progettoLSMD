@@ -18,8 +18,8 @@ public class ServerConnectionManager extends Thread {
     public ServerConnectionManager(int porta, InetAddress in) throws IOException{
         portNumber = porta;
         clientSocket = new Socket(in, porta);
-        messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
-        messageInputStream  = new  ObjectInputStream(clientSocket.getInputStream());
+        messageOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        messageInputStream  = new ObjectInputStream(clientSocket.getInputStream());
     }
 
     public ServerConnectionManager(int porta, InetAddress in, ClientInterface cl) throws IOException{
@@ -28,6 +28,7 @@ public class ServerConnectionManager extends Thread {
         messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
         messageInputStream = new ObjectInputStream(clientSocket.getInputStream());
     }
+
     public void run(){
 
         try {
@@ -74,7 +75,10 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
-                        ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
+                        if(messageGetPostByParameter.getParameter() == Parameter.Text)
+                            ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
+                        else
+
                         break;
 
                     case Message_Get_Top_Users_Posts:
@@ -112,4 +116,6 @@ public class ServerConnectionManager extends Thread {
 
         return last_server_answer;
     }
+
+
 }

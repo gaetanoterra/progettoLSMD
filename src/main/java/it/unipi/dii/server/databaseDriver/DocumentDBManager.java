@@ -343,9 +343,9 @@ public class DocumentDBManager {
     }
 
     public Post getPostById(String postId){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("Post");
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("Post");
 
-        Document postDoc = coll.find(eq("PostId", postId)).first();
+        Document postDoc = mongoCollection.find(eq("PostId", postId)).first();
 
         if (postDoc != null){
             return new Post(postId,
@@ -357,7 +357,7 @@ public class DocumentDBManager {
                     (ArrayList<String>)postDoc.get("Tags"));
         }
         else
-            return new Post();
+            return null;
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
@@ -405,7 +405,7 @@ public class DocumentDBManager {
                 $text: {$search: "??"},
                 $or:[
                     {Title: {$regex: /.*??.* /i}},
-                    {Body:{$regex: /.*parse a string.* /i}}
+                    {Body:{$regex: /.*??.* /i}}
                 ]
             },
             {

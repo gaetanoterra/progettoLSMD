@@ -1,0 +1,10 @@
+#titleLabel {
+    -fx-font-family: 'Enriqueta', arial, serif;
+    -fx-line-spacing: 1.25;
+    -fx-padding: 5px;
+    -fx-border-insets: 5px;
+    -fx-background-insets: 5px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+

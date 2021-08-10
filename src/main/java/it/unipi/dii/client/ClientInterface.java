@@ -1,12 +1,11 @@
 package it.unipi.dii.client;
 
+import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
+import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
 
-import it.unipi.dii.client.controllers.ControllerPostSearchInterface;
-import it.unipi.dii.client.controllers.ControllerSignInInterface;
-import it.unipi.dii.client.controllers.ControllerSignUpInterface;
-import it.unipi.dii.client.controllers.PageType;
+import it.unipi.dii.client.controllers.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
@@ -26,6 +25,7 @@ public class ClientInterface extends Application{
     private static ControllerPostSearchInterface controllerPostSearchInterface;
     private static ControllerSignInInterface controllerSignInInterface;
     private static ControllerSignUpInterface controllerSignUpInterface;
+    private static ControllerFullPostInterface controllerFullPostInterface;
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -55,7 +55,11 @@ public class ClientInterface extends Application{
         loader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
         scenes[PageType.SIGN_UP.ordinal()] = new Scene(loader.load());
         controllerSignUpInterface = loader.getController();
-        
+
+        loader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
+        scenes[PageType.FULL_POST.ordinal()] = new Scene(loader.load());
+        controllerSignUpInterface = loader.getController();
+
    /*   interfaces[PageType.PROFILE_INTERFACE.ordinal()]    = new FXMLLoader(getClass().getResource("/profileInterface.fxml.fxml"));
         interfaces[PageType.WRITE.ordinal()]                = new FXMLLoader(getClass().getResource("/write.fxml"));
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
@@ -77,7 +81,6 @@ public class ClientInterface extends Application{
         controllerPostSearchInterface.fillPostPane(postArrayList);
     }
 
-
     public static ServerConnectionManager getServerConnectionManager() {
         return serverConnectionManager;
     }
@@ -92,7 +95,27 @@ public class ClientInterface extends Application{
 
     public static User getLog(){ return loggedUser; }
 
-   // public static PageType getLastPageSeen(){ return last_page_seen; }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                          FULL POST INTERFACE APIs                                              //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static void getFullPostInterface(String id) {
+        try {
+            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ClientInterface.switchScene(PageType.FULL_POST);
+    }
+
+
+    public static void fillFullPostInterface(Post post){
+        controllerFullPostInterface.resetInterface();
+        controllerPostSearchInterface.fillInterface(post);
+    }
+
 
     public static void main(String[] args) {
         if (args.length != 2){
