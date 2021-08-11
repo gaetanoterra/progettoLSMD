@@ -104,7 +104,7 @@ public class ClientManager extends Thread{
 
                         switch (msgAnswer.getOperation()) {
                             case Create -> {
-                                answer.setOwnerUserId(loggedUser.getUserId());
+                                answer.setOwnerUserName(loggedUser.getUserId());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> dbManager.removeAnswer(answer, msgAnswer.getPostId());
@@ -177,10 +177,10 @@ public class ClientManager extends Thread{
 
                     case Message_Get_Post_Data:
                         MessageGetPostData msgGetPostData = (MessageGetPostData)msg;
-                        Post postToSearch = msgGetPostData.getObject().get(0);
+                        Post postToSearch = msgGetPostData.getObject();
                         String postId = postToSearch.getPostId();
                         Post postWithCompleteData = dbManager.getPostById(postId);
-                        send(new MessageGetPostData(new ArrayList<>(Arrays.asList(postWithCompleteData))));
+                        send(new MessageGetPostData(postWithCompleteData));
                         break;
 
                     case Message_Get_Top_Users_Posts:

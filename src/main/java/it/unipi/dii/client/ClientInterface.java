@@ -113,7 +113,7 @@ public class ClientInterface extends Application{
 
     public static void fillFullPostInterface(Post post){
         controllerFullPostInterface.resetInterface();
-        controllerPostSearchInterface.fillInterface(post);
+        controllerFullPostInterface.fillInterface(post);
     }
 
 

@@ -70,15 +70,13 @@ public class ServerConnectionManager extends Thread {
                         break;
 
                     case Message_Get_Post_Data:
-
+                        MessageGetPostData messageGetPostData = (MessageGetPostData) message;
+                        ClientInterface.fillFullPostInterface(messageGetPostData.getObject());
                         break;
 
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
-                        if(messageGetPostByParameter.getParameter() == Parameter.Text)
-                            ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
-                        else
-
+                        ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
                         break;
 
                     case Message_Get_Top_Users_Posts:

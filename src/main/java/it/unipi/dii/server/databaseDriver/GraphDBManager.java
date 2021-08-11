@@ -163,7 +163,7 @@ public class GraphDBManager {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
                                 "CREATE (u)-[:POSTS_ANSWER]->(a); ",
-                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
+                        parameters("userId", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
                 return null;
             });
         }
@@ -250,7 +250,7 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:User {userId = $userId})-[r:POSTS_ANSWER]->(:Answer {answerId = $answerId}) " +
                                 "DELETE r; ",
-                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
+                        parameters("userId", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
                 return null;
             });
         }

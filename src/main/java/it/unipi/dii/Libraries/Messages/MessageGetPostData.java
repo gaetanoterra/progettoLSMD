@@ -7,7 +7,7 @@ import java.util.ArrayList;
 //classe inutilizzata?
 public class MessageGetPostData extends MessageReadObjectQuery {
 
-    private ArrayList<Post> postList;
+    private Post post;
 
     //usato per la richiesta del client
     public MessageGetPostData(){
@@ -15,20 +15,21 @@ public class MessageGetPostData extends MessageReadObjectQuery {
     }
 
     //usato per la risposta dal server
-    public MessageGetPostData(ArrayList<Post> postList){
+    public MessageGetPostData(Post p){
         this.opcode = Opcode.Message_Get_Post_Data;
-        this.postList = postList;
+        this.post = p;
     }
 
     @Override
-    public ArrayList<Post> getObject() {
-        return this.postList;
+    public Post getObject() {
+        return this.post;
     }
 
     @Override
     public String toString() {
-        return "MessageGetPostData{" +
-                "opcode=" + opcode +
-                '}';
+        return "MessageGetPostData{\n" +
+               "opcode=" + opcode + "\n" +
+               "object=" + this.post +
+               "\n}";
     }
 }

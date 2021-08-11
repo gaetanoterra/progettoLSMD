@@ -87,16 +87,8 @@ public class ControllerPostSearchInterface {
        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
     }
 
-    public void getFullPostInterface(String id){
-
-
-    }
-
-
     public static Post lastPostSeen(){
         return last_post_seen;
     }
 
-    public void fillInterface(Post post) {
-    }
 }

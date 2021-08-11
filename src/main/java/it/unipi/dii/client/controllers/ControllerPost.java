@@ -57,7 +57,7 @@ public class ControllerPost {
 
             Separator separator = new Separator();
 
-            Label labelStats = new Label("answered " + answer.getCreationDate() + " by " + answer.getOwnerUserId());
+            Label labelStats = new Label("answered " + answer.getCreationDate() + " by " + answer.getOwnerUserName());
             labelStats.setPrefWidth(150);
 
             hboxTotale.setAlignment(Pos.CENTER);

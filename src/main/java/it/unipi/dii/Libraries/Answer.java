@@ -1,15 +1,26 @@
 package it.unipi.dii.Libraries;
 
-public class Answer {
+import java.io.Serializable;
+import java.util.Date;
+
+public class Answer implements Serializable {
 
     private String answerId;
     private String creationDate;
     private double score;
-    private String ownerUserId;
+    private String ownerUserName;
     private String body;
 
-    public Answer(){
+    public Answer(String answerId, String creationDate, double score, String ownerUserName, String body) {
+        this.answerId = answerId;
+        this.creationDate = creationDate;
+        this.score = score;
+        this.ownerUserName = ownerUserName;
+        this.body = body;
+    }
 
+    public Answer(String id, Date creationDate, Double viewCount, String ownerDisplayName, String body) {
+        this(null,null, 0, null,null);
     }
 
     public String getAnswerId(){
@@ -24,8 +35,8 @@ public class Answer {
         return this.score;
     }
 
-    public String getOwnerUserId(){
-        return this.ownerUserId;
+    public String getOwnerUserName(){
+        return this.ownerUserName;
     }
 
     public String getBody() { return this.body; }
@@ -45,8 +56,8 @@ public class Answer {
         return this;
     }
 
-    public Answer setOwnerUserId(String ownerUserId){
-        this.ownerUserId = ownerUserId;
+    public Answer setOwnerUserName(String ownerUserName){
+        this.ownerUserName = ownerUserName;
         return this;
     }
 

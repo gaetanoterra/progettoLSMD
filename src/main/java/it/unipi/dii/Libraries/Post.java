@@ -110,4 +110,19 @@ public class Post  implements Serializable {
         this.views = views;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "postId='" + postId + '\'' +
+                ", title='" + title + '\'' +
+                ", answers=" + answers +
+                ", creationDate=" + creationDate +
+                ", body='" + body + '\'' +
+                ", ownerUserId='" + ownerUserId + '\'' +
+                ", tags=" + tags +
+                ", views=" + views +
+                ", answersNumber=" + answersNumber +
+                '}';
+    }
 }
