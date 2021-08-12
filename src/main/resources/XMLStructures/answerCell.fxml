@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.web.WebView?>
+
+
+<SplitPane dividerPositions="0.27983539094650206" prefHeight="200.0" prefWidth="488.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <items>
+      <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="132.0">
+         <top>
+            <Polygon points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.5296052694320679" green="0.7250548005104065" blue="0.9078947305679321" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </fill>
+               <BorderPane.margin>
+                  <Insets top="20.0" />
+               </BorderPane.margin>
+            </Polygon>
+         </top>
+         <center>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="# Votes" BorderPane.alignment="CENTER" />
+         </center>
+         <bottom>
+            <Polygon points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" rotate="180.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.5296052694320679" green="0.7250548005104065" blue="0.9078947305679321" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </fill>
+               <BorderPane.margin>
+                  <Insets bottom="20.0" />
+               </BorderPane.margin>
+            </Polygon>
+         </bottom>
+      </BorderPane>
+      <BorderPane prefHeight="249.0" prefWidth="378.0">
+         <top>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" wrappingWidth="241.18798828125" BorderPane.alignment="TOP_LEFT" />
+         </top>
+         <center>
+            <WebView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </items>
+</SplitPane>

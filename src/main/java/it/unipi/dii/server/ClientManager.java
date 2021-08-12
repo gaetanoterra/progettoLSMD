@@ -176,16 +176,16 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Post_Data:
-                        MessageGetPostData msgGetPostData = (MessageGetPostData)msg;
-                        Post postToSearch = msgGetPostData.getObject();
-                        String postId = postToSearch.getPostId();
-                        Post postWithCompleteData = dbManager.getPostById(postId);
-                        send(new MessageGetPostData(postWithCompleteData));
+                        send(new MessageGetPostData(
+                                dbManager.getPostById(
+                                        ((MessageGetPostData)msg).getObject().getPostId()
+                                ))
+                        );
                         break;
 
                     case Message_Get_Top_Users_Posts:
-                        HashMap<User, Post[]> mapUsersPosts = (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts();
-                        send(new MessageGetTopUsersPosts(mapUsersPosts));
+                        send(new MessageGetTopUsersPosts(
+                                (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts()));
                         break;
 
                     case Message_Update_User_data:
@@ -197,11 +197,9 @@ public class ClientManager extends Thread{
                 }
             }
 
-        }catch( SocketException eof) {
-            System.out.println((this.loggedUser != null) ? this.loggedUser : "Anoymous user " + "just closed the connection");
-        }catch(EOFException eof){
-            System.out.println((this.loggedUser != null)?this.loggedUser: "Anoymous user " + "just closed the connection");
-        }catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
+        }catch( SocketException | EOFException eof) {
+            System.out.println((this.loggedUser != null) ? this.loggedUser : "Anonymous user " + "just closed the connection");
+        } catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
 
     }
 

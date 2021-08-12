@@ -361,17 +361,7 @@ public class DocumentDBManager {
             );
         });
 
-        postDoc.getList("Tags", Document.class).forEach((answer) -> {
-            answersList.add(
-                    new Answer(
-                            answer.getString("Id"),
-                            answer.getDate("CreationDate" ),
-                            answer.getDouble("ViewCount"),
-                            answer.getString("OwnerDisplayName"),
-                            answer.getString("Body")
-                    )
-            );
-        });
+
         return new Post(postId,
                         postDoc.getString("Title"),
                         answersList,
