@@ -15,7 +15,6 @@ import javafx.scene.control.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//classe preposta a gestire l'interfaccia da cui si visualizzano i Post
 public class ControllerPostSearchInterface {
 
     private ServerConnectionManager serverConnectionManager;
@@ -48,7 +47,6 @@ public class ControllerPostSearchInterface {
 
     }
 
-    //imposto cosa posso utilizzare e cosa no a seconda che l'utente sia loggato o meno
     public void setLoggedInterface(String username){
         label_username_anonymous_interface.setText(username);
         signin_button.setDisable(true);

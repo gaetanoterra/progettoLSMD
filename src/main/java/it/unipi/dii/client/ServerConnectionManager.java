@@ -76,7 +76,12 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
-                        ClientInterface.fillAnonymousInterfacePostsPanel(messageGetPostByParameter.getPostArrayList());
+                        switch (messageGetPostByParameter.getParameter()){
+                            case Username -> {
+                            }
+                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
+                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
+                        }
                         break;
 
                     case Message_Get_Top_Users_Posts:

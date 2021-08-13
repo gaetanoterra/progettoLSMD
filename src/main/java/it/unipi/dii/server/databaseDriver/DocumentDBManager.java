@@ -345,32 +345,32 @@ public class DocumentDBManager {
     public Post getPostById(String postId){
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("Post");
 
-        Document postDoc = (Document) mongoCollection.find(eq("PostId", postId));
         ArrayList<Answer> answersList = new ArrayList<>();
+        Post post = new Post();
+        mongoCollection.find(Filters.eq("PostId", postId)).forEach(postDoc ->{
 
-        //    public Answer(String answerId, String creationDate, double score, String ownerUserName, String body) {
-        postDoc.getList("Answers", Document.class).forEach((answer) -> {
-            answersList.add(
-                    new Answer(
-                            answer.getString("Id"),
-                            answer.getDate("CreationDate" ),
-                            answer.getDouble("ViewCount"),
-                            answer.getString("OwnerDisplayName"),
-                            answer.getString("Body")
-                    )
-            );
+                postDoc.getList("Answers", Document.class).forEach((answer) -> {
+                    answersList.add(
+                            new Answer(
+                                    answer.getString("Id"),
+                                    answer.getDate("CreationDate" ),
+                                    answer.getDouble("ViewCount"),
+                                    answer.getString("OwnerDisplayName"),
+                                    answer.getString("Body")
+                            )
+                    );
+                });
+
+               post.setPostId(postId);
+               post.setTitle(postDoc.getString("Title"));
+               post.setAnswers(answersList);
+               post.setCreationDate(postDoc.getDate("CreationDate"));
+               post.setBody(postDoc.getString("Body"));
+               post.setOwnerUserName(postDoc.getString("OwnerDisplayName"));
+               post.setTags(postDoc.getList("Tags", String.class));
         });
 
-
-        return new Post(postId,
-                        postDoc.getString("Title"),
-                        answersList,
-                        postDoc.getDate("CreationDate"),
-                        postDoc.getString("Body"),
-                        postDoc.getString("OwnerDisplayName"),
-                        postDoc.getList("Tags", String.class)
-        );
-
+        return post;
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {

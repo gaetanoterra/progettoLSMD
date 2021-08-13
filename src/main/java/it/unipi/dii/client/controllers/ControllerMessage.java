@@ -19,6 +19,6 @@ public class ControllerMessage {
 
     public void eventButtonCloseMessage(ActionEvent actionEvent) throws IOException {
         textarea_message.setText("");
-        ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE);
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
     }
 }

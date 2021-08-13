@@ -1,14 +1,8 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Post;
-import it.unipi.dii.client.ClientInterface;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.TextArea;
-import it.unipi.dii.Libraries.Messages.MessageAnswer;
-import it.unipi.dii.Libraries.Messages.OperationCD;
 import it.unipi.dii.Libraries.Answer;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
@@ -43,7 +37,8 @@ public class ControllerAnswerCell extends ListCell<Answer> {
             setText(null);
             setGraphic(null);
         }else{
-            answerCellFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/PostBriefViewCell.fxml"));
+            answerCellFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/answerCell.fxml"));
+            answerCellFXMLLoader.setController(this);
             try {
                 this.answerCellFXMLLoader.load();
             } catch (IOException e) {
@@ -57,6 +52,7 @@ public class ControllerAnswerCell extends ListCell<Answer> {
             voteText.setText(String.valueOf(answer.getScore()));
             authorText.setText("Author: " + answer.getOwnerUserName());
             bodyWebView.getEngine().loadContent(answer.getBody());
+
         }
 
     }

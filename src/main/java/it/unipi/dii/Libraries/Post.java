@@ -8,6 +8,7 @@ public class Post  implements Serializable {
 
     private String postId;
     private String title;
+    private String ownerUserName;
     private List<Answer> answers;
     private Date creationDate;
     private String body;
@@ -111,6 +112,9 @@ public class Post  implements Serializable {
         return this;
     }
 
+    public void setOwnerUserName(String ownerUserName) {
+        this.ownerUserName = ownerUserName;
+    }
     @Override
     public String toString() {
         return "Post{" +

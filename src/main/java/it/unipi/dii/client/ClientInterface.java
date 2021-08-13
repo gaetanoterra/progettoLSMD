@@ -7,6 +7,7 @@ import it.unipi.dii.Libraries.Post;
 
 import it.unipi.dii.client.controllers.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
@@ -31,7 +32,7 @@ public class ClientInterface extends Application{
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
         mainStage = primaryStage;
-        switchScene(PageType.POSTSEARCH_INTERFACE);
+        switchScene(PageType.POSTSEARCHINTERFACE);
     }
 
     //rischio loop con la pagina answer e post
@@ -44,10 +45,10 @@ public class ClientInterface extends Application{
     private void initScenesArray() throws IOException  {
         scenes = new Scene[PageType.values().length];
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
-        scenes[PageType.POSTSEARCH_INTERFACE.ordinal()] = new Scene(loader.load());
-        controllerPostSearchInterface = loader.getController();
-
+        FXMLLoader PostSearchInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
+        scenes[PageType.POSTSEARCHINTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
+        controllerPostSearchInterface = PostSearchInterfaceloader.getController();
+/*
         loader = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
         scenes[PageType.SIGN_IN.ordinal()] = new Scene(loader.load());
         controllerSignInInterface = loader.getController();
@@ -55,10 +56,10 @@ public class ClientInterface extends Application{
         loader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
         scenes[PageType.SIGN_UP.ordinal()] = new Scene(loader.load());
         controllerSignUpInterface = loader.getController();
-
-        loader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
-        scenes[PageType.FULL_POST.ordinal()] = new Scene(loader.load());
-        controllerSignUpInterface = loader.getController();
+*/
+        FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
+        scenes[PageType.FULLPOST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
+        controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
    /*   interfaces[PageType.PROFILE_INTERFACE.ordinal()]    = new FXMLLoader(getClass().getResource("/profileInterface.fxml.fxml"));
         interfaces[PageType.WRITE.ordinal()]                = new FXMLLoader(getClass().getResource("/write.fxml"));
@@ -76,7 +77,7 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void fillAnonymousInterfacePostsPanel(ArrayList<Post> postArrayList){
+    public static void fillPostSearchInterface(ArrayList<Post> postArrayList){
         controllerPostSearchInterface.resetInterface();
         controllerPostSearchInterface.fillPostPane(postArrayList);
     }
@@ -107,28 +108,33 @@ public class ClientInterface extends Application{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ClientInterface.switchScene(PageType.FULL_POST);
+        ClientInterface.switchScene(PageType.FULLPOST);
     }
 
 
     public static void fillFullPostInterface(Post post){
-        controllerFullPostInterface.resetInterface();
-        controllerFullPostInterface.fillInterface(post);
+        Platform.runLater(() -> {
+            controllerFullPostInterface.resetInterface();
+            controllerFullPostInterface.fillInterface(post);
+        });
+
     }
 
 
     public static void main(String[] args) {
+
         if (args.length != 2){
             System.err.println("Please enter port number and server address");
             return;
         }
+
         int portNumber;
         String serverIPAddress;
         try {
             portNumber = Integer.parseInt(args[1]);
             serverIPAddress = args[0];
             if (portNumber > 65535 || portNumber < 2000){
-                throw new Exception("Port number is not between 2000 and 65535");
+                throw new RuntimeException("Port number is not between 2000 and 65535");
             }
             serverConnectionManager = new ServerConnectionManager(portNumber, InetAddress.getByName(serverIPAddress));
             serverConnectionManager.setDaemon(true);
@@ -141,7 +147,7 @@ public class ClientInterface extends Application{
             System.out.println("A new server socket cannot be allocated. See stack trace for error details");
             ioe.printStackTrace();
         }
-        catch(Exception e) {
+        catch(RuntimeException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }

@@ -159,10 +159,11 @@ public class ClientManager extends Thread{
                             case Date -> postArrayList = dbManager.getPostByDate(msgParameter.getValue());
                             case Tags -> {
                                 String[] tags = msgParameter.getValue().split(";");
-                                postArrayList = dbManager.getPostsByTag(tags);
+                                postArrayList.addAll(dbManager.getPostsByTag(tags));
                             }
-                            case Text -> postArrayList = dbManager.getPostByText(msgParameter.getValue());
+                            case Text -> postArrayList.addAll(dbManager.getPostByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
+                            case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
                         send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
                         break;
@@ -176,11 +177,7 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Post_Data:
-                        send(new MessageGetPostData(
-                                dbManager.getPostById(
-                                        ((MessageGetPostData)msg).getObject().getPostId()
-                                ))
-                        );
+
                         break;
 
                     case Message_Get_Top_Users_Posts:

@@ -46,6 +46,6 @@ public class ControllerSignUpInterface {
     }
 
     public void eventButtonCloseSignup(ActionEvent actionEvent) throws IOException {
-        ClientInterface.switchScene(PageType.POSTSEARCH_INTERFACE);
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
     }
 }
