@@ -10,11 +10,11 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<SplitPane dividerPositions="0.20236336779911374" prefHeight="266.0" prefWidth="679.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerAnswerCell">
+<SplitPane fx:id="answerCellSplitPane" dividerPositions="0.20236336779911374" prefHeight="217.0" prefWidth="679.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <items>
-      <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="132.0">
+      <BorderPane fx:id="votesBoderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="132.0">
          <top>
-            <Polygon id="arrowUpPolygon" points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
+            <Polygon fx:id="arrowUpPolygon" points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
                <fill>
                   <LinearGradient endX="1.0" endY="1.0">
                      <stops>
@@ -37,10 +37,10 @@
             </Polygon>
          </top>
          <center>
-            <Text id="voteText" strokeType="OUTSIDE" strokeWidth="0.0" text="# Votes" BorderPane.alignment="CENTER" />
+            <Text fx:id="voteText" strokeType="OUTSIDE" strokeWidth="0.0" text="# Votes" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
-            <Polygon id="arrowDownPolygon" points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" rotate="180.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
+            <Polygon fx:id="arrowDownPolygon" points="60.0, 83.0, 30.0, 40.0, -2.0, 83.0" rotate="180.0" stroke="BLACK" strokeType="INSIDE" BorderPane.alignment="CENTER">
                <fill>
                   <LinearGradient endX="1.0" endY="1.0">
                      <stops>
@@ -65,10 +65,10 @@
       </BorderPane>
       <BorderPane prefHeight="249.0" prefWidth="378.0">
          <top>
-            <Text id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" wrappingWidth="241.18798828125" BorderPane.alignment="TOP_LEFT" />
+            <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" wrappingWidth="241.18798828125" BorderPane.alignment="TOP_LEFT" />
          </top>
          <center>
-            <WebView id="bodyWebView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <WebView fx:id="bodyWebView" prefHeight="185.0" prefWidth="536.0" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </items>

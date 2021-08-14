@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import it.unipi.dii.Libraries.Answer;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
@@ -27,6 +29,12 @@ public class ControllerAnswerCell extends ListCell<Answer> {
     @FXML
     WebView bodyWebView;
 
+    @FXML
+    SplitPane answerCellSplitPane;
+
+    @FXML
+    private BorderPane votesBoderPane;
+
     private FXMLLoader answerCellFXMLLoader;
 
     @Override
@@ -49,10 +57,15 @@ public class ControllerAnswerCell extends ListCell<Answer> {
 
             //arrowDownPolygon.setOnMouseClicked();
             //arrowUpPolygon.setOnMouseClicked();
-            voteText.setText(String.valueOf(answer.getScore()));
             authorText.setText("Author: " + answer.getOwnerUserName());
-            bodyWebView.getEngine().loadContent(answer.getBody());
+            if(answer.getBody() != null)
+                bodyWebView.getEngine().loadContent(answer.getBody(), "text/html");
+            else
+                bodyWebView.getEngine().loadContent("<h1> NO BODY! </h1>", "text/html");
 
+            voteText.setText(String.valueOf(answer.getScore()));
+            setText(null);
+            setGraphic(answerCellSplitPane);
         }
 
     }

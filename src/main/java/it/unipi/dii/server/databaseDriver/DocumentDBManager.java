@@ -27,12 +27,17 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import com.mongodb.BasicDBObject;
+import org.bson.types.ObjectId;
 
 //TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
+    private final String POSTSCOLLECTION = "Posts";
+    private final String USERSCOLLECTION = "Users";
+    private MongoCollection<Document> postsCollection;
+    private MongoCollection<Document> usersCollection;
 
     public DocumentDBManager(){
         this(DBExecutionMode.LOCAL);
@@ -45,6 +50,8 @@ public class DocumentDBManager {
             case CLUSTER -> mongoClient = MongoClients.create("mongodb://host-1:27020, host-2:27020, host-3:27020/?retryWrites=true&w=majority&wtimeout=10000");
         }
         mongoDatabase = mongoClient.getDatabase("PseudoStackOverDB");
+        postsCollection = mongoDatabase.getCollection(POSTSCOLLECTION);
+        usersCollection = mongoDatabase.getCollection(USERSCOLLECTION);
     }
 
     public void close(){
@@ -343,34 +350,50 @@ public class DocumentDBManager {
     }
 
     public Post getPostById(String postId){
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("Post");
 
         ArrayList<Answer> answersList = new ArrayList<>();
-        Post post = new Post();
-        mongoCollection.find(Filters.eq("PostId", postId)).forEach(postDoc ->{
 
-                postDoc.getList("Answers", Document.class).forEach((answer) -> {
-                    answersList.add(
-                            new Answer(
-                                    answer.getString("Id"),
-                                    answer.getDate("CreationDate" ),
-                                    answer.getDouble("ViewCount"),
-                                    answer.getString("OwnerDisplayName"),
-                                    answer.getString("Body")
-                            )
-                    );
-                });
+        Document document = this.postsCollection.find(
+                                        eq("_id", new ObjectId("605325af98a3842f7d9e35e5"))).first();
 
-               post.setPostId(postId);
-               post.setTitle(postDoc.getString("Title"));
-               post.setAnswers(answersList);
-               post.setCreationDate(postDoc.getDate("CreationDate"));
-               post.setBody(postDoc.getString("Body"));
-               post.setOwnerUserName(postDoc.getString("OwnerDisplayName"));
-               post.setTags(postDoc.getList("Tags", String.class));
-        });
+        if(document == null) {
+            System.out.println("Found no document marching the id " + postId);
+            return new Post();
+        }else{
+            System.out.println("Found one document marching the id " + postId + " Containing " +
+                                document.getList("Answers", Document.class).size() + " answers");
 
-        return post;
+            document.getList("Answers", Document.class).forEach((answerDocument) -> {
+
+                String body =answerDocument.getString("Body");
+                String id = answerDocument.getInteger("Id").toString();
+                Date date = new Date(answerDocument.getLong("CreationDate"));
+                String ownerDisplayName = answerDocument.getString("OwnerDisplayName");
+
+                //        public Answer(String id, Date creationDate, Double viewCount, String ownerDisplayName, String body) {
+                Answer answer = new Answer(
+                        answerDocument.getInteger("Id").toString(),
+                        new Date(answerDocument.getLong("CreationDate")),
+                        (answerDocument.getDouble("ViewCount")== null)? 0 : answerDocument.getDouble("ViewCount"),
+                        answerDocument.getString("OwnerDisplayName"),
+                        answerDocument.getString("Body")
+                );
+
+                answersList.add(answer);
+
+
+            });
+        }
+
+        return new Post(
+                postId,
+                document.getString("Title"),
+                answersList,
+                new Date(document.getLong("CreationDate")),
+                document.getString("Body"),
+                document.getString("OwnerDisplayName"),
+                document.getList("Tags", String.class)
+        );
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
@@ -381,7 +404,7 @@ public class DocumentDBManager {
             Post p = new Post(doc.getString("PostId"),
                     doc.getString("Title"),
                     (ArrayList<Answer>)doc.get("Answers"),
-                    doc.getDate("CreationDate"),
+                    new Date(doc.getLong("CreationDate")),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
                     (ArrayList<String>)doc.get("Tags"));
@@ -422,18 +445,17 @@ public class DocumentDBManager {
                 ]
             },
             {
-                Title:1,
-                Tags:1,
+                _id:    1,
+                Title:  1,
+                Tags:   1,
                 numberOfAnswers: { $size: "$Answers" },
-                Views:1
+                Views:  1
             }
         );
     */
     public ArrayList<Post> getPostsByText(String text){
-        // controllo il titolo per semplicità (e velocità), si può cambiare ovviamente con il body
-        MongoCollection<Document> collection = mongoDatabase.getCollection("Posts");
         ArrayList<Post> postArrayList = new ArrayList<>();
-        collection.find(and(
+        this.postsCollection.find(and(
                             Filters.text(text),
                             or(
                                regex("Title",".*" +text +".*","i"),
@@ -441,13 +463,14 @@ public class DocumentDBManager {
                             ))
                         )
                         .projection(new Document("Title",1)
+                                    .append("_id", 1)
                                     .append("Views", 1)
                                     .append("Title", 1)
                                     .append("Tags" , 1)
                                     .append("AnswersNumber",new BasicDBObject("$size","$Answers"))
                         )
                         .forEach(doc -> {
-                            Post p = new Post(doc.getString("PostId"),
+                            Post p = new Post(doc.getObjectId("_id").toHexString(),
                                               doc.getString("Title"),
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
@@ -468,17 +491,17 @@ public class DocumentDBManager {
 
         if(userDoc != null) {
             user.setUserId(userId)
-                    .setDisplayName(userDoc.getString("DisplayName"))
-                    .setPassword(userDoc.getString("Password"))
-                    .setFollowersNumber(userDoc.getInteger("followerNumber"))
-                    .setFollowedNumber(userDoc.getInteger("followedNumber"))
-                    .setReputation(userDoc.getDouble("Reputation"))
-                    .setCreationDate(userDoc.getDate("CreationDate"))
-                    .setLastAccessDate(userDoc.getDate("LastAccessDate"))
-                    .setType(userDoc.getString("type"))
-                    .setLocation(userDoc.getString("Location"))
-                    .setAboutMe(userDoc.getString("AboutMe"))
-                    .setWebsiteURL(userDoc.getString("WebsiteURL"));
+                .setDisplayName(userDoc.getString("DisplayName"))
+                .setPassword(userDoc.getString("Password"))
+                .setFollowersNumber(userDoc.getInteger("followerNumber"))
+                .setFollowedNumber(userDoc.getInteger("followedNumber"))
+                .setReputation(userDoc.getDouble("Reputation"))
+                .setCreationDate(userDoc.getDate("CreationDate"))
+                .setLastAccessDate(userDoc.getDate("LastAccessDate"))
+                .setType(userDoc.getString("type"))
+                .setLocation(userDoc.getString("Location"))
+                .setAboutMe(userDoc.getString("AboutMe"))
+                .setWebsiteURL(userDoc.getString("WebsiteURL"));
         }
 
         return user;

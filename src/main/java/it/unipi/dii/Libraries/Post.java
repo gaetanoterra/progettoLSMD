@@ -1,6 +1,7 @@
 package it.unipi.dii.Libraries;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Post  implements Serializable {
     private int answersNumber;
 
     public Post(){
-        this(null, null, null, null, null, null, null);
+        this(null, null, new ArrayList<>(), null, null, null, null);
     }
 
     public Post(String postId, String title, List<Answer> answers, Date creationDate, String body, String ownerUserId, List<String> tags){
@@ -83,7 +84,7 @@ public class Post  implements Serializable {
     }
 
     public Post setAnswers(List<Answer> answers){
-        this.answers = answers;
+        this.answers.addAll(answers);
         return this;
     }
 
@@ -127,6 +128,7 @@ public class Post  implements Serializable {
                 ", tags=" + tags +
                 ", views=" + views +
                 ", answersNumber=" + answersNumber +
+                ", answers=" + answers +
                 '}';
     }
 }

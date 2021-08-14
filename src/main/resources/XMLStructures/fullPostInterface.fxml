@@ -12,42 +12,37 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/15.0.1" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface" >
-   <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0"
-         prefWidth="435.0">
-      <BorderPane prefHeight="200.0" prefWidth="416.0">
+<AnchorPane prefHeight="608.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface">
+   <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="684.0" prefWidth="849.0">
+      <BorderPane prefHeight="61.0" prefWidth="849.0">
          <top>
-            <Label fx:id="titleLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                   prefHeight="143.0" prefWidth="337.0" stylesheets="@../Style/FullPostInterfaceStyle.css"
-                   text="Here it goes the Title" BorderPane.alignment="CENTER"/>
+            <Label fx:id="titleLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="69.0" prefWidth="849.0" stylesheets="@../Style/FullPostInterfaceStyle.css" text="Here it goes the Title" BorderPane.alignment="CENTER" />
          </top>
          <left>
-            <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo"
-                  BorderPane.alignment="CENTER"/>
+            <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" BorderPane.alignment="CENTER" />
          </left>
       </BorderPane>
-      <Separator fx:id="titleSeparator" prefWidth="200.0" stylesheets="@../Style/FullPostInterfaceStyle.css"/>
-      <WebView fx:id="questionWebView" prefHeight="208.0" prefWidth="435.0"/>
-      <Label prefHeight="36.0" prefWidth="439.0" text="# Answers"/>
-      <ListView fx:id="answersListView" editable="true" prefHeight="200.0" prefWidth="200.0"/>
-      <Separator prefWidth="200.0"/>
+      <Separator fx:id="titleSeparator" prefWidth="200.0" stylesheets="@../Style/FullPostInterfaceStyle.css" />
+      <WebView fx:id="questionWebView" prefHeight="226.0" prefWidth="849.0" />
+      <Label prefHeight="36.0" prefWidth="439.0" text="# Answers" />
+      <ListView fx:id="answersListView" editable="true" prefHeight="254.0" prefWidth="849.0" />
+      <Separator prefHeight="0.0" prefWidth="849.0" />
       <Label prefHeight="23.0" prefWidth="119.0" text="Your Aswer">
          <padding>
-            <Insets bottom="10.0" top="10.0"/>
+            <Insets bottom="10.0" top="10.0" />
          </padding>
          <VBox.margin>
-            <Insets left="10.0"/>
+            <Insets left="10.0" />
          </VBox.margin>
       </Label>
       <TextArea fx:id="answerTextarea" prefHeight="135.0" prefWidth="417.0">
          <VBox.margin>
-            <Insets left="10.0" right="10.0"/>
+            <Insets left="10.0" right="10.0" />
          </VBox.margin>
       </TextArea>
-      <Button fx:id="postYourAnswerButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false"
-              text="Post Your Answer">
+      <Button fx:id="postYourAnswerButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Post Your Answer">
          <VBox.margin>
-            <Insets left="10.0" top="10.0"/>
+            <Insets left="10.0" top="10.0" />
          </VBox.margin>
       </Button>
    </VBox>

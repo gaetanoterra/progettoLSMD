@@ -36,7 +36,7 @@ public class ServerConnectionManager extends Thread {
 
             while(true){
                 Message message = receive();
-                System.out.println("ricevuto messaggio dal server di tipo:" + message);
+                System.out.println("ricevuto messaggio dal server di tipo:" + message.getOpcode());
 
                 switch (message.getOpcode()){
 

@@ -42,16 +42,19 @@ public class ControllerFullPostInterface {
     }
 
     public void resetInterface() {
-        titleLabel.setText("");
-        authorText.setText(null);
-        questionWebView.getEngine().load("<p> EMPTY BODY</p>");
+        titleLabel.setText("The Title");
+        authorText.setText("Pippo");
+        questionWebView.getEngine().loadContent("<h1> EMPTY BODY</h1>", "text/html");
         answerObservableList.removeAll();
     }
 
     public void fillInterface(Post post) {
+        System.out.println(post);
         titleLabel.setText(post.gettitle());
         authorText.setText(post.getOwnerUserId());
-        questionWebView.getEngine().load(post.getBody());
+        questionWebView.getEngine().loadContent(post.getBody(), "text/html");
+        //questionWebView.getEngine().load("<p>Is there an easy way to track how many times a particular song clip (or any binary file) has been downloaded?</p>\n");
+
         answerObservableList.addAll(post.getAnswers());
     }
 

@@ -16,11 +16,11 @@ public class Answer implements Serializable {
         this.creationDate = creationDate;
         this.score = score;
         this.ownerUserName = ownerUserName;
-        this.body = body;
+        this.body =  body;
     }
 
     public Answer(String id, Date creationDate, Double viewCount, String ownerDisplayName, String body) {
-        this(null,null, 0, null,null);
+        this(id,creationDate.toString(), viewCount, ownerDisplayName,body);
     }
 
     public String getAnswerId(){
@@ -63,5 +63,16 @@ public class Answer implements Serializable {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "answerId='" + answerId + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", score=" + score +
+                ", ownerUserName='" + ownerUserName + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

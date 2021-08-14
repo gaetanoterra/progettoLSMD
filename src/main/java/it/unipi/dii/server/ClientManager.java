@@ -165,6 +165,9 @@ public class ClientManager extends Thread{
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
+                        System.out.println("sending out new Message_Get_Posts_By_Parameter containing "
+                                                                                                    + postArrayList.size()
+                                                                                                    + " posts");
                         send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
                         break;
 
