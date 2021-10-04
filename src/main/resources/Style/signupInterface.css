@@ -1,0 +1,13 @@
+.Label{
+      -fx-font: normal bold 15px 'serif';
+}
+
+#newUserLabel{
+      -fx-font:  bold 25px 'serif';
+}
+.gridPane{
+      -fx-background-color: BEIGE;
+}
+#registerButton{
+      -fx-font:  bold 15px 'Arial';
+}

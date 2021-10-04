@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerSignInInterface">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerSignInInterface">
    <children>
       <Label alignment="CENTER" layoutX="299.0" layoutY="14.0" prefHeight="109.0" prefWidth="203.0" text="SIGN IN" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="298.0">
          <font>
@@ -15,14 +19,14 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <PasswordField fx:id="passwordfield_signin_password" layoutX="55.0" layoutY="365.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
+      <PasswordField fx:id="passwordfield_signin_password" layoutX="227.0" layoutY="365.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="227.0" AnchorPane.rightAnchor="244.0" />
       <Separator layoutX="37.0" layoutY="141.0" prefHeight="3.0" prefWidth="726.0" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="37.0" />
       <Label alignment="CENTER" layoutX="107.0" layoutY="341.0" text="Password:" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0">
          <font>
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="textfield_signin_username" alignment="CENTER" layoutX="55.0" layoutY="244.0" prefHeight="25.0" prefWidth="191.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="54.0" />
+      <TextField fx:id="textfield_signin_username" alignment="CENTER" layoutX="224.0" layoutY="244.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="224.0" AnchorPane.rightAnchor="247.0" />
       <Button fx:id="button_confirm_signin" alignment="CENTER" layoutX="162.0" layoutY="446.0" mnemonicParsing="false" onAction="#eventButtonConfirmSignIn" prefHeight="38.0" prefWidth="477.0" text="Sign In" AnchorPane.leftAnchor="162.0" AnchorPane.rightAnchor="161.0">
          <font>
             <Font name="Courier New" size="16.0" />
@@ -35,11 +39,6 @@
          </font>
       </Label>
       <Button fx:id="button_signup_signin" layoutX="231.0" layoutY="627.0" mnemonicParsing="false" onAction="#eventButtonSignUpSignIn" prefHeight="38.0" prefWidth="339.0" text="Sign Up" AnchorPane.leftAnchor="231.0" AnchorPane.rightAnchor="230.0">
-         <font>
-            <Font name="Courier New" size="16.0" />
-         </font>
-      </Button>
-      <Button fx:id="button_cancel_signin" alignment="CENTER" layoutX="353.0" layoutY="513.0" mnemonicParsing="false" onAction="#eventButtonCancelSignIn" prefHeight="38.0" prefWidth="94.0" text="Cancel">
          <font>
             <Font name="Courier New" size="16.0" />
          </font>

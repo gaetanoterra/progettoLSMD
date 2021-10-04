@@ -11,6 +11,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 public class ClientManager extends Thread{
@@ -165,9 +166,10 @@ public class ClientManager extends Thread{
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
-                        System.out.println("sending out new Message_Get_Posts_By_Parameter containing "
-                                                                                                    + postArrayList.size()
-                                                                                                    + " posts");
+                        System.out.println("sending out new Message_Get_Posts_By_Parameter containing " +
+                                            postArrayList.size() +
+                                            " posts"
+                        );
                         send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
                         break;
 
@@ -176,7 +178,7 @@ public class ClientManager extends Thread{
                         User userToSearch = msgGetUserData.getObject().get(0);
                         String displayName = userToSearch.getDisplayName();
                         User userWithCompleteData = dbManager.getUserData(displayName);
-                        send(new MessageGetUserData(new ArrayList<>(Arrays.asList(userWithCompleteData))));
+                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData))));
                         break;
 
                     case Message_Get_Post_Data:

@@ -354,7 +354,7 @@ public class DocumentDBManager {
         ArrayList<Answer> answersList = new ArrayList<>();
 
         Document document = this.postsCollection.find(
-                                        eq("_id", new ObjectId("605325af98a3842f7d9e35e5"))).first();
+                                        eq("_id", new ObjectId(postId))).first();
 
         if(document == null) {
             System.out.println("Found no document marching the id " + postId);
@@ -364,36 +364,28 @@ public class DocumentDBManager {
                                 document.getList("Answers", Document.class).size() + " answers");
 
             document.getList("Answers", Document.class).forEach((answerDocument) -> {
-
-                String body =answerDocument.getString("Body");
-                String id = answerDocument.getInteger("Id").toString();
-                Date date = new Date(answerDocument.getLong("CreationDate"));
-                String ownerDisplayName = answerDocument.getString("OwnerDisplayName");
-
-                //        public Answer(String id, Date creationDate, Double viewCount, String ownerDisplayName, String body) {
-                Answer answer = new Answer(
+                answersList.add(
+                    new Answer(
                         answerDocument.getInteger("Id").toString(),
                         new Date(answerDocument.getLong("CreationDate")),
                         (answerDocument.getDouble("ViewCount")== null)? 0 : answerDocument.getDouble("ViewCount"),
                         answerDocument.getString("OwnerDisplayName"),
                         answerDocument.getString("Body")
+                    )
                 );
-
-                answersList.add(answer);
-
-
             });
+
+            return new Post(
+                    postId,
+                    document.getString("Title"),
+                    answersList,
+                    new Date(document.getLong("CreationDate")),
+                    document.getString("Body"),
+                    document.getString("OwnerDisplayName"),
+                    document.getList("Tags", String.class)
+            );
         }
 
-        return new Post(
-                postId,
-                document.getString("Title"),
-                answersList,
-                new Date(document.getLong("CreationDate")),
-                document.getString("Body"),
-                document.getString("OwnerDisplayName"),
-                document.getList("Tags", String.class)
-        );
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
