@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
+//prova branch-gaetano
 public class ClientManager extends Thread{
 
     private final DBManager dbManager;
