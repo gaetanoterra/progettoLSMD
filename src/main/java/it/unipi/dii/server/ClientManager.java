@@ -25,8 +25,8 @@ public class ClientManager extends Thread{
 
     public ClientManager(Socket socketUser, DBManager dbManager) throws IOException{
         this.socketUser = socketUser;
-        this.dbManager = dbManager;
-        clientInputStream = new ObjectInputStream(socketUser.getInputStream());
+        this.dbManager  = dbManager;
+        clientInputStream  = new ObjectInputStream(socketUser.getInputStream());
         clientOutputStream = new ObjectOutputStream(socketUser.getOutputStream());
     }
 
@@ -59,16 +59,16 @@ public class ClientManager extends Thread{
 
                     case Message_Logout:
                         loggedUser = null;
-                        this.socketUser.close();
                         this.clientInputStream.close();
                         this.clientOutputStream.close();
+                        this.socketUser.close();
                         return;
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
 
                         if(dbManager.insertUser(messageSignUp.getUser())){
-                            send(new MessageSignUp(StatusCode.Message_Ok));
+                            send(new MessageSignUp(messageSignUp.getUser(), StatusCode.Message_Ok));
                         }
                         else{
                             send(new MessageSignUp(StatusCode.Message_Fail));
@@ -95,7 +95,7 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                             }
                             case Delete -> dbManager.removePost(post);
-                            default -> throw new OpcodeNotValidException("You are not supposed to be here");
+                            default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
                         }
                         break;
 

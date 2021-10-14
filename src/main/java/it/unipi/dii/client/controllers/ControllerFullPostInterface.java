@@ -53,8 +53,6 @@ public class ControllerFullPostInterface {
         titleLabel.setText(post.gettitle());
         authorText.setText(post.getOwnerUserId());
         questionWebView.getEngine().loadContent(post.getBody(), "text/html");
-        //questionWebView.getEngine().load("<p>Is there an easy way to track how many times a particular song clip (or any binary file) has been downloaded?</p>\n");
-
         answerObservableList.addAll(post.getAnswers());
     }
 

@@ -19,7 +19,7 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <PasswordField fx:id="passwordfield_signin_password" layoutX="227.0" layoutY="365.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="227.0" AnchorPane.rightAnchor="244.0" />
+      <PasswordField fx:id="signInPasswordField" layoutX="227.0" layoutY="365.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="227.0" AnchorPane.rightAnchor="244.0" />
       <Separator layoutX="37.0" layoutY="141.0" prefHeight="3.0" prefWidth="726.0" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="37.0" />
       <Label alignment="CENTER" layoutX="107.0" layoutY="341.0" text="Password:" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0">
          <font>
@@ -43,6 +43,6 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Button>
-      <Label fx:id="label_error_message_signin" layoutX="126.0" layoutY="275.0" prefHeight="17.0" prefWidth="587.0" />
+      <Label fx:id="errorMessageSignInLabel" layoutX="126.0" layoutY="275.0" prefHeight="17.0" prefWidth="587.0" />
    </children>
 </AnchorPane>

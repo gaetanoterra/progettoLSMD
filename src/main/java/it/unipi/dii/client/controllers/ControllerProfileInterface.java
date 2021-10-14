@@ -68,7 +68,7 @@ public class ControllerProfileInterface {
     }
 
     //funzione che riempie i campi dell'interfaccia del profilo
-    public void fillProfileInterface(User user) throws IOException {
+    public void fillProfileInterface(User user){
         setDisplayName(user.getDisplayName());
         setAboutMe(user.getAboutMe());
 
@@ -82,8 +82,7 @@ public class ControllerProfileInterface {
     }
 
     //funzione che riempie i campi del pannello dei post
-    private void fillPosts() throws IOException {
-        clientServerManager.send(new MessageGetPostByParameter(Parameter.Username, ClientInterface.getLog().getDisplayName()));
+    private void fillPosts() {
     }
 
     //richiedere gli utenti suggeriti

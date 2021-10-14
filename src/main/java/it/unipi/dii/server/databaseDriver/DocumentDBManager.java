@@ -578,29 +578,19 @@ public class DocumentDBManager {
     }
 
     public boolean insertUser(User user){
-        boolean res = true;
-        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
 
-        /* controllo con la checkUser se il displayName è già in uso */
-        if(checkUser(user.getDisplayName())){
-            res = false;
-            System.out.println("displayName presente");
-        }
-        else {
+        Document us = new Document("Id", user.getUserId())
+                .append("DisplayName", user.getDisplayName())
+                .append("Password", user.getPassword())
+                .append("CreationDate", user.getCreationData())
+                .append("Location", user.getLocation())
+                .append("AboutMe", user.getAboutMe())
+                .append("WebsiteURL", user.getWebsiteURL());
 
-            Document us = new Document("Id", user.getUserId())
-                    .append("DisplayName", user.getDisplayName())
-                    .append("Password", user.getPassword())
-                    .append("CreationDate", user.getCreationData())
-                    .append("Location", user.getLocation())
-                    .append("AboutMe", user.getAboutMe())
-                    .append("WebsiteURL", user.getWebsiteURL());
-
-            coll.insertOne(us);
-        }
-        return res;
+        return usersCollection.insertOne(us).wasAcknowledged();
     }
 
+    //
     private boolean checkUser(String displayName) {
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         boolean res = false;

@@ -1,48 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.unipi.dii.client.controllers.ControllerPostSearchInterface">
-
-   <Label fx:id="label_username_anonymous_interface" alignment="CENTER" prefHeight="75.0" prefWidth="134.0"
-          text="Anonymous">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerPostSearchInterface">
+   <HBox prefHeight="72.0" prefWidth="800.0">
+      <children>
+      
+         <Label fx:id="usernameLabel" alignment="CENTER" prefHeight="72.0" prefWidth="263.0" text="Anonymous">
+            <font>
+               <Font name="Courier New" size="18.0" />
+            </font>
+            <cursor>
+               <Cursor fx:constant="CROSSHAIR" />
+            </cursor>
+         </Label>
+         <ImageView fx:id="profileImageView" fitHeight="70.0" fitWidth="107.0" pickOnBounds="true" preserveRatio="true">
+            <HBox.margin>
+               <Insets right="210.0" />
+            </HBox.margin>
+         </ImageView>
+         <Button id="signin_button" fx:id="signin_button" alignment="CENTER" mnemonicParsing="false" onAction="#eventButtonSignIn" prefHeight="36.0" prefWidth="82.0" text="Sign In">
+            <font>
+               <Font name="Courier New" size="14.0" />
+            </font>
+            <HBox.margin>
+               <Insets top="16.0" />
+            </HBox.margin>
+         </Button>
+         <Button fx:id="signup_button" mnemonicParsing="false" onAction="#eventButtonSignUp" prefHeight="36.0" prefWidth="82.0" text="Sign Up">
+            <font>
+               <Font name="Courier New" size="14.0" />
+            </font>
+            <HBox.margin>
+               <Insets left="25.0" top="16.0" />
+            </HBox.margin>
+         </Button>
+      </children>
+   </HBox>
+   <Separator layoutY="73.0" prefHeight="3.0" prefWidth="800.0" />
+   <TextField fx:id="textfield_search" layoutX="24.0" layoutY="91.0" prefHeight="25.0" prefWidth="691.0" />
+   <Button fx:id="search_button" layoutX="722.0" layoutY="92.0" mnemonicParsing="false" onAction="#eventButtonSearch" text="Search">
       <font>
-         <Font name="Courier New" size="18.0"/>
-      </font>
-      <cursor>
-         <Cursor fx:constant="CROSSHAIR"/>
-      </cursor>
-   </Label>
-   <Separator layoutY="73.0" prefHeight="3.0" prefWidth="800.0"/>
-   <Button id="signin_button" fx:id="signin_button" layoutX="604.0" layoutY="20.0" mnemonicParsing="false"
-           onAction="#eventButtonSignIn" prefHeight="36.0" prefWidth="82.0" text="Sign In">
-      <font>
-         <Font name="Courier New" size="14.0"/>
+         <Font name="Courier New" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="signup_button" layoutX="700.0" layoutY="20.0" mnemonicParsing="false" onAction="#eventButtonSignUp"
-           prefHeight="36.0" prefWidth="82.0" text="Sign Up">
-      <font>
-         <Font name="Courier New" size="14.0"/>
-      </font>
-   </Button>
-   <TextField fx:id="textfield_search" layoutX="24.0" layoutY="91.0" prefHeight="25.0" prefWidth="691.0"/>
-   <Button fx:id="search_button" layoutX="722.0" layoutY="92.0" mnemonicParsing="false" onAction="#eventButtonSearch"
-           text="Search">
-      <font>
-         <Font name="Courier New" size="12.0"/>
-      </font>
-   </Button>
-   <ListView fx:id="postsListView" editable="true" layoutX="24.0" layoutY="199.0" maxHeight="1.7976931348623157E308"
-             maxWidth="1.7976931348623157E308" prefHeight="480.0" prefWidth="752.0"/>
+   <ListView fx:id="postsListView" editable="true" layoutX="24.0" layoutY="199.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="480.0" prefWidth="752.0" />
 
 </AnchorPane>

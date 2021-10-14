@@ -1,7 +1,9 @@
 package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
+import it.unipi.dii.Libraries.Messages.MessageSignUp;
 import it.unipi.dii.Libraries.Messages.Parameter;
+import it.unipi.dii.Libraries.Messages.StatusCode;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
 
@@ -23,10 +25,12 @@ public class ClientInterface extends Application{
     private static ServerConnectionManager serverConnectionManager;
     private static Scene[] scenes;
     private static Stage mainStage;
+
     private static ControllerPostSearchInterface controllerPostSearchInterface;
     private static ControllerSignInInterface controllerSignInInterface;
     private static ControllerSignUpInterface controllerSignUpInterface;
     private static ControllerFullPostInterface controllerFullPostInterface;
+    private static ControllerProfileInterface controllerProfileInterface;
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -48,26 +52,25 @@ public class ClientInterface extends Application{
         FXMLLoader PostSearchInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
         scenes[PageType.POSTSEARCHINTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
         controllerPostSearchInterface = PostSearchInterfaceloader.getController();
-/*
-        loader = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
-        scenes[PageType.SIGN_IN.ordinal()] = new Scene(loader.load());
-        controllerSignInInterface = loader.getController();
 
-        loader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
-        scenes[PageType.SIGN_UP.ordinal()] = new Scene(loader.load());
-        controllerSignUpInterface = loader.getController();
-*/
+        FXMLLoader signInInterfaceloader  = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
+        scenes[PageType.SIGN_IN.ordinal()] = new Scene(signInInterfaceloader.load());
+        controllerSignInInterface = signInInterfaceloader.getController();
+
+        FXMLLoader signupInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
+        scenes[PageType.SIGN_UP.ordinal()] = new Scene(signupInterfaceloader.load());
+        controllerSignUpInterface = signupInterfaceloader.getController();
+
         FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
         scenes[PageType.FULLPOST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
         controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
-   /*   interfaces[PageType.PROFILE_INTERFACE.ordinal()]    = new FXMLLoader(getClass().getResource("/profileInterface.fxml.fxml"));
-        interfaces[PageType.WRITE.ordinal()]                = new FXMLLoader(getClass().getResource("/write.fxml"));
-        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
-        interfaces[PageType.MESSAGE.ordinal()]              = new FXMLLoader(getClass().getResource("/message.fxml"));
-        interfaces[PageType.READ_POST.ordinal()]            = new FXMLLoader(getClass().getResource("/read_post.fxml"));
-        interfaces[PageType.CREATE_ANSWER.ordinal()]        = new FXMLLoader(getClass().getResource("/createAnswerInterface.fxml"));
+        FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/profileInterface.fxml"));
+        scenes[PageType.PROFILE_INTERFACE.ordinal()] = new Scene(profileInterfaceLoader.load());
+        controllerProfileInterface = profileInterfaceLoader.getController();
 
+   /*
+        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
      */
     }
 
@@ -86,15 +89,15 @@ public class ClientInterface extends Application{
         return serverConnectionManager;
     }
 
-    public static void setLog(User user){
-        loggedUser = user;
-    }
-
     public static void resetLog(){
         loggedUser = null;
     }
 
     public static User getLog(){ return loggedUser; }
+
+    public static void updatePostSearchInterfaceWithLoggedUserInfos(User u) {
+        controllerPostSearchInterface.setLoggedInterface(u.getDisplayName(), u.getProfileImage());
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -111,13 +114,34 @@ public class ClientInterface extends Application{
         ClientInterface.switchScene(PageType.FULLPOST);
     }
 
-
     public static void fillFullPostInterface(Post post){
         Platform.runLater(() -> {
             controllerFullPostInterface.resetInterface();
             controllerFullPostInterface.fillInterface(post);
         });
+    }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                          PROFILE INTERFACE APIs                                                //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static void sendRegistrationRequest(User u){
+        try {
+            serverConnectionManager.send(new MessageSignUp(u));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registrationResponseHandler(User u, StatusCode stc){
+        Platform.runLater(() -> {
+            if(stc.equals(StatusCode.Message_Ok)){
+                switchScene(PageType.PROFILE_INTERFACE);
+                controllerProfileInterface.fillProfileInterface(u);
+            }
+        });
     }
 
 

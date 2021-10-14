@@ -20,6 +20,7 @@ public class DBManager {
         documentDBManager = new DocumentDBManager(dbe);
         graphDBManager = new GraphDBManager();
     }
+
     public void close(){
         this.documentDBManager.close();
         this.graphDBManager.close();
@@ -73,8 +74,8 @@ public class DBManager {
 
     public boolean insertUser(User newUser){
         boolean insertedUser = documentDBManager.insertUser(newUser);
-        if(insertedUser)
-            graphDBManager.insertUser(newUser);
+       /* if(insertedUser)
+            graphDBManager.insertUser(newUser);*/
         return insertedUser;
     }
 

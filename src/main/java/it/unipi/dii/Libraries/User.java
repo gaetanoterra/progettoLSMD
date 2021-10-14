@@ -8,26 +8,33 @@ public class User implements Serializable {
     private String userId;
     private String password;
     private String displayName;
-    private int followersNumber = 0;
-    private int followedNumber = 0;
-    private double reputation = 0;
+    private int followersNumber;
+    private int followedNumber;
+    private double reputation;
     private Date creationDate;
     private Date lastAccessDate;
     private String type = "generic_user";
     private String location;
     private String aboutMe;
     private String websiteURL;
+    private String profileImage;
 
-    public User(){
-    }
-    public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
         this.userId = userId;
         this.displayName = displayName;
         this.location = location;
         this.aboutMe = aboutMe;
         this.websiteURL = websiteURL;
+        this.password = pwd;
     }
 
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
+        this(userId, displayName, location, aboutMe,  websiteURL, null);
+    }
+
+    public User(){
+        this(null,null,null,null,null);
+    }
     public String getUserId(){
         return this.userId;
     }
@@ -74,6 +81,14 @@ public class User implements Serializable {
 
     public String getWebsiteURL(){
         return this.websiteURL;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public User setUserId(String userId){

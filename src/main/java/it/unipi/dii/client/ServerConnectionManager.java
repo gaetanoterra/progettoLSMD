@@ -1,6 +1,7 @@
 package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
+import it.unipi.dii.Libraries.User;
 
 import java.io.*;
 import java.net.*;
@@ -14,6 +15,7 @@ public class ServerConnectionManager extends Thread {
     private static boolean waiting = true; //vedo se sto aspettando la risposta del server
     private boolean last_server_answer = false;
     private  int portNumber;
+    private User loggedUser;
 
     public ServerConnectionManager(int porta, InetAddress in) throws IOException{
         portNumber = porta;
@@ -59,10 +61,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)message;
-
-                        if(messageSignUp.getStatus() == StatusCode.Message_Ok)
-                            last_server_answer = true;
-
+                        ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
                         break;
 
                     case Message_Get_Experts:
@@ -113,12 +112,8 @@ public class ServerConnectionManager extends Thread {
         ServerConnectionManager.waiting = in_attesa;
     }
 
-    public boolean checkLastServerAnswer() throws InterruptedException {
-        while(waiting)
-            wait();
-
-        return last_server_answer;
+    public void setLoggedUser(User loggedUser) {
+        this.loggedUser = loggedUser;
     }
-
 
 }

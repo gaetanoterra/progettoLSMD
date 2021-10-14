@@ -11,6 +11,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,27 +20,25 @@ import java.util.ArrayList;
 public class ControllerPostSearchInterface {
 
     private ServerConnectionManager serverConnectionManager;
-
-    private static Post last_post_seen;
-
     private ObservableList<Post> postObservableList;
 
     @FXML
-    private Label label_username_anonymous_interface;
-    @FXML
-    private Button signin_button, signup_button, search_button, profile_button;
-
+    private Button signin_button, signup_button, search_button;
     @FXML
     private TextField textfield_search;
     @FXML
     private ListView<Post> postsListView;
+    @FXML
+    private ImageView profileImageView;
+    @FXML
+    private Label usernameLabel;
 
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
     }
 
-    @FXML
+    @Deprecated
     private void initialize(){
         textfield_search.requestFocus();
 
@@ -47,11 +47,10 @@ public class ControllerPostSearchInterface {
 
     }
 
-    public void setLoggedInterface(String username){
-        label_username_anonymous_interface.setText(username);
+    public void setLoggedInterface(String username, String imageUrl){
+        this.profileImageView.setImage(new Image(imageUrl));
         signin_button.setDisable(true);
         signup_button.setDisable(true);
-        profile_button.setDisable(false);
     }
 
     //rendo di nuovo disponibili i bottoni e scollego l'interfaccia dall'utente
@@ -64,29 +63,21 @@ public class ControllerPostSearchInterface {
         this.postObservableList.setAll(postArrayList);
     }
 
-
+    @FXML
     public void eventButtonSignIn(ActionEvent event) throws IOException {
         ClientInterface.switchScene(PageType.SIGN_IN);
     }
 
+    @FXML
     public void eventButtonSignUp(ActionEvent event) throws IOException {
         ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
-    public void eventButtonProfile(ActionEvent actionEvent) {
-        //
-        // ClientInterface.getControllerProfileInterface().lockTextArea();
-    }
-
-
     //event che invia la richiesta al ClientManager in base al parametro di ricerca
+    @FXML
     public void eventButtonSearch(ActionEvent actionEvent) throws IOException {
        resetInterface();
        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
-    }
-
-    public static Post lastPostSeen(){
-        return last_post_seen;
     }
 
 }

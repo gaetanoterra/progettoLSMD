@@ -8,19 +8,18 @@ public class MessageSignUp extends Message {
     private User user;
     private StatusCode status;
 
-    //usato dal client
-    public MessageSignUp(User user) {
-        this(user, null);
-    }
-    //usato dal server
-    public MessageSignUp(StatusCode status) {
-        this(null, status);
-    }
-
     public MessageSignUp(User user, StatusCode status){
         this.opcode = Opcode.Message_Signup;
         this.user = user;
         this.status = status;
+    }
+
+    public MessageSignUp(User user) {
+        this(user, null);
+    }
+
+    public MessageSignUp(StatusCode status) {
+        this(null, status);
     }
 
     public User getUser() {
