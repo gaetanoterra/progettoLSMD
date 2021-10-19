@@ -38,10 +38,11 @@ public class DBManager {
     }
 
     //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
-    public String[] findMostPopularTagsByLocation(String location, int numTags){
-        return documentDBManager.findMostPopularTagsByLocation(location, numTags);
-    }
+    //per i most popular tags per lcation inserire nella pagina delle analytics una piechart che mostra i top 10, con una casella di testo per modificare la location
+    public String[] findMostPopularTagsByLocation(String location, int numTags){ return documentDBManager.findMostPopularTagsByLocation(location, numTags); }
+
     //TODO: Non esiste un messaggio per ottenere i tag più popolari in generale. Creare un opcode e un messagio per questo
+    //per i most popular tags inserire nella pagina delle analytics una piechart che mostra i top 10
     public Map<String, Integer> findMostPopularTags() {
         return graphDBManager.findMostPopularTags();
     }
