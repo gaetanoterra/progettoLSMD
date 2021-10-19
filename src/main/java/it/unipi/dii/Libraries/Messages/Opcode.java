@@ -27,8 +27,6 @@ public enum Opcode {
         this.opcode = (byte)opcode;
     }
 
-
-
     public byte getOpcode() {
         return this.opcode;
     }

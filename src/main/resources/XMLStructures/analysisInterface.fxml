@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox layoutX="20.0" layoutY="66.0" prefHeight="268.0" prefWidth="561.0">
+         <children>
+            <VBox prefHeight="268.0" prefWidth="201.0">
+               <children>
+                  <PieChart />
+               </children>
+            </VBox>
+            <VBox prefHeight="268.0" prefWidth="201.0">
+               <children>
+                  <PieChart />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <TextArea prefHeight="38.0" prefWidth="128.0" text="location" />
+                        <Button mnemonicParsing="false" prefHeight="39.0" prefWidth="69.0" text="Search" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="268.0" prefWidth="200.0">
+               <children>
+                  <Label text="User Ranking" />
+                  <TableView prefHeight="254.0" prefWidth="161.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children></HBox>
+      <Button layoutX="419.0" layoutY="14.0" mnemonicParsing="false" text="Back" />
+      <Label layoutX="32.0" layoutY="18.0" prefHeight="17.0" prefWidth="88.0" text="Username" />
+   </children>
 </AnchorPane>
