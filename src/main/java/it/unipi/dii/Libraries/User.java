@@ -5,12 +5,13 @@ import java.util.Date;
 
 public class User implements Serializable {
 
+    //TODO nel database ci sono 3 identificativi (_id, Id, AccountId) e manca lastAccessDate e type
     private String userId;
     private String password;
     private String displayName;
     private int followersNumber;
     private int followedNumber;
-    private double reputation;
+    private int reputation;
     private Date creationDate;
     private Date lastAccessDate;
     private String type = "generic_user";
@@ -51,7 +52,7 @@ public class User implements Serializable {
         return this.followedNumber;
     }
 
-    public double getReputation() {
+    public int getReputation() {
         return this.reputation;
     }
 
@@ -111,7 +112,7 @@ public class User implements Serializable {
         return this;
     }
 
-    public User setReputation(double reputation) {
+    public User setReputation(int reputation) {
         this.reputation = reputation;
         return this;
     }
@@ -149,5 +150,13 @@ public class User implements Serializable {
     public User setWebsiteURL(String websiteURL){
         this.websiteURL = websiteURL;
         return this;
+    }
+
+    public static Date convertMillisToDate (long millis){
+        Date data = new Date(millis);
+
+        System.out.println(data);
+
+        return data;
     }
 }

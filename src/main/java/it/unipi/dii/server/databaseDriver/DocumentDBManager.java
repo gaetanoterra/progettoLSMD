@@ -234,7 +234,7 @@ public class DocumentDBManager {
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))
                     .setFollowedNumber(document.getInteger("followedNumber"))
-                    .setReputation(document.getDouble("Reputation"))
+                    .setReputation(document.getInteger("Reputation"))
                     .setCreationDate(document.getDate("CreationDate"))
                     .setLastAccessDate(document.getDate("LastAccessDate"))
                     .setType(document.getString("type"))
@@ -280,7 +280,7 @@ public class DocumentDBManager {
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))
                     .setFollowedNumber(document.getInteger("followedNumber"))
-                    .setReputation(document.getDouble("Reputation"))
+                    .setReputation(document.getInteger("Reputation"))
                     .setCreationDate(document.getDate("CreationDate"))
                     .setLastAccessDate(document.getDate("LastAccessDate"))
                     .setType(document.getString("type"))
@@ -487,7 +487,7 @@ public class DocumentDBManager {
                 .setPassword(userDoc.getString("Password"))
                 .setFollowersNumber(userDoc.getInteger("followerNumber"))
                 .setFollowedNumber(userDoc.getInteger("followedNumber"))
-                .setReputation(userDoc.getDouble("Reputation"))
+                .setReputation(userDoc.getInteger("Reputation"))
                 .setCreationDate(userDoc.getDate("CreationDate"))
                 .setLastAccessDate(userDoc.getDate("LastAccessDate"))
                 .setType(userDoc.getString("type"))
@@ -500,24 +500,26 @@ public class DocumentDBManager {
     }
 
     public User getUserData(String displayName){
-        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
+        MongoCollection<Document> coll = mongoDatabase.getCollection(USERSCOLLECTION);
 
         Document userDoc = coll.find(eq("DisplayName", displayName)).first();
         User user = new User();
 
         if(userDoc != null) {
-            user.setUserId(userDoc.getString("Id"))
+            user.setUserId(userDoc.getObjectId("_id").toHexString())
                     .setDisplayName(displayName)
                     .setPassword(userDoc.getString("Password"))
                     .setFollowersNumber(userDoc.getInteger("followerNumber"))
                     .setFollowedNumber(userDoc.getInteger("followedNumber"))
-                    .setReputation(userDoc.getDouble("Reputation"))
-                    .setCreationDate(userDoc.getDate("CreationDate"))
+                    .setReputation(userDoc.getInteger("Reputation"))
+                    .setCreationDate(User.convertMillisToDate(userDoc.getLong("CreationDate")))
                     .setLastAccessDate(userDoc.getDate("LastAccessDate"))
                     .setType(userDoc.getString("type"))
                     .setLocation(userDoc.getString("Location"))
                     .setAboutMe(userDoc.getString("AboutMe"))
                     .setWebsiteURL(userDoc.getString("WebsiteURL"));
+
+            System.out.println(user.getLastAccessDate());
         }
 
         return user;
@@ -534,7 +536,7 @@ public class DocumentDBManager {
                     .setPassword(doc.getString("Password"))
                     .setFollowersNumber(doc.getInteger("followerNumber"))
                     .setFollowedNumber(doc.getInteger("followedNumber"))
-                    .setReputation(doc.getDouble("Reputation"))
+                    .setReputation(doc.getInteger("Reputation"))
                     .setCreationDate(doc.getDate("CreationDate"))
                     .setLastAccessDate(doc.getDate("LastAccessDate"))
                     .setType(doc.getString("type"))

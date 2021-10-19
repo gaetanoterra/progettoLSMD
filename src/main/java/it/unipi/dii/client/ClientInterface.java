@@ -65,7 +65,7 @@ public class ClientInterface extends Application{
         scenes[PageType.FULLPOST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
         controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
-        FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/profileInterface.fxml"));
+        FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
         scenes[PageType.PROFILE_INTERFACE.ordinal()] = new Scene(profileInterfaceLoader.load());
         controllerProfileInterface = profileInterfaceLoader.getController();
 
