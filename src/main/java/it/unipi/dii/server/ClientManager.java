@@ -202,6 +202,14 @@ public class ClientManager extends Thread{
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) msg;
                         messageAnalyticMPTags.setTags(dbManager.findMostPopularTags());
                         send(messageAnalyticMPTags);
+                        break;
+
+                    case Message_Analytics_Most_Popular_Tags_Location:
+                        MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) msg;
+                        messageAnalyticMPTagsLocation.setTags(dbManager.findMostPopularTagsByLocation(messageAnalyticMPTagsLocation.getLocation(), messageAnalyticMPTagsLocation.getNumTags()));
+                        send(messageAnalyticMPTagsLocation);
+                        break;
+
                 }
             }
 

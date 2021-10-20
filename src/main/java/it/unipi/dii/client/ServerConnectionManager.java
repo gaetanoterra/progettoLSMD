@@ -90,6 +90,12 @@ public class ServerConnectionManager extends Thread {
                     case Message_Analytics_Most_Popular_Tags:
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) message;
                         ClientInterface.fillMPTagChart(messageAnalyticMPTags.getTags());
+                        break;
+
+                    case Message_Analytics_Most_Popular_Tags_Location:
+                        MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) message;
+                        ClientInterface.fillMPTagLocationChart(messageAnalyticMPTagsLocation.getTags());
+                        break;
                 }
 
             }

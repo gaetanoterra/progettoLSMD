@@ -191,8 +191,15 @@ public class ClientInterface extends Application{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void fillMPTagChart(Map<String, Integer> tags){
-        controllerAnalysisInterface.resetInterface();
+        controllerAnalysisInterface.resetTagList();
         controllerAnalysisInterface.fillTagList(tags);
+        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
+    }
+
+    public static void fillMPTagLocationChart(String[] tags){
+        controllerAnalysisInterface.resetTagLocationList();
+        controllerAnalysisInterface.fillTagLocationList(tags);
+        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 }
 

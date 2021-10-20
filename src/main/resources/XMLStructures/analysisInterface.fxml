@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerAnalysisInterface">
    <children>
       <HBox layoutX="20.0" layoutY="66.0" prefHeight="268.0" prefWidth="561.0">
          <children>
@@ -19,8 +19,8 @@
                   <PieChart fx:id="pie_chart_mptags_location" />
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <TextArea fx:id="text_field_location" prefHeight="38.0" prefWidth="128.0" text="location" />
-                        <Button fx:id="button_search" mnemonicParsing="false" prefHeight="39.0" prefWidth="69.0" text="Search" />
+                        <TextField fx:id="text_field_location" text="location" />
+                        <Button fx:id="button_search" mnemonicParsing="false" onAction="#eventButtonSearch" prefHeight="39.0" prefWidth="69.0" text="Search" />
                      </children>
                   </HBox>
                </children>
