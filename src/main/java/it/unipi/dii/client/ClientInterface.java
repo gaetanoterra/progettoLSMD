@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class ClientInterface extends Application{
@@ -31,6 +32,7 @@ public class ClientInterface extends Application{
     private static ControllerSignUpInterface controllerSignUpInterface;
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
+    private static ControllerAnalysisInterface controllerAnalysisInterface;
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -68,6 +70,10 @@ public class ClientInterface extends Application{
         FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
         scenes[PageType.PROFILE_INTERFACE.ordinal()] = new Scene(profileInterfaceLoader.load());
         controllerProfileInterface = profileInterfaceLoader.getController();
+
+        FXMLLoader analysisInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/analysisInterface.fxml"));
+        scenes[PageType.ANALYSIS_INTERFACE.ordinal()] = new Scene(analysisInterfaceLoader.load());
+        controllerAnalysisInterface = analysisInterfaceLoader.getController();
 
    /*
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
@@ -176,6 +182,24 @@ public class ClientInterface extends Application{
             e.printStackTrace();
         }
         Application.launch(args);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                         ANALYSIS INTERFACE APIs                                                //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static void fillMPTagChart(Map<String, Integer> tags){
+        controllerAnalysisInterface.resetTagList();
+        controllerAnalysisInterface.fillTagList(tags);
+        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
+    }
+
+    public static void fillMPTagLocationChart(String[] tags){
+        controllerAnalysisInterface.resetTagLocationList();
+        controllerAnalysisInterface.fillTagLocationList(tags);
+        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 }
 
