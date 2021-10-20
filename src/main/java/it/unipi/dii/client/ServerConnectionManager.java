@@ -2,6 +2,7 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
+import it.unipi.dii.client.controllers.ControllerAnalysisInterface;
 
 import java.io.*;
 import java.net.*;
@@ -85,6 +86,10 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_Top_Users_Posts:
                         break;
+
+                    case Message_Analytics_Most_Popular_Tags:
+                        MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) message;
+                        ClientInterface.fillMPTagChart(messageAnalyticMPTags.getTags());
                 }
 
             }

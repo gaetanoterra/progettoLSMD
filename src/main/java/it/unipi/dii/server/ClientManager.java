@@ -197,6 +197,11 @@ public class ClientManager extends Thread{
                         dbManager.updateUserData(updatedUser);
                         // Main.setLog(updatedUser);
                         break;
+
+                    case Message_Analytics_Most_Popular_Tags:
+                        MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) msg;
+                        messageAnalyticMPTags.setTags(dbManager.findMostPopularTags());
+                        send(messageAnalyticMPTags);
                 }
             }
 
