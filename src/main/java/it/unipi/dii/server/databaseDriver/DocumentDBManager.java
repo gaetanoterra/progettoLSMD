@@ -8,6 +8,7 @@ import javafx.util.Pair;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
@@ -235,12 +236,12 @@ public class DocumentDBManager {
                     .setFollowersNumber(document.getInteger("followerNumber"))
                     .setFollowedNumber(document.getInteger("followedNumber"))
                     .setReputation(document.getInteger("Reputation"))
-                    .setCreationDate(document.getDate("CreationDate"))
-                    .setLastAccessDate(document.getDate("LastAccessDate"))
+                    .setCreationDate(document.getLong("CreationDate"))
+                    .setLastAccessDate(document.getLong("LastAccessDate"))
                     .setType(document.getString("type"))
                     .setLocation(document.getString("Location"))
                     .setAboutMe(document.getString("AboutMe"))
-                    .setWebsiteURL(document.getString("WebsiteURL"));
+                    .setWebsiteURL(document.getString("WebsiteUrl"));
             userList.add(user);
         });
 
@@ -281,12 +282,12 @@ public class DocumentDBManager {
                     .setFollowersNumber(document.getInteger("followerNumber"))
                     .setFollowedNumber(document.getInteger("followedNumber"))
                     .setReputation(document.getInteger("Reputation"))
-                    .setCreationDate(document.getDate("CreationDate"))
-                    .setLastAccessDate(document.getDate("LastAccessDate"))
+                    .setCreationDate(document.getLong("CreationDate"))
+                    .setLastAccessDate(document.getLong("LastAccessDate"))
                     .setType(document.getString("type"))
                     .setLocation(document.getString("Location"))
                     .setAboutMe(document.getString("AboutMe"))
-                    .setWebsiteURL(document.getString("WebsiteURL"));
+                    .setWebsiteURL(document.getString("WebsiteUrl"));
             // user done, now the three posts
             // for each user id ($Id)
             int userId = Integer.parseInt(user.getUserId());
@@ -488,12 +489,12 @@ public class DocumentDBManager {
                 .setFollowersNumber(userDoc.getInteger("followerNumber"))
                 .setFollowedNumber(userDoc.getInteger("followedNumber"))
                 .setReputation(userDoc.getInteger("Reputation"))
-                .setCreationDate(userDoc.getDate("CreationDate"))
-                .setLastAccessDate(userDoc.getDate("LastAccessDate"))
+                .setCreationDate(userDoc.getLong("CreationDate"))
+                .setLastAccessDate(userDoc.getLong("LastAccessDate"))
                 .setType(userDoc.getString("type"))
                 .setLocation(userDoc.getString("Location"))
                 .setAboutMe(userDoc.getString("AboutMe"))
-                .setWebsiteURL(userDoc.getString("WebsiteURL"));
+                .setWebsiteURL(userDoc.getString("WebsiteUrl"));
         }
 
         return user;
@@ -512,14 +513,14 @@ public class DocumentDBManager {
                     .setFollowersNumber(userDoc.getInteger("followerNumber"))
                     .setFollowedNumber(userDoc.getInteger("followedNumber"))
                     .setReputation(userDoc.getInteger("Reputation"))
-                    .setCreationDate(User.convertMillisToDate(userDoc.getLong("CreationDate")))
-                    .setLastAccessDate(userDoc.getDate("LastAccessDate"))
+                    .setCreationDate(userDoc.getLong("CreationDate"))
+                    .setLastAccessDate(userDoc.getLong("LastAccessDate"))
                     .setType(userDoc.getString("type"))
                     .setLocation(userDoc.getString("Location"))
                     .setAboutMe(userDoc.getString("AboutMe"))
-                    .setWebsiteURL(userDoc.getString("WebsiteURL"));
+                    .setWebsiteURL(userDoc.getString("WebsiteUrl"));
 
-            System.out.println(user.getLastAccessDate());
+            System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
         }
 
         return user;
@@ -537,12 +538,12 @@ public class DocumentDBManager {
                     .setFollowersNumber(doc.getInteger("followerNumber"))
                     .setFollowedNumber(doc.getInteger("followedNumber"))
                     .setReputation(doc.getInteger("Reputation"))
-                    .setCreationDate(doc.getDate("CreationDate"))
-                    .setLastAccessDate(doc.getDate("LastAccessDate"))
+                    .setCreationDate(doc.getLong("CreationDate"))
+                    .setLastAccessDate(doc.getLong("LastAccessDate"))
                     .setType(doc.getString("type"))
                     .setLocation(doc.getString("Location"))
                     .setAboutMe(doc.getString("AboutMe"))
-                    .setWebsiteURL(doc.getString("WebsiteURL"));
+                    .setWebsiteURL(doc.getString("WebsiteUrl"));
 
             user.add(u);
         });
@@ -580,15 +581,24 @@ public class DocumentDBManager {
     }
 
     public boolean insertUser(User user){
-
+        user.setCreationDate(Instant.now().toEpochMilli())
+                .setLastAccessDate(Instant.now().toEpochMilli())
+                .setFollowedNumber(0)
+                .setFollowersNumber(0)
+                .setReputation(0)
+                .setType("N");
         Document us = new Document("Id", user.getUserId())
                 .append("DisplayName", user.getDisplayName())
                 .append("Password", user.getPassword())
-                .append("CreationDate", user.getCreationData())
+                .append("CreationDate", user.getCreationDate())
+                .append("LastAccessDate", user.getLastAccessDate())
                 .append("Location", user.getLocation())
                 .append("AboutMe", user.getAboutMe())
-                .append("WebsiteURL", user.getWebsiteURL());
-
+                .append("WebsiteUrl", user.getWebsiteURL())
+                .append("followedNumber", user.getFollowedNumber())
+                .append("followerNumber", user.getFollowersNumber())
+                .append("Reputation", user.getReputation())
+                .append("type", user.getType());
         return usersCollection.insertOne(us).wasAcknowledged();
     }
 
@@ -638,11 +648,11 @@ public class DocumentDBManager {
         MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         coll.updateOne(
                 eq("Id", user.getUserId()),
-                and(
+                Updates.combine(
                         set("Password", user.getPassword()),
                         set("Location", user.getLocation()),
                         set("AboutMe", user.getAboutMe()),
-                        set("WebsiteURL", user.getWebsiteURL())
+                        set("WebsiteUrl", user.getWebsiteURL())
                 )
         );
 

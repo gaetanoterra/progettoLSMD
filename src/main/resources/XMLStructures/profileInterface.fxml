@@ -38,6 +38,6 @@
       <TextField fx:id="textfield_creationdate" layoutX="619.0" layoutY="88.0" editable="false"/>
       <TextField fx:id="textfield_reputation" layoutX="619.0" layoutY="125.0" editable="false"/>
       <TextField fx:id="textfield_url" layoutX="619.0" layoutY="163.0" editable="false"/>
-      <Button layoutX="622.0" layoutY="200.0" mnemonicParsing="false" onAction="#eventButtonModify" text="Modify" />
+      <Button fx:id="button_modify" layoutX="622.0" layoutY="200.0" mnemonicParsing="false" onAction="#eventButtonModify" text="Modify" />
    </children>
 </AnchorPane>

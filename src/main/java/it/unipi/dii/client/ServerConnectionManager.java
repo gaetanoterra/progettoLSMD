@@ -2,6 +2,7 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
+import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -47,9 +48,7 @@ public class ServerConnectionManager extends Thread {
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
-                            // ClientInterface.getControllerProfileInterface().fillProfileInterface(msgl.getUser());
-                            // ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
-                            // ClientInterface.setLog(msgl.getUser());
+                            ClientInterface.loginResponseHandler(msgl.getUser(), msgl.getStatus());
                             last_server_answer = true;
                         }
                         break;

@@ -75,8 +75,8 @@ public class DBManager {
 
     public boolean insertUser(User newUser){
         boolean insertedUser = documentDBManager.insertUser(newUser);
-       /* if(insertedUser)
-            graphDBManager.insertUser(newUser);*/
+        if(insertedUser)
+            graphDBManager.insertUser(newUser);
         return insertedUser;
     }
 

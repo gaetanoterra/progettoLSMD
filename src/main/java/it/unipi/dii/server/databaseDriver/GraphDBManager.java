@@ -16,7 +16,7 @@ public class GraphDBManager {
     private Driver dbConnection;
 
     public GraphDBManager(){
-        String uri = "bolt://host-1:7687";
+        String uri = "bolt://localhost:7687";
         String user = "neo4j";
         String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));

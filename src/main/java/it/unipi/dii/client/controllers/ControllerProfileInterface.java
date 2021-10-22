@@ -1,9 +1,7 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
 import it.unipi.dii.Libraries.Messages.MessageUser;
 import it.unipi.dii.Libraries.Messages.Opcode;
-import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
@@ -27,7 +25,7 @@ public class ControllerProfileInterface {
     @FXML
     private TextArea textarea_aboutme;
     @FXML
-    private TextField textfield_location, textfield_cretiondate, textfield_reputation, textfield_url;
+    private TextField textfield_location, textfield_creationdate, textfield_reputation, textfield_url;
     @FXML
     private ImageView imageview_profile;
     @FXML
@@ -44,6 +42,7 @@ public class ControllerProfileInterface {
     }
 
     public void eventButtonLogout(ActionEvent actionEvent) throws IOException {
+        ClientInterface.resetLog();
         ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
     }
 
@@ -73,7 +72,7 @@ public class ControllerProfileInterface {
         setAboutMe(user.getAboutMe());
 
         textfield_location.setText(user.getLocation());
-        textfield_cretiondate.setText(user.getCreationData().toString());
+        textfield_creationdate.setText(User.convertMillisToDate(user.getCreationDate()).toString());
         textfield_reputation.setText(String.valueOf(user.getReputation()));
         textfield_url.setText(user.getWebsiteURL());
         
@@ -100,7 +99,7 @@ public class ControllerProfileInterface {
     public void lockTextArea(){
         textfield_location.setEditable(false);
         textfield_reputation.setEditable(false);
-        textfield_cretiondate.setEditable(false);
+        textfield_creationdate.setEditable(false);
         textfield_url.setEditable(false);
         textarea_aboutme.setEditable(false);
     }

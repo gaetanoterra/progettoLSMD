@@ -48,6 +48,7 @@ public class ControllerSignInInterface {
         if(messageLogin.getStatus().equals(StatusCode.Message_Ok)){
             serverConnectionManager.setLoggedUser(messageLogin.getUser());
             ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+            ClientInterface.setLog(messageLogin.getUser());
             ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(messageLogin.getUser());
         }else{
             errorMessageSignInLabel.setText("Username or password not valid");

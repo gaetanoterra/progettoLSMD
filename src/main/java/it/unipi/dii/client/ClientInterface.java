@@ -32,6 +32,10 @@ public class ClientInterface extends Application{
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
 
+    public static ControllerProfileInterface getControllerProfileInterface() {
+        return controllerProfileInterface;
+    }
+
     @Override
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
@@ -89,8 +93,12 @@ public class ClientInterface extends Application{
         return serverConnectionManager;
     }
 
+    public static void setLog(User user){
+        loggedUser = user;
+    }
+
     public static void resetLog(){
-        loggedUser = null;
+        setLog(null);
     }
 
     public static User getLog(){ return loggedUser; }
@@ -139,6 +147,23 @@ public class ClientInterface extends Application{
         Platform.runLater(() -> {
             if(stc.equals(StatusCode.Message_Ok)){
                 switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(u);
+                controllerProfileInterface.fillProfileInterface(u);
+            }
+        });
+    }
+
+    public static void loginResponseHandler(User u, StatusCode stc){
+        Platform.runLater(() -> {
+            if(stc.equals(StatusCode.Message_Ok)) {
+                // ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
+                switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(u);
+                controllerProfileInterface.fillProfileInterface(u);
+            }
+            if(stc.equals(StatusCode.Message_Ok)){
+                switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(u);
                 controllerProfileInterface.fillProfileInterface(u);
             }
         });
