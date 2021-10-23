@@ -48,9 +48,9 @@ public class ServerConnectionManager extends Thread {
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
-                            ClientInterface.loginResponseHandler(msgl.getUser(), msgl.getStatus());
                             last_server_answer = true;
                         }
+                        ClientInterface.loginResponseHandler(msgl);
                         break;
 
                     case Message_Logout:
@@ -60,7 +60,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)message;
-                        ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
+                        ClientInterface.registrationResponseHandler(messageSignUp);
                         break;
 
                     case Message_Get_Experts:

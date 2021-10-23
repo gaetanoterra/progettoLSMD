@@ -1,9 +1,6 @@
 package it.unipi.dii.client;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
-import it.unipi.dii.Libraries.Messages.MessageSignUp;
-import it.unipi.dii.Libraries.Messages.Parameter;
-import it.unipi.dii.Libraries.Messages.StatusCode;
+import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
 
@@ -32,9 +29,6 @@ public class ClientInterface extends Application{
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
 
-    public static ControllerProfileInterface getControllerProfileInterface() {
-        return controllerProfileInterface;
-    }
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -143,30 +137,16 @@ public class ClientInterface extends Application{
         }
     }
 
-    public static void registrationResponseHandler(User u, StatusCode stc){
-        Platform.runLater(() -> {
-            if(stc.equals(StatusCode.Message_Ok)){
-                switchScene(PageType.PROFILE_INTERFACE);
-                ClientInterface.setLog(u);
-                controllerProfileInterface.fillProfileInterface(u);
-            }
-        });
+    public static void registrationResponseHandler(MessageSignUp msgs){
+        controllerSignUpInterface.handleSignUpResponse(msgs);
     }
 
-    public static void loginResponseHandler(User u, StatusCode stc){
-        Platform.runLater(() -> {
-            if(stc.equals(StatusCode.Message_Ok)) {
-                // ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
-                switchScene(PageType.PROFILE_INTERFACE);
-                ClientInterface.setLog(u);
-                controllerProfileInterface.fillProfileInterface(u);
-            }
-            if(stc.equals(StatusCode.Message_Ok)){
-                switchScene(PageType.PROFILE_INTERFACE);
-                ClientInterface.setLog(u);
-                controllerProfileInterface.fillProfileInterface(u);
-            }
-        });
+    public static void fillProfileInterface(User u) {
+        controllerProfileInterface.fillProfileInterface(u);
+    }
+
+    public static void loginResponseHandler(MessageLogin msg){
+        controllerSignInInterface.handleLogInResponse(msg);
     }
 
 

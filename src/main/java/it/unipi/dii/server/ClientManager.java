@@ -165,7 +165,7 @@ public class ClientManager extends Thread{
                                 String[] tags = msgParameter.getValue().split(";");
                                 postArrayList.addAll(dbManager.getPostsByTag(tags));
                             }
-                            case Text -> postArrayList.addAll(dbManager.getPostByText(msgParameter.getValue()));
+                            case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }

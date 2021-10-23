@@ -7,20 +7,20 @@ public class Answer implements Serializable {
 
     private String answerId;
     private String creationDate;
-    private double score;
+    private Integer score;
     private String ownerUserName;
     private String body;
 
-    public Answer(String answerId, String creationDate, double score, String ownerUserName, String body) {
+    public Answer(String answerId, String creationDate, Integer score, String ownerUserName, String body) {
         this.answerId = answerId;
         this.creationDate = creationDate;
         this.score = score;
         this.ownerUserName = ownerUserName;
-        this.body =  body;
+        this.body = body;
     }
 
-    public Answer(String id, Date creationDate, Double viewCount, String ownerDisplayName, String body) {
-        this(id,creationDate.toString(), viewCount, ownerDisplayName,body);
+    public Answer(String id, Date creationDate, Integer score, String ownerDisplayName, String body) {
+        this(id,creationDate.toString(), score, ownerDisplayName,body);
     }
 
     public String getAnswerId(){
@@ -31,7 +31,7 @@ public class Answer implements Serializable {
         return this.creationDate;
     }
 
-    public double getScore(){
+    public Integer getScore(){
         return this.score;
     }
 
@@ -51,7 +51,7 @@ public class Answer implements Serializable {
         return this;
     }
 
-    public Answer setScore(double score){
+    public Answer setScore(Integer score){
         this.score = score;
         return this;
     }

@@ -361,6 +361,7 @@ public class DocumentDBManager {
             System.out.println("Found no document marching the id " + postId);
             return new Post();
         }else{
+            this.increaseViewsPost(postId);
             System.out.println("Found one document marching the id " + postId + " Containing " +
                                 document.getList("Answers", Document.class).size() + " answers");
 
@@ -369,7 +370,7 @@ public class DocumentDBManager {
                     new Answer(
                         answerDocument.getInteger("Id").toString(),
                         new Date(answerDocument.getLong("CreationDate")),
-                        (answerDocument.getDouble("ViewCount")== null)? 0 : answerDocument.getDouble("ViewCount"),
+                        answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerDisplayName"),
                         answerDocument.getString("Body")
                     )
@@ -387,6 +388,11 @@ public class DocumentDBManager {
             );
         }
 
+    }
+
+    private void increaseViewsPost(String postId) {
+        // Assuming the document already exists in the MongoDB collection
+        this.postsCollection.updateOne(eq("_id", new ObjectId(postId)), inc("ViewCount", 1));
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
@@ -442,7 +448,7 @@ public class DocumentDBManager {
                 Title:  1,
                 Tags:   1,
                 numberOfAnswers: { $size: "$Answers" },
-                Views:  1
+                ViewCount:  1
             }
         );
     */
@@ -457,8 +463,8 @@ public class DocumentDBManager {
                         )
                         .projection(new Document("Title",1)
                                     .append("_id", 1)
-                                    .append("Views", 1)
-                                    .append("Title", 1)
+                                    .append("ViewCount", 1)
+                                    .append("OwnerUserId", 1)
                                     .append("Tags" , 1)
                                     .append("AnswersNumber",new BasicDBObject("$size","$Answers"))
                         )
@@ -468,6 +474,7 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class));
+                            p.setViews(doc.getLong("ViewCount"));
                             postArrayList.add(p);
                         }
         );

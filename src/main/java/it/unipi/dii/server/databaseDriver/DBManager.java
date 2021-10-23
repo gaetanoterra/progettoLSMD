@@ -122,7 +122,7 @@ public class DBManager {
         return documentDBManager.getPostsByTag(tags);
     }
 
-    public ArrayList<Post> getPostByText(String text){
+    public ArrayList<Post> getPostsByText(String text){
         return documentDBManager.getPostsByText(text);
     }
 

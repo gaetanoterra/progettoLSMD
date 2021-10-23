@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Post  implements Serializable {
+public class Post implements Serializable {
 
     private String postId;
     private String title;
@@ -15,7 +15,7 @@ public class Post  implements Serializable {
     private String body;
     private String ownerUserId;
     private List<String> tags;
-    private int views;
+    private Long views;
     private int answersNumber;
 
     public Post(){
@@ -67,7 +67,7 @@ public class Post  implements Serializable {
         return this.tags;
     }
 
-    public int getViews() { return this.views; }
+    public Long getViews() { return this.views; }
 
     public Post setPostId(String postId){
         this.postId = postId;
@@ -108,7 +108,7 @@ public class Post  implements Serializable {
         return this;
     }
 
-    public Post setViews(int views) {
+    public Post setViews(Long views) {
         this.views = views;
         return this;
     }

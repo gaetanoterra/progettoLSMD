@@ -10,14 +10,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-public class ControllerPostSearchInterface {
+public class ControllerPostSearchInterface implements Initializable {
 
     private ServerConnectionManager serverConnectionManager;
     private ObservableList<Post> postObservableList;
@@ -36,19 +39,22 @@ public class ControllerPostSearchInterface {
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
+
     }
 
-    @Deprecated
-    private void initialize(){
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         textfield_search.requestFocus();
 
         postsListView.setItems(this.postObservableList);
         postsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
-
     }
 
     public void setLoggedInterface(String username, String imageUrl){
-        this.profileImageView.setImage(new Image(imageUrl));
+        this.usernameLabel.setText(username);
+        if (imageUrl != null) {
+            this.profileImageView.setImage(new Image(imageUrl));
+        }
         signin_button.setDisable(true);
         signup_button.setDisable(true);
     }
@@ -79,5 +85,6 @@ public class ControllerPostSearchInterface {
        resetInterface();
        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
     }
+
 
 }

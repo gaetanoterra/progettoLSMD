@@ -1,8 +1,11 @@
 package it.unipi.dii.client.controllers;
 
+import it.unipi.dii.Libraries.Messages.MessageSignUp;
+import it.unipi.dii.Libraries.Messages.StatusCode;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -42,5 +45,15 @@ public class ControllerSignUpInterface {
 
     public void setErroneousUserName(){
       //  userNameTextField.set
+    }
+
+    public void handleSignUpResponse(MessageSignUp msgs) {
+        Platform.runLater(() -> {
+            if(msgs.getStatus().equals(StatusCode.Message_Ok)){
+                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(msgs.getUser());
+                ClientInterface.fillProfileInterface(msgs.getUser());
+            }
+        });
     }
 }
