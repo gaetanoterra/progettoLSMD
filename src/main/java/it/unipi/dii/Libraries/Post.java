@@ -43,7 +43,7 @@ public class Post implements Serializable {
         return this.postId;
     }
 
-    public String gettitle(){
+    public String getTitle(){
         return this.title;
     }
 

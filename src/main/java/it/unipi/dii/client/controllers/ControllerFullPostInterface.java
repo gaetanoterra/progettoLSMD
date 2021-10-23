@@ -50,7 +50,7 @@ public class ControllerFullPostInterface {
 
     public void fillInterface(Post post) {
         System.out.println(post);
-        titleLabel.setText(post.gettitle());
+        titleLabel.setText(post.getTitle());
         authorText.setText(post.getOwnerUserId());
         questionWebView.getEngine().loadContent(post.getBody(), "text/html");
         answerObservableList.addAll(post.getAnswers());

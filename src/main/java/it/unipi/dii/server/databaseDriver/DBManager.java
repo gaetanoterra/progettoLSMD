@@ -4,6 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 
+import java.time.Instant;
 import java.util.*;
 
 //classe preposta a ricevere le richieste dal clientManager e a propagarle al documentDB e al graphDB
@@ -74,6 +75,12 @@ public class DBManager {
     }
 
     public boolean insertUser(User newUser){
+        newUser.setCreationDate(Instant.now().toEpochMilli())
+                .setLastAccessDate(Instant.now().toEpochMilli())
+                .setFollowedNumber(0)
+                .setFollowersNumber(0)
+                .setReputation(0)
+                .setType("N");
         boolean insertedUser = documentDBManager.insertUser(newUser);
         if(insertedUser)
             graphDBManager.insertUser(newUser);
