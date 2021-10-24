@@ -227,7 +227,7 @@ db.Posts.find().forEach(function(doc) {
                 new Document(
                         "OwnerUserId", 1
                 ).append(
-                        "PostId", 1
+                        "Id", 1
                 ).append(
                         "NumeroRisposte",
                         new Document(
@@ -459,7 +459,7 @@ db.Posts.find().forEach(function(doc) {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(eq("CreationDate", data)).forEach(doc -> {
-            Post p = new Post(doc.getInteger("PostId"),
+            Post p = new Post(doc.getInteger("Id"),
                     doc.getString("Title"),
                     (ArrayList<Answer>)doc.get("Answers"),
                     doc.getDate("CreationDate"),
@@ -523,7 +523,7 @@ db.Posts.find().forEach(function(doc) {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(all("OwnerUserId", username)).forEach(doc -> {
-            Post p = new Post(doc.getInteger("PostId"),
+            Post p = new Post(doc.getInteger("Id"),
                     doc.getString("Title"),
                     (ArrayList<Answer>)doc.get("Answers"),
                     new Date(doc.getLong("CreationDate")),
@@ -542,7 +542,7 @@ db.Posts.find().forEach(function(doc) {
 
         ArrayList<Post> postArrayList = new ArrayList<>();
         postsCollection.find(all("Tags", tags)).forEach(doc -> {
-            Post p = new Post(doc.getInteger("PostId"),
+            Post p = new Post(doc.getInteger("Id"),
                     doc.getString("Title"),
                     (ArrayList<Answer>)doc.get("Answers"),
                     doc.getDate("CreationDate"),
@@ -677,21 +677,21 @@ db.Posts.find().forEach(function(doc) {
         return (User[]) user.toArray();
     }
 
-    public boolean insertAnswer(Answer answer, String postId){
+    public boolean insertAnswer(Answer answer, Integer postId){
 
-        Document doc = new Document("AnswerId", answer.getAnswerId())
+        Document doc = new Document("Id", answer.getAnswerId())
                 .append("CreationDate", answer.getCreationDate())
                 .append("Score", answer.getScore())
                 .append("OwnerUserId", answer.getOwnerUserName());
 
-        postsCollection.updateOne(eq("PostId", postId), Updates.push("Answers", doc));
+        postsCollection.updateOne(eq("Id", postId), Updates.push("Answers", doc));
 
         return true;
     }
 
     public boolean insertPost(Post post){
 
-        Document doc = new Document("PostId", post.getPostId())
+        Document doc = new Document("Id", post.getPostId())
                 .append("Title", post.getTitle())
                 .append("Answers", post.getAnswers())
                 .append("CreationDate", post.getCreationDate())
@@ -733,28 +733,29 @@ db.Posts.find().forEach(function(doc) {
         return res;
     }
 
-    public boolean removeAnswer(Answer answer, String postId){
+    public boolean removeAnswer(Answer answer, Integer postId){
 
-        /*Document doc = new Document("AnswerId", answer.getAnswerId()).append("CreationDate", answer.getCreationDate()).append("Score", answer.getScore()).append("OwnerUserId", answer.getOwnerUserId());
-        postsCollection.updateOne(eq("PostId", postId), Updates.pull("Answers", doc));*/
+        /*Document doc = new Document("Id", answer.getAnswerId()).append("CreationDate", answer.getCreationDate()).append("Score", answer.getScore()).append("OwnerUserId", answer.getOwnerUserId());
+        postsCollection.updateOne(eq("Id", postId), Updates.pull("Answers", doc));*/
 
         //provare uno dei due
-        BasicDBObject match = new BasicDBObject("PostId", postId);
-        BasicDBObject update = new BasicDBObject("Answers", new BasicDBObject("AnswerId", answer.getAnswerId()));
+        BasicDBObject match = new BasicDBObject("Id", postId);
+        BasicDBObject update = new BasicDBObject("Answers", new BasicDBObject("Id", answer.getAnswerId()));
         postsCollection.updateOne(match, new BasicDBObject("$pull", update));
 
         return true;
     }
 
     public boolean removePost(Post post){
-        postsCollection.deleteOne(eq("PostId", post.getPostId()));
+        postsCollection.deleteOne(eq("Id", post.getPostId()));
         return true;
     }
 
-    public boolean removeUser(Integer userIdString){
+    public boolean removeUser(Integer userId){
         //addio utente
-        usersCollection.deleteOne(eq("Id", userIdString));
+        usersCollection.deleteOne(eq("Id", userId));
         //addio post scritti da lui
+        //TODO: Rimuovere tutti i post dell'utente
         return true;
     }
 

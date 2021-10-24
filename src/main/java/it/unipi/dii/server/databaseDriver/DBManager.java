@@ -136,6 +136,8 @@ public class DBManager {
     }
 
     public boolean insertPost(Post newPost){
+        Integer newPostId = documentDBManager.getNewPostId();
+        newPost.setPostId(newPostId);
         boolean insertedPost = documentDBManager.insertPost(newPost);
         graphDBManager.insertPost(newPost);
         return insertedPost;
@@ -151,15 +153,17 @@ public class DBManager {
     --------------------------- ANSWERS ---------------------------
      */
 
-    public boolean insertAnswer(Answer answer, String postIdString){
-        documentDBManager.insertAnswer(answer, postIdString);
-        graphDBManager.insertAnswer(answer, postIdString);
+    public boolean insertAnswer(Answer answer, Integer postId){
+        Integer newAnswerId = documentDBManager.getNewPostId();
+        answer.setAnswerId(newAnswerId);
+        documentDBManager.insertAnswer(answer, postId);
+        graphDBManager.insertAnswer(answer, postId);
         return true;
     }
 
-    public boolean removeAnswer(Answer answer, String postIdString){
-        documentDBManager.removeAnswer(answer, postIdString);
-        graphDBManager.removeAnswer(answer, postIdString);
+    public boolean removeAnswer(Answer answer, Integer postId){
+        documentDBManager.removeAnswer(answer, postId);
+        graphDBManager.removeAnswer(answer, postId);
         return true;
     }
 
@@ -167,12 +171,12 @@ public class DBManager {
     --------------------------- VOTES ---------------------------
      */
 
-    public boolean insertRelationVote(Integer userIdString, Integer answerIdString, int voteAnswer){
-        graphDBManager.insertRelationVote(userIdString, answerIdString, voteAnswer);
+    public boolean insertRelationVote(Integer userId, Integer answerId, int voteAnswer){
+        graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
         return true;
     }
-    public boolean removeRelationVote(Integer userIdString, Integer answerIdString){
-        graphDBManager.removeRelationVote(userIdString, answerIdString);
+    public boolean removeRelationVote(Integer userId, Integer answerId){
+        graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }
 
