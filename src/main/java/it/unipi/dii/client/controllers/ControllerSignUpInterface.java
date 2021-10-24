@@ -50,9 +50,11 @@ public class ControllerSignUpInterface {
     public void handleSignUpResponse(MessageSignUp msgs) {
         Platform.runLater(() -> {
             if(msgs.getStatus().equals(StatusCode.Message_Ok)){
+                clientServerManager.setLoggedUser(msgs.getUser());
                 ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
                 ClientInterface.setLog(msgs.getUser());
                 ClientInterface.fillProfileInterface(msgs.getUser());
+                ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(msgs.getUser());
             }
         });
     }

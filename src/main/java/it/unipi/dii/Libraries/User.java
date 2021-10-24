@@ -6,12 +6,12 @@ import java.util.Date;
 public class User implements Serializable {
 
     //TODO nel database ci sono 3 identificativi (_id, Id, AccountId) e manca lastAccessDate e type
-    private String userId;
+    private Integer userId;
     private String password;
     private String displayName;
-    private int followersNumber;
-    private int followedNumber;
-    private int reputation;
+    private Integer followersNumber;
+    private Integer followedNumber;
+    private Integer reputation;
     private Long creationDate;
     private Long lastAccessDate;
     private String type = "generic_user";
@@ -20,7 +20,7 @@ public class User implements Serializable {
     private String websiteURL;
     private String profileImage;
 
-    public User(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
+    public User(Integer userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
         this.userId = userId;
         this.displayName = displayName;
         this.location = location;
@@ -29,14 +29,14 @@ public class User implements Serializable {
         this.password = pwd;
     }
 
-    public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
+    public User(Integer userId, String displayName, String location, String aboutMe, String websiteURL){
         this(userId, displayName, location, aboutMe,  websiteURL, null);
     }
 
     public User(){
         this(null,null,null,null,null);
     }
-    public String getUserId(){
+    public Integer getUserId(){
         return this.userId;
     }
 
@@ -92,7 +92,7 @@ public class User implements Serializable {
         this.profileImage = profileImage;
     }
 
-    public User setUserId(String userId){
+    public User setUserId(Integer userId){
         this.userId = userId;
         return this;
     }
@@ -102,17 +102,17 @@ public class User implements Serializable {
         return this;
     }
 
-    public User setFollowersNumber(int followersNumber) {
+    public User setFollowersNumber(Integer followersNumber) {
         this.followersNumber = followersNumber;
         return this;
     }
 
-    public User setFollowedNumber(int followedNumber) {
+    public User setFollowedNumber(Integer followedNumber) {
         this.followedNumber = followedNumber;
         return this;
     }
 
-    public User setReputation(int reputation) {
+    public User setReputation(Integer reputation) {
         this.reputation = reputation;
         return this;
     }

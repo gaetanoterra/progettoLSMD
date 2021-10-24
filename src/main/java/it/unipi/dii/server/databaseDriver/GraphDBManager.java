@@ -114,30 +114,30 @@ public class GraphDBManager {
     }
 
 
-    public ArrayList<String> getUserIdsFollower(String userId) {
+    public ArrayList<Integer> getUserIdsFollower(Integer userId) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollower = new ArrayList<>();
+                ArrayList<Integer> userIdsFollower = new ArrayList<>();
                 tx.run("MATCH (fr:User)-[:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
                                 "RETURN fr.userId as userIdFollower ",
                         parameters("userIdFollowed", userId))
                 .stream().forEach(record ->
-                    userIdsFollower.add(record.get("userIdFollower").asString())
+                    userIdsFollower.add(record.get("userIdFollower").asInt())
                 );
                 return userIdsFollower;
             });
         }
     }
 
-    public ArrayList<String> getUserIdsFollowed(String userId) {
+    public ArrayList<Integer> getUserIdsFollowed(Integer userId) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollowed = new ArrayList<>();
+                ArrayList<Integer> userIdsFollowed = new ArrayList<>();
                 tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOWS]->(fd:User) " +
                                 "RETURN fd.userId as userIdFollowed ",
                         parameters("userIdFollower", userId))
                         .stream().forEach(record ->
-                        userIdsFollowed.add(record.get("userIdFollowed").asString())
+                        userIdsFollowed.add(record.get("userIdFollowed").asInt())
                 );
                 return userIdsFollowed;
             });
@@ -171,7 +171,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire la relazione Follow tra due username
-    public void insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+    public void insertFollowRelationAndUpdate(Integer userIdFollower, Integer userIdFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fd:User {userId: $userIdFollowed), " +
@@ -208,7 +208,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
-    public void insertRelationVote(String userIdString, String answerIdString, int voteAnswer){
+    public void insertRelationVote(Integer userIdString, Integer answerIdString, int voteAnswer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
@@ -257,7 +257,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per rimuovere la relazione Follows tra due utenti
-    public void removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
+    public void removeFollowRelationAndUpdate(Integer userIdFollower, Integer userIdFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fr:User {userId = $userIdFollower})-[r:FOLLOWS]->(fd:User {userId = $userIdFollowed}) " +
@@ -298,7 +298,7 @@ public class GraphDBManager {
         }
     }
 
-    public void removeRelationVote(String userId, String answerId){
+    public void removeRelationVote(Integer userId, Integer answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:User {userId = $userId})-[r:VOTES]->(:Answer {answerId = $answerId})" +
@@ -309,7 +309,7 @@ public class GraphDBManager {
         }
     }
 
-    public void removeUser(String userId){
+    public void removeUser(Integer userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId = $userId})-[:FOLLOWS]-(:User), " +

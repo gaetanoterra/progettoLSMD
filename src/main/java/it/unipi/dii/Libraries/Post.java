@@ -7,13 +7,13 @@ import java.util.List;
 
 public class Post implements Serializable {
 
-    private String postId;
+    private Integer postId;
     private String title;
     private String ownerUserName;
     private List<Answer> answers;
     private Date creationDate;
     private String body;
-    private String ownerUserId;
+    private Integer ownerUserId;
     private List<String> tags;
     private Long views;
     private int answersNumber;
@@ -22,7 +22,7 @@ public class Post implements Serializable {
         this(null, null, new ArrayList<>(), null, null, null, null);
     }
 
-    public Post(String postId, String title, List<Answer> answers, Date creationDate, String body, String ownerUserId, List<String> tags){
+    public Post(Integer postId, String title, List<Answer> answers, Date creationDate, String body, Integer ownerUserId, List<String> tags){
         this.postId = postId;
         this.title = title;
         this.answers = answers;
@@ -32,14 +32,14 @@ public class Post implements Serializable {
         this.tags = tags;
     }
 
-    public Post(String postId, String title, int answersNumber, String ownerUserId, List<String> tags){
+    public Post(Integer postId, String title, int answersNumber, Integer ownerUserId, List<String> tags){
         this.postId = postId;
         this.title = title;
         this.answersNumber = answersNumber;
         this.ownerUserId = ownerUserId;
         this.tags = tags;
     }
-    public String getPostId(){
+    public Integer getPostId(){
         return this.postId;
     }
 
@@ -59,7 +59,7 @@ public class Post implements Serializable {
         return this.body;
     }
 
-    public String getOwnerUserId(){
+    public Integer getOwnerUserId(){
         return this.ownerUserId;
     }
 
@@ -69,13 +69,13 @@ public class Post implements Serializable {
 
     public Long getViews() { return this.views; }
 
-    public Post setPostId(String postId){
-        this.postId = postId;
-        return this;
-    }
-
     public int getAnswersNumber() {
         return answersNumber;
+    }
+
+    public Post setPostId(Integer postId){
+        this.postId = postId;
+        return this;
     }
 
     public Post setTitle(String title){
@@ -98,7 +98,7 @@ public class Post implements Serializable {
         return this;
     }
 
-    public Post setOwnerUserId(String ownerUserId){
+    public Post setOwnerUserId(Integer ownerUserId){
         this.ownerUserId = ownerUserId;
         return this;
     }
@@ -113,9 +113,11 @@ public class Post implements Serializable {
         return this;
     }
 
-    public void setOwnerUserName(String ownerUserName) {
+    public Post setOwnerUserName(String ownerUserName) {
         this.ownerUserName = ownerUserName;
+        return this;
     }
+
     @Override
     public String toString() {
         return "Post{" +

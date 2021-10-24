@@ -30,7 +30,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
     AnchorPane anchorPanePost;
 
     private FXMLLoader pbvFXMLLoader;
-    private String mongoPostID;
+    private Integer mongoPostID;
 
 
     @Override

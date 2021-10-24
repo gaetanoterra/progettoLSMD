@@ -5,13 +5,13 @@ import java.util.Date;
 
 public class Answer implements Serializable {
 
-    private String answerId;
+    private Integer answerId;
     private String creationDate;
     private Integer score;
     private String ownerUserName;
     private String body;
 
-    public Answer(String answerId, String creationDate, Integer score, String ownerUserName, String body) {
+    public Answer(Integer answerId, String creationDate, Integer score, String ownerUserName, String body) {
         this.answerId = answerId;
         this.creationDate = creationDate;
         this.score = score;
@@ -19,11 +19,11 @@ public class Answer implements Serializable {
         this.body = body;
     }
 
-    public Answer(String id, Date creationDate, Integer score, String ownerDisplayName, String body) {
+    public Answer(Integer id, Date creationDate, Integer score, String ownerDisplayName, String body) {
         this(id,creationDate.toString(), score, ownerDisplayName,body);
     }
 
-    public String getAnswerId(){
+    public Integer getAnswerId(){
         return this.answerId;
     }
 
@@ -41,7 +41,7 @@ public class Answer implements Serializable {
 
     public String getBody() { return this.body; }
 
-    public Answer setAnswerId(String answerId){
+    public Answer setAnswerId(Integer answerId){
         this.answerId = answerId;
         return this;
     }

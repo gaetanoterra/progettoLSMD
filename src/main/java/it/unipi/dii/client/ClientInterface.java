@@ -107,9 +107,9 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void getFullPostInterface(String id) {
+    public static void getFullPostInterface(Integer id) {
         try {
-            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id));
+            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id.toString()));
         } catch (IOException e) {
             e.printStackTrace();
         }

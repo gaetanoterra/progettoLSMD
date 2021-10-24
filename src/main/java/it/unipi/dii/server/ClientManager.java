@@ -108,7 +108,7 @@ public class ClientManager extends Thread{
 
                         switch (msgAnswer.getOperation()) {
                             case Create -> {
-                                answer.setOwnerUserName(loggedUser.getUserId());
+                                answer.setOwnerUserName(loggedUser.getDisplayName());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> dbManager.removeAnswer(answer, msgAnswer.getPostId());
@@ -167,7 +167,7 @@ public class ClientManager extends Thread{
                             }
                             case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
-                            case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
+                            case Id -> postArrayList.add(dbManager.getPostById(Integer.parseInt(msgParameter.getValue())));
                         }
                         System.out.println("sending out new Message_Get_Posts_By_Parameter containing " +
                                             postArrayList.size() +
