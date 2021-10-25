@@ -6,7 +6,7 @@ import java.util.Date;
 public class User implements Serializable {
 
     //TODO nel database ci sono 3 identificativi (_id, Id, AccountId) e manca lastAccessDate e type
-    private Integer userId;
+    private String userId;
     private String password;
     private String displayName;
     private Integer followersNumber;
@@ -20,7 +20,7 @@ public class User implements Serializable {
     private String websiteURL;
     private String profileImage;
 
-    public User(Integer userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
         this.userId = userId;
         this.displayName = displayName;
         this.location = location;
@@ -29,14 +29,14 @@ public class User implements Serializable {
         this.password = pwd;
     }
 
-    public User(Integer userId, String displayName, String location, String aboutMe, String websiteURL){
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
         this(userId, displayName, location, aboutMe,  websiteURL, null);
     }
 
     public User(){
         this(null,null,null,null,null);
     }
-    public Integer getUserId(){
+    public String getUserId(){
         return this.userId;
     }
 
@@ -92,7 +92,7 @@ public class User implements Serializable {
         this.profileImage = profileImage;
     }
 
-    public User setUserId(Integer userId){
+    public User setUserId(String userId){
         this.userId = userId;
         return this;
     }

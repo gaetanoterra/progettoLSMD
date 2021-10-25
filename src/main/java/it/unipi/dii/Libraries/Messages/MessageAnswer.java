@@ -6,9 +6,9 @@ import it.unipi.dii.Libraries.Answer;
 public class MessageAnswer extends MessageCreateDelete{
 
     private Answer answer;
-    private Integer postId;
+    private String postId;
 
-    public MessageAnswer(OperationCD operation, Answer answer, Integer postId){
+    public MessageAnswer(OperationCD operation, Answer answer, String postId){
         this.opcode = Opcode.Message_Answer;
         this.operation = operation;
         this.answer = answer;
@@ -19,7 +19,7 @@ public class MessageAnswer extends MessageCreateDelete{
         return answer;
     }
 
-    public Integer getPostId() {
+    public String getPostId() {
         return postId;
     }
 

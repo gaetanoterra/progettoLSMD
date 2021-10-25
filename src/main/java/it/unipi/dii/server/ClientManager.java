@@ -71,7 +71,7 @@ public class ClientManager extends Thread{
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
                         User signupUser = messageSignUp.getUser();
                         if(dbManager.insertUser(signupUser)){
-                            send(new MessageSignUp(signupUser, StatusCode.Message_Ok));
+                            send(new MessageSignUp(dbManager.getUserData(signupUser.getDisplayName()), StatusCode.Message_Ok));
                         }
                         else{
                             send(new MessageSignUp(StatusCode.Message_Fail));
@@ -167,7 +167,7 @@ public class ClientManager extends Thread{
                             }
                             case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
-                            case Id -> postArrayList.add(dbManager.getPostById(Integer.parseInt(msgParameter.getValue())));
+                            case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
                         System.out.println("sending out new Message_Get_Posts_By_Parameter containing " +
                                             postArrayList.size() +

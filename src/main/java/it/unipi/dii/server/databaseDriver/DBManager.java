@@ -75,14 +75,11 @@ public class DBManager {
     }
 
     public boolean insertUser(User newUser){
-        Integer newUserId = documentDBManager.getNewUserId();
         newUser.setCreationDate(Instant.now().toEpochMilli())
                 .setLastAccessDate(Instant.now().toEpochMilli())
                 .setFollowedNumber(0)
                 .setFollowersNumber(0)
-                .setReputation(0)
-                .setType("N")
-                .setUserId(newUserId);
+                .setReputation(0);
         boolean insertedUser = documentDBManager.insertUser(newUser);
         if(insertedUser)
             graphDBManager.insertUser(newUser);
@@ -91,12 +88,12 @@ public class DBManager {
 
     public boolean removeUser(User user){
         //prima aggiorno gli attributi ridondanti follower e followed su mongodb
-        ArrayList<Integer> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
-        ArrayList<Integer> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
-        for (Integer userIdFollower: userIdsFollower) {
+        ArrayList<String> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
+        ArrayList<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
+        for (String userIdFollower: userIdsFollower) {
             documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, user.getUserId());
         }
-        for (Integer userIdFollowed: userIdsFollowed) {
+        for (String userIdFollowed: userIdsFollowed) {
             documentDBManager.removeUserFollowerAndFollowedRelation(user.getUserId(), userIdFollowed);
         }
         //ora posso rimuovere l'utente
@@ -119,7 +116,7 @@ public class DBManager {
         return documentDBManager.getPostByDate(postCreationDateString);
     }
 
-    public Post getPostById(Integer postId){
+    public Post getPostById(String postId){
         return documentDBManager.getPostById(postId);
     }
 
@@ -136,8 +133,6 @@ public class DBManager {
     }
 
     public boolean insertPost(Post newPost){
-        Integer newPostId = documentDBManager.getNewPostId();
-        newPost.setPostId(newPostId);
         boolean insertedPost = documentDBManager.insertPost(newPost);
         graphDBManager.insertPost(newPost);
         return insertedPost;
@@ -153,15 +148,13 @@ public class DBManager {
     --------------------------- ANSWERS ---------------------------
      */
 
-    public boolean insertAnswer(Answer answer, Integer postId){
-        Integer newAnswerId = documentDBManager.getNewPostId();
-        answer.setAnswerId(newAnswerId);
+    public boolean insertAnswer(Answer answer, String postId){
         documentDBManager.insertAnswer(answer, postId);
         graphDBManager.insertAnswer(answer, postId);
         return true;
     }
 
-    public boolean removeAnswer(Answer answer, Integer postId){
+    public boolean removeAnswer(Answer answer, String postId){
         documentDBManager.removeAnswer(answer, postId);
         graphDBManager.removeAnswer(answer, postId);
         return true;
@@ -171,11 +164,11 @@ public class DBManager {
     --------------------------- VOTES ---------------------------
      */
 
-    public boolean insertRelationVote(Integer userId, Integer answerId, int voteAnswer){
+    public boolean insertRelationVote(String userId, String answerId, int voteAnswer){
         graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
         return true;
     }
-    public boolean removeRelationVote(Integer userId, Integer answerId){
+    public boolean removeRelationVote(String userId, String answerId){
         graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }
@@ -184,12 +177,12 @@ public class DBManager {
     --------------------------- FOLLOWs ---------------------------
      */
 
-    public boolean insertFollowRelationAndUpdate(Integer userIdFollower, Integer userIdFollowed){
+    public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
         documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
     }
-    public boolean removeFollowRelationAndUpdate(Integer userIdFollower, Integer userIdFollowed){
+    public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
         documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
