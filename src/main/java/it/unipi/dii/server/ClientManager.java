@@ -95,6 +95,8 @@ public class ClientManager extends Thread{
                         switch (msgPost.getOperation()) {
                             case Create -> {
                                 post.setOwnerUserId(loggedUser.getUserId());
+                                post.setOwnerUserName(loggedUser.getDisplayName());
+                                post.setViews(0L);
                                 dbManager.insertPost(post);
                             }
                             case Delete -> dbManager.removePost(post);

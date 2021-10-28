@@ -475,13 +475,15 @@ public class DocumentDBManager {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(eq("CreationDate", data)).forEach(doc -> {
-            Post p = new Post(doc.getObjectId("_id").toString(),
+            Post p = new Post(
+                    doc.getObjectId("_id").toString(),
                     doc.getString("Title"),
-                    (ArrayList<Answer>)doc.get("Answers"),
-                    doc.getDate("CreationDate"),
+                    doc.getList("Answers", Answer.class),
+                    doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
-                    (ArrayList<String>)doc.get("Tags"));
+                    doc.getList("Tags", String.class)
+            );
             posts.add(p);
         });
         System.out.println("found " + posts.size() + " posts matching the date given as input");
@@ -519,7 +521,7 @@ public class DocumentDBManager {
                     postId,
                     document.getString("Title"),
                     answersList,
-                    new Date(document.getLong("CreationDate")),
+                    document.getLong("CreationDate"),
                     document.getString("Body"),
                     document.getString("OwnerUserId"),
                     document.getList("Tags", String.class)
@@ -539,14 +541,15 @@ public class DocumentDBManager {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(all("OwnerUserId", username)).forEach(doc -> {
-            Post p = new Post(doc.getObjectId("_id").toString(),
+            Post p = new Post(
+                    doc.getObjectId("_id").toString(),
                     doc.getString("Title"),
-                    (ArrayList<Answer>)doc.get("Answers"),
-                    new Date(doc.getLong("CreationDate")),
+                    doc.getList("Answers", Answer.class),
+                    doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
-                    (ArrayList<String>)doc.get("Tags"));
-
+                    doc.getList("Tags", String.class)
+            );
             posts.add(p);
         });
 
@@ -558,13 +561,15 @@ public class DocumentDBManager {
 
         ArrayList<Post> postArrayList = new ArrayList<>();
         postsCollection.find(all("Tags", tags)).forEach(doc -> {
-            Post p = new Post(doc.getObjectId("_id").toString(),
+            Post p = new Post(
+                    doc.getObjectId("_id").toString(),
                     doc.getString("Title"),
-                    (ArrayList<Answer>)doc.get("Answers"),
-                    doc.getDate("CreationDate"),
+                    doc.getList("Answers", Answer.class),
+                    doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
-                    (ArrayList<String>)doc.get("Tags"));
+                    doc.getList("Tags", String.class)
+            );
 
             postArrayList.add(p);
         });
@@ -713,7 +718,9 @@ public class DocumentDBManager {
                 .append("CreationDate", post.getCreationDate())
                 .append("Body", post.getBody())
                 .append("OwnerUserId", post.getOwnerUserId())
-                .append("Tags", post.getTags());
+                .append("OwnerDisplayName", post.getOwnerUserName())
+                .append("Tags", post.getTags())
+                .append("ViewCount", post.getViews());
 
         postsCollection.insertOne(doc);
 

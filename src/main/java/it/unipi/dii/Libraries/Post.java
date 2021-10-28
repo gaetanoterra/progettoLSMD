@@ -11,7 +11,7 @@ public class Post implements Serializable {
     private String title;
     private String ownerUserName;
     private List<Answer> answers;
-    private Date creationDate;
+    private Long creationDate;
     private String body;
     private String ownerUserId;
     private List<String> tags;
@@ -19,10 +19,10 @@ public class Post implements Serializable {
     private int answersNumber;
 
     public Post(){
-        this(null, null, new ArrayList<>(), null, null, null, null);
+        this(null, null, new ArrayList<>(), null, null, null, new ArrayList<>());
     }
 
-    public Post(String postId, String title, List<Answer> answers, Date creationDate, String body, String ownerUserId, List<String> tags){
+    public Post(String postId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
         this.postId = postId;
         this.title = title;
         this.answers = answers;
@@ -51,7 +51,7 @@ public class Post implements Serializable {
         return this.answers;
     }
 
-    public Date getCreationDate(){
+    public Long getCreationDate(){
         return this.creationDate;
     }
 
@@ -61,6 +61,10 @@ public class Post implements Serializable {
 
     public String getOwnerUserId(){
         return this.ownerUserId;
+    }
+
+    public String getOwnerUserName(){
+        return this.ownerUserName;
     }
 
     public List<String> getTags(){
@@ -84,11 +88,14 @@ public class Post implements Serializable {
     }
 
     public Post setAnswers(List<Answer> answers){
-        this.answers.addAll(answers);
+        this.answers.clear();
+        if (answers != null) {
+            this.answers.addAll(answers);
+        }
         return this;
     }
 
-    public Post setCreationDate(Date creationDate){
+    public Post setCreationDate(Long creationDate){
         this.creationDate = creationDate;
         return this;
     }
@@ -104,7 +111,10 @@ public class Post implements Serializable {
     }
 
     public Post setTags(List<String> tags){
-        this.tags = tags;
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
         return this;
     }
 

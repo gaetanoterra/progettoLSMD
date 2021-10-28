@@ -49,8 +49,9 @@ public class ControllerSignInInterface {
         Platform.runLater(() -> {
             if (messageLogin.getStatus().equals(StatusCode.Message_Ok)){
                 serverConnectionManager.setLoggedUser(messageLogin.getUser());
-                ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
                 ClientInterface.setLog(messageLogin.getUser());
+                ClientInterface.fillProfileInterface(messageLogin.getUser());
                 ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(messageLogin.getUser());
             }
             else {

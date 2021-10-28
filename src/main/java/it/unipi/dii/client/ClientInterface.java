@@ -28,6 +28,7 @@ public class ClientInterface extends Application{
     private static ControllerSignUpInterface controllerSignUpInterface;
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
+    private static ControllerWrite controllerWriteInterface;
 
 
     @Override
@@ -66,6 +67,10 @@ public class ClientInterface extends Application{
         FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
         scenes[PageType.PROFILE_INTERFACE.ordinal()] = new Scene(profileInterfaceLoader.load());
         controllerProfileInterface = profileInterfaceLoader.getController();
+
+        FXMLLoader writeInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/write.fxml"));
+        scenes[PageType.WRITE.ordinal()] = new Scene(writeInterfaceLoader.load());
+        controllerWriteInterface = writeInterfaceLoader.getController();
 
    /*
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
