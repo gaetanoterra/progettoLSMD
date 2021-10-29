@@ -587,17 +587,20 @@ public class DocumentDBManager {
                 .append("CreationDate", user.getCreationData())
                 .append("Location", user.getLocation())
                 .append("AboutMe", user.getAboutMe())
-                .append("WebsiteURL", user.getWebsiteURL());
+                .append("WebsiteURL", user.getWebsiteURL())
+                .append("followedNumber", 0)
+                .append("followerNumber", 0)
+                .append("ProfileImageUrl", null)
+                .append("Location", "nan")
+                .append("Reputation", 0);
 
         return usersCollection.insertOne(us).wasAcknowledged();
     }
 
-    //
     private boolean checkUser(String displayName) {
-        MongoCollection<Document> coll = mongoDatabase.getCollection("User");
         boolean res = false;
 
-        long count = coll.countDocuments(eq("DisplayName", displayName));
+        long count = usersCollection.countDocuments(eq("DisplayName", displayName));
 
         if(count > 0)
             res = true;

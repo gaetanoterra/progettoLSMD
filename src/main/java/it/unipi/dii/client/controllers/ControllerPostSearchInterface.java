@@ -36,9 +36,10 @@ public class ControllerPostSearchInterface {
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
+
     }
 
-    @Deprecated
+    @FXML
     private void initialize(){
         textfield_search.requestFocus();
 
@@ -48,9 +49,12 @@ public class ControllerPostSearchInterface {
     }
 
     public void setLoggedInterface(String username, String imageUrl){
-        this.profileImageView.setImage(new Image(imageUrl));
+        if(imageUrl != null)
+            this.profileImageView.setImage(new Image(imageUrl));
+        usernameLabel.setText(username);
         signin_button.setDisable(true);
         signup_button.setDisable(true);
+
     }
 
     //rendo di nuovo disponibili i bottoni e scollego l'interfaccia dall'utente

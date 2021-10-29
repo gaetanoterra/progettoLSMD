@@ -77,8 +77,7 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
                         switch (messageGetPostByParameter.getParameter()){
-                            case Username -> {
-                            }
+                            case Username -> {}
                             case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
                             case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
                         }

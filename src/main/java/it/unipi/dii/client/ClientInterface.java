@@ -29,7 +29,7 @@ public class ClientInterface extends Application{
 
     private static ControllerPostSearchInterface controllerPostSearchInterface;
     private static ControllerSignInInterface controllerSignInInterface;
-    private static ControllerSignUpInterface controllerSignUpInterface;
+    private static ControllerRegistrationInterface controllerSignUpInterface;
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
     private static ControllerAnalysisInterface controllerAnalysisInterface;
@@ -59,7 +59,7 @@ public class ClientInterface extends Application{
         scenes[PageType.SIGN_IN.ordinal()] = new Scene(signInInterfaceloader.load());
         controllerSignInInterface = signInInterfaceloader.getController();
 
-        FXMLLoader signupInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/signup.fxml"));
+        FXMLLoader signupInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/registrationInterface.fxml"));
         scenes[PageType.SIGN_UP.ordinal()] = new Scene(signupInterfaceloader.load());
         controllerSignUpInterface = signupInterfaceloader.getController();
 
@@ -75,9 +75,7 @@ public class ClientInterface extends Application{
         scenes[PageType.ANALYSIS_INTERFACE.ordinal()] = new Scene(analysisInterfaceLoader.load());
         controllerAnalysisInterface = analysisInterfaceLoader.getController();
 
-   /*
-        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
-     */
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,6 +85,7 @@ public class ClientInterface extends Application{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void fillPostSearchInterface(ArrayList<Post> postArrayList){
+        System.out.println("Updating Full Post interface with " + postArrayList.size() + " posts.");
         controllerPostSearchInterface.resetInterface();
         controllerPostSearchInterface.fillPostPane(postArrayList);
     }
@@ -144,8 +143,8 @@ public class ClientInterface extends Application{
     public static void registrationResponseHandler(User u, StatusCode stc){
         Platform.runLater(() -> {
             if(stc.equals(StatusCode.Message_Ok)){
-                switchScene(PageType.PROFILE_INTERFACE);
-                controllerProfileInterface.fillProfileInterface(u);
+                switchScene(PageType.POSTSEARCHINTERFACE);
+                controllerPostSearchInterface.setLoggedInterface(u.getDisplayName(),u.getProfileImage());
             }
         });
     }
@@ -164,7 +163,7 @@ public class ClientInterface extends Application{
             portNumber = Integer.parseInt(args[1]);
             serverIPAddress = args[0];
             if (portNumber > 65535 || portNumber < 2000){
-                throw new RuntimeException("Port number is not between 2000 and 65535");
+                throw new RuntimeException("Port number is not valid, it must be between 2000 and 65535");
             }
             serverConnectionManager = new ServerConnectionManager(portNumber, InetAddress.getByName(serverIPAddress));
             serverConnectionManager.setDaemon(true);

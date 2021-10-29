@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 
-public class ControllerSignUpInterface {
+public class ControllerRegistrationInterface {
 
     ServerConnectionManager clientServerManager;
 
@@ -28,7 +28,7 @@ public class ControllerSignUpInterface {
     @FXML
     private TextField userNameTextField;
 
-    public ControllerSignUpInterface(){
+    public ControllerRegistrationInterface(){
         this.clientServerManager = ClientInterface.getServerConnectionManager();
     }
 //(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){

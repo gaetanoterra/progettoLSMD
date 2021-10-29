@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/signupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerSignUpInterface">
+<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/signupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerRegistrationInterface">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="191.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="583.0" minWidth="10.0" prefWidth="328.0" />
