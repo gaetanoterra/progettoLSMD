@@ -1,33 +1,35 @@
 package it.unipi.dii.Libraries;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class Answer implements Serializable {
 
+    //TODO: Considerare possibile cambio in postId (riutilizzare Id come postId di cui è risposta)
     private String answerId;
-    private String creationDate;
+    private Long creationDate;
     private Integer score;
+    private String ownerUserId;
     private String ownerUserName;
     private String body;
 
-    public Answer(String answerId, String creationDate, Integer score, String ownerUserName, String body) {
+    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body) {
         this.answerId = answerId;
         this.creationDate = creationDate;
         this.score = score;
+        this.ownerUserId = ownerUserId;
         this.ownerUserName = ownerUserName;
         this.body = body;
     }
 
-    public Answer(String id, Date creationDate, Integer score, String ownerDisplayName, String body) {
-        this(id,creationDate.toString(), score, ownerDisplayName,body);
+    public Answer(String body) {
+        this(null, null, null, null, null, body);
     }
 
     public String getAnswerId(){
         return this.answerId;
     }
 
-    public String getCreationDate(){
+    public Long getCreationDate(){
         return this.creationDate;
     }
 
@@ -41,12 +43,16 @@ public class Answer implements Serializable {
 
     public String getBody() { return this.body; }
 
+    public String getOwnerUserId() {
+        return ownerUserId;
+    }
+
     public Answer setAnswerId(String answerId){
         this.answerId = answerId;
         return this;
     }
 
-    public Answer setCreationDate(String creationDate){
+    public Answer setCreationDate(Long creationDate){
         this.creationDate = creationDate;
         return this;
     }
@@ -64,6 +70,11 @@ public class Answer implements Serializable {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public void setOwnerUserId(String ownerUserId) {
+        this.ownerUserId = ownerUserId;
+    }
+
 
     @Override
     public String toString() {

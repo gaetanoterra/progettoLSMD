@@ -110,7 +110,11 @@ public class ClientManager extends Thread{
 
                         switch (msgAnswer.getOperation()) {
                             case Create -> {
+                                answer.setAnswerId("test");
+                                answer.setCreationDate(Instant.now().toEpochMilli());
+                                answer.setScore(0);
                                 answer.setOwnerUserName(loggedUser.getDisplayName());
+                                answer.setOwnerUserId(loggedUser.getUserId());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> dbManager.removeAnswer(answer, msgAnswer.getPostId());

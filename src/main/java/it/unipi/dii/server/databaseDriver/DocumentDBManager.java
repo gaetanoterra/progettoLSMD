@@ -509,8 +509,9 @@ public class DocumentDBManager {
                 answersList.add(
                     new Answer(
                         answerDocument.getString("Id"),
-                        new Date(answerDocument.getLong("CreationDate")),
+                        answerDocument.getLong("CreationDate"),
                         answerDocument.getInteger("Score"),
+                        answerDocument.getString("OwnerUserId"),
                         answerDocument.getString("OwnerDisplayName"),
                         answerDocument.getString("Body")
                     )
@@ -703,7 +704,9 @@ public class DocumentDBManager {
         Document doc = new Document("Id", answer.getAnswerId())
                 .append("CreationDate", answer.getCreationDate())
                 .append("Score", answer.getScore())
-                .append("OwnerUserId", answer.getOwnerUserName());
+                .append("OwnerUserId", answer.getOwnerUserId())
+                .append("Body", answer.getBody())
+                .append("OwnerDisplayName", answer.getOwnerUserName());
 
         postsCollection.updateOne(eq("_id", new ObjectId(postId)), Updates.push("Answers", doc));
 

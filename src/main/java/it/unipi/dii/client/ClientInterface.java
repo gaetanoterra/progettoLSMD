@@ -1,5 +1,6 @@
 package it.unipi.dii.client;
 
+import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
@@ -126,6 +127,15 @@ public class ClientInterface extends Application{
             controllerFullPostInterface.resetInterface();
             controllerFullPostInterface.fillInterface(post);
         });
+    }
+
+    public static void postNewAnswer(String postId, String body) {
+        Answer answer = new Answer(body);
+        try {
+            serverConnectionManager.send(new MessageAnswer(OperationCD.Create, answer, postId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
