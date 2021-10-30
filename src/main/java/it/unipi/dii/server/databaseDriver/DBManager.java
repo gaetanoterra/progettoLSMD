@@ -164,11 +164,13 @@ public class DBManager {
     --------------------------- VOTES ---------------------------
      */
 
-    public boolean insertRelationVote(String userId, String answerId, int voteAnswer){
+    public boolean insertRelationVote(String userId, String answerId, String postId, int voteAnswer){
+        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
         graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
         return true;
     }
-    public boolean removeRelationVote(String userId, String answerId){
+    public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
+        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
         graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }

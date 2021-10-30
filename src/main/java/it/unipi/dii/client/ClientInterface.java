@@ -138,6 +138,34 @@ public class ClientInterface extends Application{
         }
     }
 
+    public static void upvoteAnswer(String postId, String answerId) {
+        try {
+            serverConnectionManager.send(
+                    new MessageVote(
+                            OperationCD.Create,
+                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            +1
+                    )
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void downvoteAnswer(String postId, String answerId) {
+        try {
+            serverConnectionManager.send(
+                    new MessageVote(
+                            OperationCD.Create,
+                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            -1
+                    )
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
     //                                          PROFILE INTERFACE APIs                                                //

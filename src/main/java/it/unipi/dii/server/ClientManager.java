@@ -152,9 +152,18 @@ public class ClientManager extends Thread{
                         answer = msgVote.getAnswer();
 
                         switch (msgVote.getOperation()) {
-                            case Create -> dbManager.insertRelationVote(loggedUser.getUserId(),
-                                                                                answer.getAnswerId(),msgVote.getVoto());
-                            case Delete -> dbManager.removeRelationVote(loggedUser.getUserId(), answer.getAnswerId());
+                            case Create -> dbManager.insertRelationVote(
+                                    loggedUser.getUserId(),
+                                    answer.getAnswerId(),
+                                    answer.getPostId(),
+                                    msgVote.getVoto()
+                            );
+                            case Delete -> dbManager.removeRelationVote(
+                                    loggedUser.getUserId(),
+                                    answer.getAnswerId(),
+                                    answer.getPostId(),
+                                    msgVote.getVoto()
+                            );
                             default     -> throw new OpcodeNotValidException("Opcode of Message_Vote" +
                                                                                 msgVote.getOperation() + " not valid");
                         }

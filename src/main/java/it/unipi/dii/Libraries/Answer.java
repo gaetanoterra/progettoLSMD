@@ -4,25 +4,32 @@ import java.io.Serializable;
 
 public class Answer implements Serializable {
 
-    //TODO: Considerare possibile cambio in postId (riutilizzare Id come postId di cui è risposta)
+    //TODO: Considerare possibile cambio in postId (riutilizzare Id come postId di cui è risposta) oppure indice nell'array delle risposte
     private String answerId;
     private Long creationDate;
     private Integer score;
     private String ownerUserId;
     private String ownerUserName;
     private String body;
+    // Attualmente è utilizzato per rendere possibile l'upvote/downvote, non è inserito nel db
+    private String postId;
 
-    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body) {
+    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body, String postId) {
         this.answerId = answerId;
         this.creationDate = creationDate;
         this.score = score;
         this.ownerUserId = ownerUserId;
         this.ownerUserName = ownerUserName;
         this.body = body;
+        this.postId = postId;
+    }
+
+    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body) {
+        this(answerId, creationDate, score, ownerUserId, ownerUserName, body, null);
     }
 
     public Answer(String body) {
-        this(null, null, null, null, null, body);
+        this(null, null, null, null, null, body, null);
     }
 
     public String getAnswerId(){
@@ -47,6 +54,10 @@ public class Answer implements Serializable {
         return ownerUserId;
     }
 
+    public String getPostId() {
+        return postId;
+    }
+
     public Answer setAnswerId(String answerId){
         this.answerId = answerId;
         return this;
@@ -67,12 +78,19 @@ public class Answer implements Serializable {
         return this;
     }
 
-    public void setBody(String body) {
+    public Answer setBody(String body) {
         this.body = body;
+        return this;
     }
 
-    public void setOwnerUserId(String ownerUserId) {
+    public Answer setOwnerUserId(String ownerUserId) {
         this.ownerUserId = ownerUserId;
+        return this;
+    }
+
+    public Answer setPostId(String postId) {
+        this.postId = postId;
+        return this;
     }
 
 
@@ -84,6 +102,7 @@ public class Answer implements Serializable {
                 ", score=" + score +
                 ", ownerUserName='" + ownerUserName + '\'' +
                 ", body='" + body + '\'' +
+                ", postId='" + postId + '\'' +
                 '}';
     }
 }

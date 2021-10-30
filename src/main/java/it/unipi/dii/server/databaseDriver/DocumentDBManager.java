@@ -513,7 +513,8 @@ public class DocumentDBManager {
                         answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerUserId"),
                         answerDocument.getString("OwnerDisplayName"),
-                        answerDocument.getString("Body")
+                        answerDocument.getString("Body"),
+                        postId
                     )
                 );
             });
@@ -797,6 +798,14 @@ public class DocumentDBManager {
 
         return true;
     }
+
+    public void updateVotesAnswer(String postId, String answerId, int vote) {
+        postsCollection.updateOne(
+                and(eq("_id", new ObjectId(postId)), eq("Answers.Id", answerId)),
+                Updates.inc("Answers.$.Score", vote)
+        );
+    }
+
 
     public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)

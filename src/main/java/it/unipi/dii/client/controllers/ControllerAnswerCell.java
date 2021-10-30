@@ -1,5 +1,6 @@
 package it.unipi.dii.client.controllers;
 
+import it.unipi.dii.client.ClientInterface;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
@@ -55,8 +56,8 @@ public class ControllerAnswerCell extends ListCell<Answer> {
 
             //TODO set the action increase up/downVotes for the arrows
 
-            //arrowDownPolygon.setOnMouseClicked();
-            //arrowUpPolygon.setOnMouseClicked();
+            arrowDownPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.downvoteAnswer(answer.getPostId(), answer.getAnswerId()));
+            arrowUpPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.upvoteAnswer(answer.getPostId(), answer.getAnswerId()));
             authorText.setText("Author: " + answer.getOwnerUserName());
             if(answer.getBody() != null)
                 bodyWebView.getEngine().loadContent(answer.getBody(), "text/html");
