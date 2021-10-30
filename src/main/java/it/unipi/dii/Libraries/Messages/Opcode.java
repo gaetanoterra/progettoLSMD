@@ -31,4 +31,10 @@ public enum Opcode {
         return this.opcode;
     }
 
+    @Override
+    public String toString() {
+        return "Opcode{" +
+                "opcode=" + opcode +
+                '}';
+    }
 }
