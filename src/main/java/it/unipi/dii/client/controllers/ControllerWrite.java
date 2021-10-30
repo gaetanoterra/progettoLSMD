@@ -10,8 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 //classe per gestire l'interfaccia dove scrivere un nuovo post
@@ -29,14 +29,16 @@ public class ControllerWrite {
     public void eventButtonSend(ActionEvent actionEvent) throws IOException {
         //invio il post
         List<String> tags = Arrays.asList(textfield_tags_post.getText().split(";"));
+        tags.replaceAll((str) -> str.strip());
+        tags.removeIf((str) -> str.equals(""));
 
         Post post = new Post();
 
-        post.setAnswers(null);
-        post.setBody(textarea_body_post.getText());
-        post.setCreationDate(new Date());
-        post.setTitle(textfield_titolo_post.getText());
-        post.setTags(tags);
+        post.setAnswers(null)
+                .setBody(textarea_body_post.getText())
+                .setCreationDate(Instant.now().toEpochMilli())
+                .setTitle(textfield_titolo_post.getText())
+                .setTags(tags);
 
         clm.send(new MessagePost(OperationCD.Create, post));
 

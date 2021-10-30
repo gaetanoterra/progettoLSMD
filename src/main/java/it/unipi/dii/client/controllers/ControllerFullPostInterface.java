@@ -6,9 +6,12 @@ import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 
@@ -16,6 +19,9 @@ public class ControllerFullPostInterface {
 
     @FXML
     private Text authorText;
+
+    @FXML
+    private TextArea answerTextArea;
 
     @FXML
     private Label titleLabel;
@@ -26,8 +32,12 @@ public class ControllerFullPostInterface {
     @FXML
     private ListView<Answer> answersListView;
 
+    @FXML
+    private Button postYourAnswerButton, refreshButton;
+
     private ObservableList<Answer> answerObservableList;
     private ServerConnectionManager serverConnectionManager;
+    private String currentPostId;
 
 
     public ControllerFullPostInterface() {
@@ -39,6 +49,7 @@ public class ControllerFullPostInterface {
     private void initialize(){
         answersListView.setItems(this.answerObservableList);
         answersListView.setCellFactory(alv->new ControllerAnswerCell());
+
     }
 
     public void resetInterface() {
@@ -50,10 +61,25 @@ public class ControllerFullPostInterface {
 
     public void fillInterface(Post post) {
         System.out.println(post);
-        titleLabel.setText(post.gettitle());
+        currentPostId = post.getPostId();
+        titleLabel.setText(post.getTitle());
         authorText.setText(post.getOwnerUserId());
         questionWebView.getEngine().loadContent(post.getBody(), "text/html");
-        answerObservableList.addAll(post.getAnswers());
+        answerObservableList.setAll(post.getAnswers());
     }
 
+    public void eventButtonAnswer(ActionEvent actionEvent) {
+        if (ClientInterface.getLog() == null) {
+            // not logged
+            return;
+        }
+        String answerBody = answerTextArea.getText();
+
+        ClientInterface.postNewAnswer(currentPostId, answerBody);
+    }
+
+    public void eventButtonRefresh(ActionEvent actionEvent) {
+        //riscarica il post dal postId
+        ClientInterface.getFullPostInterface(currentPostId);
+    }
 }

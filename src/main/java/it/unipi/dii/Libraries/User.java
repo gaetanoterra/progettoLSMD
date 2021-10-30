@@ -9,11 +9,11 @@ public class User implements Serializable {
     private String userId;
     private String password;
     private String displayName;
-    private int followersNumber;
-    private int followedNumber;
-    private int reputation;
-    private Date creationDate;
-    private Date lastAccessDate;
+    private Integer followersNumber;
+    private Integer followedNumber;
+    private Integer reputation;
+    private Long creationDate;
+    private Long lastAccessDate;
     private String type = "generic_user";
     private String location;
     private String aboutMe;
@@ -56,11 +56,11 @@ public class User implements Serializable {
         return this.reputation;
     }
 
-    public Date getCreationData() {
+    public Long getCreationDate() {
         return this.creationDate;
     }
 
-    public Date getLastAccessDate() {
+    public Long getLastAccessDate() {
         return this.lastAccessDate;
     }
 
@@ -102,27 +102,27 @@ public class User implements Serializable {
         return this;
     }
 
-    public User setFollowersNumber(int followersNumber) {
+    public User setFollowersNumber(Integer followersNumber) {
         this.followersNumber = followersNumber;
         return this;
     }
 
-    public User setFollowedNumber(int followedNumber) {
+    public User setFollowedNumber(Integer followedNumber) {
         this.followedNumber = followedNumber;
         return this;
     }
 
-    public User setReputation(int reputation) {
+    public User setReputation(Integer reputation) {
         this.reputation = reputation;
         return this;
     }
 
-    public User setCreationDate(Date creationDate) {
+    public User setCreationDate(Long creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public User setLastAccessDate(Date lastAccessDate) {
+    public User setLastAccessDate(Long lastAccessDate) {
         this.lastAccessDate = lastAccessDate;
         return this;
     }

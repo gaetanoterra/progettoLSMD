@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Post  implements Serializable {
+public class Post implements Serializable {
 
     private String postId;
     private String title;
     private String ownerUserName;
     private List<Answer> answers;
-    private Date creationDate;
+    private Long creationDate;
     private String body;
     private String ownerUserId;
     private List<String> tags;
-    private int views;
+    private Long views;
     private int answersNumber;
 
     public Post(){
-        this(null, null, new ArrayList<>(), null, null, null, null);
+        this(null, null, new ArrayList<>(), null, null, null, new ArrayList<>());
     }
 
-    public Post(String postId, String title, List<Answer> answers, Date creationDate, String body, String ownerUserId, List<String> tags){
+    public Post(String postId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
         this.postId = postId;
         this.title = title;
         this.answers = answers;
@@ -43,7 +43,7 @@ public class Post  implements Serializable {
         return this.postId;
     }
 
-    public String gettitle(){
+    public String getTitle(){
         return this.title;
     }
 
@@ -51,7 +51,7 @@ public class Post  implements Serializable {
         return this.answers;
     }
 
-    public Date getCreationDate(){
+    public Long getCreationDate(){
         return this.creationDate;
     }
 
@@ -63,19 +63,23 @@ public class Post  implements Serializable {
         return this.ownerUserId;
     }
 
+    public String getOwnerUserName(){
+        return this.ownerUserName;
+    }
+
     public List<String> getTags(){
         return this.tags;
     }
 
-    public int getViews() { return this.views; }
+    public Long getViews() { return this.views; }
+
+    public int getAnswersNumber() {
+        return answersNumber;
+    }
 
     public Post setPostId(String postId){
         this.postId = postId;
         return this;
-    }
-
-    public int getAnswersNumber() {
-        return answersNumber;
     }
 
     public Post setTitle(String title){
@@ -84,11 +88,14 @@ public class Post  implements Serializable {
     }
 
     public Post setAnswers(List<Answer> answers){
-        this.answers.addAll(answers);
+        this.answers.clear();
+        if (answers != null) {
+            this.answers.addAll(answers);
+        }
         return this;
     }
 
-    public Post setCreationDate(Date creationDate){
+    public Post setCreationDate(Long creationDate){
         this.creationDate = creationDate;
         return this;
     }
@@ -104,18 +111,23 @@ public class Post  implements Serializable {
     }
 
     public Post setTags(List<String> tags){
-        this.tags = tags;
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
         return this;
     }
 
-    public Post setViews(int views) {
+    public Post setViews(Long views) {
         this.views = views;
         return this;
     }
 
-    public void setOwnerUserName(String ownerUserName) {
+    public Post setOwnerUserName(String ownerUserName) {
         this.ownerUserName = ownerUserName;
+        return this;
     }
+
     @Override
     public String toString() {
         return "Post{" +

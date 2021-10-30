@@ -16,7 +16,7 @@ public class GraphDBManager {
     private Driver dbConnection;
 
     public GraphDBManager(){
-        String uri = "bolt://host-1:7687";
+        String uri = "bolt://localhost:7687";
         String user = "neo4j";
         String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
@@ -145,7 +145,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per per inserire il nodo Answer
-    public void insertAnswer(Answer answer, String postIdString){
+    public void insertAnswer(Answer answer, String postId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                tx.run("CREATE (a:Answer {answerId: $answerId}); ",
@@ -156,14 +156,14 @@ public class GraphDBManager {
                 tx.run("MATCH (a:Answer {answerId: $answerId}), " +
                                 "(q:Question {questionId: $questionId}) " +
                                 "CREATE (a)-[:ANSWERS_TO]->(q); ",
-                        parameters("answerId", answer.getAnswerId(), "questionId", postIdString));
+                        parameters("answerId", answer.getAnswerId(), "questionId", postId));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
                                 "CREATE (u)-[:POSTS_ANSWER]->(a); ",
-                        parameters("userId", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
+                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
                 return null;
             });
         }
@@ -208,13 +208,13 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
-    public void insertRelationVote(String userIdString, String answerIdString, int voteAnswer){
+    public void insertRelationVote(String userId, String answerId, int voteAnswer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
                                 "CREATE (u)-[:VOTES {voteTypeId: $voteTypeId}]->(a); ",
-                        parameters("userId", userIdString, "answerId", answerIdString, "voteTypeId", voteAnswer));
+                        parameters("userId", userId, "answerId", answerId, "voteTypeId", voteAnswer));
                 return null;
             });
         }
@@ -233,7 +233,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per rimuovere il nodo Answer
-    public void removeAnswer(Answer answer, String postIdString){
+    public void removeAnswer(Answer answer, String postId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                tx.run("MATCH (a:Answer {answerId: $answerId}) " +
@@ -244,13 +244,13 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:Answer {answerId = $answerId})-[r:ANSWERS_TO]->(:Question {questionId = $questionId}) " +
                                 "DELETE r; ",
-                        parameters( "questionId", postIdString, "answerId", answer.getAnswerId()));
+                        parameters( "questionId", postId, "answerId", answer.getAnswerId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:User {userId = $userId})-[r:POSTS_ANSWER]->(:Answer {answerId = $answerId}) " +
                                 "DELETE r; ",
-                        parameters("userId", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
+                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
                 return null;
             });
         }

@@ -24,6 +24,6 @@
          <font>
             <Font size="18.0" />
          </font></Label>
-      <TextField fx:id="texfield_tags_post" layoutX="36.0" layoutY="148.0" prefHeight="39.0" prefWidth="744.0" text="(inserire un massimo di 5 tag, separati dal simbolo ;)" />
+      <TextField fx:id="textfield_tags_post" layoutX="36.0" layoutY="148.0" prefHeight="39.0" prefWidth="744.0" text="(inserire un massimo di 5 tag, separati dal simbolo ;)" />
    </children>
 </AnchorPane>

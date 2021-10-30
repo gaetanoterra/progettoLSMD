@@ -8,6 +8,7 @@ import it.unipi.dii.server.databaseDriver.DBManager;
 
 import java.io.*;
 import java.net.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,10 +47,11 @@ public class ClientManager extends Thread{
 
                         //chiedo al db i dati dell'utente corrispondente allo username
                         User user = dbManager.getUserData(userDisplayName);
-
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
-                        if(user.getPassword().equals(password)){
+                        if(user.getPassword() != null && user.getPassword().equals(password)){
                             loggedUser = user;
+                            user.setLastAccessDate(Instant.now().toEpochMilli());
+                            dbManager.updateUserData(user);
                             //aggiorno la lastAcessDate dell'utente loggato a questo istante
                             //loggedUser.setLastAccessDate(new Date());
                             send(new MessageLogin(user, StatusCode.Message_Ok));
@@ -67,9 +69,10 @@ public class ClientManager extends Thread{
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
-
-                        if(dbManager.insertUser(messageSignUp.getUser())){
-                            send(new MessageSignUp(messageSignUp.getUser(), StatusCode.Message_Ok));
+                        User signupUser = messageSignUp.getUser();
+                        if(dbManager.insertUser(signupUser)){
+                            loggedUser = dbManager.getUserData(signupUser.getDisplayName());
+                            send(new MessageSignUp(dbManager.getUserData(signupUser.getDisplayName()), StatusCode.Message_Ok));
                         }
                         else{
                             send(new MessageSignUp(StatusCode.Message_Fail));
@@ -93,6 +96,8 @@ public class ClientManager extends Thread{
                         switch (msgPost.getOperation()) {
                             case Create -> {
                                 post.setOwnerUserId(loggedUser.getUserId());
+                                post.setOwnerUserName(loggedUser.getDisplayName());
+                                post.setViews(0L);
                                 dbManager.insertPost(post);
                             }
                             case Delete -> dbManager.removePost(post);
@@ -106,7 +111,11 @@ public class ClientManager extends Thread{
 
                         switch (msgAnswer.getOperation()) {
                             case Create -> {
-                                answer.setOwnerUserName(loggedUser.getUserId());
+                                answer.setAnswerId("test");
+                                answer.setCreationDate(Instant.now().toEpochMilli());
+                                answer.setScore(0);
+                                answer.setOwnerUserName(loggedUser.getDisplayName());
+                                answer.setOwnerUserId(loggedUser.getUserId());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> dbManager.removeAnswer(answer, msgAnswer.getPostId());
@@ -144,9 +153,18 @@ public class ClientManager extends Thread{
                         answer = msgVote.getAnswer();
 
                         switch (msgVote.getOperation()) {
-                            case Create -> dbManager.insertRelationVote(loggedUser.getUserId(),
-                                                                                answer.getAnswerId(),msgVote.getVoto());
-                            case Delete -> dbManager.removeRelationVote(loggedUser.getUserId(), answer.getAnswerId());
+                            case Create -> dbManager.insertRelationVote(
+                                    loggedUser.getUserId(),
+                                    answer.getAnswerId(),
+                                    answer.getPostId(),
+                                    msgVote.getVoto()
+                            );
+                            case Delete -> dbManager.removeRelationVote(
+                                    loggedUser.getUserId(),
+                                    answer.getAnswerId(),
+                                    answer.getPostId(),
+                                    msgVote.getVoto()
+                            );
                             default     -> throw new OpcodeNotValidException("Opcode of Message_Vote" +
                                                                                 msgVote.getOperation() + " not valid");
                         }
@@ -163,7 +181,7 @@ public class ClientManager extends Thread{
                                 String[] tags = msgParameter.getValue().split(";");
                                 postArrayList.addAll(dbManager.getPostsByTag(tags));
                             }
-                            case Text -> postArrayList.addAll(dbManager.getPostByText(msgParameter.getValue()));
+                            case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }

@@ -5,6 +5,7 @@ import it.unipi.dii.Libraries.Messages.StatusCode;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -45,14 +46,19 @@ public class ControllerSignInInterface {
 
     //annullo la signin e torno dove ero
     public void handleLogInResponse(MessageLogin messageLogin) {
-        if(messageLogin.getStatus().equals(StatusCode.Message_Ok)){
-            serverConnectionManager.setLoggedUser(messageLogin.getUser());
-            ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
-            ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(messageLogin.getUser());
-        }else{
-            errorMessageSignInLabel.setText("Username or password not valid");
-            errorMessageSignInLabel.setTextFill(Color.web("#0076a3"));
-        }
+        Platform.runLater(() -> {
+            if (messageLogin.getStatus().equals(StatusCode.Message_Ok)){
+                serverConnectionManager.setLoggedUser(messageLogin.getUser());
+                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(messageLogin.getUser());
+                ClientInterface.fillProfileInterface(messageLogin.getUser());
+                ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(messageLogin.getUser());
+            }
+            else {
+                errorMessageSignInLabel.setText("Username or password not valid");
+                errorMessageSignInLabel.setTextFill(Color.web("#0076a3"));
+            }
+        });
     }
 
 

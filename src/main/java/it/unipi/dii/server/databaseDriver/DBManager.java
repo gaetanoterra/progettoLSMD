@@ -4,6 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 
+import java.time.Instant;
 import java.util.*;
 
 //classe preposta a ricevere le richieste dal clientManager e a propagarle al documentDB e al graphDB
@@ -74,9 +75,15 @@ public class DBManager {
     }
 
     public boolean insertUser(User newUser){
+        newUser.setCreationDate(Instant.now().toEpochMilli())
+                .setLastAccessDate(Instant.now().toEpochMilli())
+                .setFollowedNumber(0)
+                .setFollowersNumber(0)
+                .setReputation(0);
         boolean insertedUser = documentDBManager.insertUser(newUser);
-       /* if(insertedUser)
-            graphDBManager.insertUser(newUser);*/
+        if(insertedUser) {
+            graphDBManager.insertUser(newUser);
+        }
         return insertedUser;
     }
 
@@ -110,8 +117,8 @@ public class DBManager {
         return documentDBManager.getPostByDate(postCreationDateString);
     }
 
-    public Post getPostById(String postIdString){
-        return documentDBManager.getPostById(postIdString);
+    public Post getPostById(String postId){
+        return documentDBManager.getPostById(postId);
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
@@ -122,13 +129,17 @@ public class DBManager {
         return documentDBManager.getPostsByTag(tags);
     }
 
-    public ArrayList<Post> getPostByText(String text){
+    public ArrayList<Post> getPostsByText(String text){
         return documentDBManager.getPostsByText(text);
     }
 
     public boolean insertPost(Post newPost){
         boolean insertedPost = documentDBManager.insertPost(newPost);
-        graphDBManager.insertPost(newPost);
+        if (insertedPost) {
+            // in insertPost il post è stato modificato aggiungendo l'id
+            graphDBManager.insertPost(newPost);
+        }
+
         return insertedPost;
     }
 
@@ -142,15 +153,15 @@ public class DBManager {
     --------------------------- ANSWERS ---------------------------
      */
 
-    public boolean insertAnswer(Answer answer, String postIdString){
-        documentDBManager.insertAnswer(answer, postIdString);
-        graphDBManager.insertAnswer(answer, postIdString);
+    public boolean insertAnswer(Answer answer, String postId){
+        documentDBManager.insertAnswer(answer, postId);
+        graphDBManager.insertAnswer(answer, postId);
         return true;
     }
 
-    public boolean removeAnswer(Answer answer, String postIdString){
-        documentDBManager.removeAnswer(answer, postIdString);
-        graphDBManager.removeAnswer(answer, postIdString);
+    public boolean removeAnswer(Answer answer, String postId){
+        documentDBManager.removeAnswer(answer, postId);
+        graphDBManager.removeAnswer(answer, postId);
         return true;
     }
 
@@ -158,12 +169,14 @@ public class DBManager {
     --------------------------- VOTES ---------------------------
      */
 
-    public boolean insertRelationVote(String userIdString, String answerIdString, int voteAnswer){
-        graphDBManager.insertRelationVote(userIdString, answerIdString, voteAnswer);
+    public boolean insertRelationVote(String userId, String answerId, String postId, int voteAnswer){
+        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
+        graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
         return true;
     }
-    public boolean removeRelationVote(String userIdString, String answerIdString){
-        graphDBManager.removeRelationVote(userIdString, answerIdString);
+    public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
+        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
+        graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }
 

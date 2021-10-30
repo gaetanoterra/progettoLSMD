@@ -3,6 +3,7 @@ package it.unipi.dii.client;
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.controllers.ControllerAnalysisInterface;
+import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -48,11 +49,9 @@ public class ServerConnectionManager extends Thread {
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
                         if(msgl.getStatus() == StatusCode.Message_Ok) {
-                            // ClientInterface.getControllerProfileInterface().fillProfileInterface(msgl.getUser());
-                            // ClientInterface.getControllerAnonymousInterface().setLoggedInterface(msgl.getUser().getDisplayName());
-                            // ClientInterface.setLog(msgl.getUser());
                             last_server_answer = true;
                         }
+                        ClientInterface.loginResponseHandler(msgl);
                         break;
 
                     case Message_Logout:
@@ -62,7 +61,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)message;
-                        ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
+                        ClientInterface.registrationResponseHandler(messageSignUp);
                         break;
 
                     case Message_Get_Experts:

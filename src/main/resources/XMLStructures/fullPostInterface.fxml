@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
@@ -16,18 +17,33 @@
    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="684.0" prefWidth="849.0">
       <BorderPane prefHeight="61.0" prefWidth="849.0">
          <top>
-            <Label fx:id="titleLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="69.0" prefWidth="849.0" stylesheets="@../Style/FullPostInterfaceStyle.css" text="Here it goes the Title" BorderPane.alignment="CENTER" />
+            <Label fx:id="titleLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="69.0" prefWidth="849.0" stylesheets="@../Style/FullPostInterfaceStyle.css" text="Here it goes the Title" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="10.0" />
+               </BorderPane.margin></Label>
          </top>
          <left>
-            <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" BorderPane.alignment="CENTER" />
+            <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" text="Author: Pippo" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="10.0" />
+               </BorderPane.margin></Text>
          </left>
       </BorderPane>
       <Separator fx:id="titleSeparator" prefWidth="200.0" stylesheets="@../Style/FullPostInterfaceStyle.css" />
-      <WebView fx:id="questionWebView" prefHeight="226.0" prefWidth="849.0" />
-      <Label prefHeight="36.0" prefWidth="439.0" text="# Answers" />
-      <ListView fx:id="answersListView" editable="true" prefHeight="254.0" prefWidth="849.0" />
+      <WebView fx:id="questionWebView" prefHeight="226.0" prefWidth="849.0">
+         <VBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </VBox.margin></WebView>
+      <Label prefHeight="36.0" prefWidth="439.0" text="# Answers">
+         <VBox.margin>
+            <Insets left="10.0" />
+         </VBox.margin></Label>
+      <ListView fx:id="answersListView" editable="true" prefHeight="254.0" prefWidth="849.0">
+         <VBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </VBox.margin></ListView>
       <Separator prefHeight="0.0" prefWidth="849.0" />
-      <Label prefHeight="23.0" prefWidth="119.0" text="Your Aswer">
+      <Label prefHeight="23.0" prefWidth="119.0" text="Your Answer">
          <padding>
             <Insets bottom="10.0" top="10.0" />
          </padding>
@@ -35,15 +51,24 @@
             <Insets left="10.0" />
          </VBox.margin>
       </Label>
-      <TextArea fx:id="answerTextarea" prefHeight="135.0" prefWidth="417.0">
+      <TextArea fx:id="answerTextArea" prefHeight="135.0" prefWidth="417.0">
          <VBox.margin>
             <Insets left="10.0" right="10.0" />
          </VBox.margin>
       </TextArea>
-      <Button fx:id="postYourAnswerButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Post Your Answer">
-         <VBox.margin>
-            <Insets left="10.0" top="10.0" />
-         </VBox.margin>
-      </Button>
+      <HBox prefHeight="41.0" prefWidth="849.0">
+         <children>
+            <Button fx:id="postYourAnswerButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#eventButtonAnswer" text="Post Your Answer">
+               <HBox.margin>
+                  <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="refreshButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#eventButtonRefresh" text="Refresh">
+               <HBox.margin>
+                  <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
    </VBox>
 </AnchorPane>

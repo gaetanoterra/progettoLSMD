@@ -30,7 +30,7 @@ public class ControllerPost {
     }
 
     public void setPost(Post post){
-        text_title.setText(post.gettitle());
+        text_title.setText(post.getTitle());
         scrollpane_body_post.setContent(new Label(post.getBody()));
 
         VBox vbox = new VBox(1);

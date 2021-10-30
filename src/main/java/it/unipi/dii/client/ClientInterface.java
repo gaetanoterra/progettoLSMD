@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Map;
 
 
 public class ClientInterface extends Application{
@@ -33,6 +32,8 @@ public class ClientInterface extends Application{
     private static ControllerFullPostInterface controllerFullPostInterface;
     private static ControllerProfileInterface controllerProfileInterface;
     private static ControllerAnalysisInterface controllerAnalysisInterface;
+    private static ControllerWrite controllerWriteInterface;
+
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -76,6 +77,13 @@ public class ClientInterface extends Application{
         controllerAnalysisInterface = analysisInterfaceLoader.getController();
 
 
+        FXMLLoader writeInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/write.fxml"));
+        scenes[PageType.WRITE.ordinal()] = new Scene(writeInterfaceLoader.load());
+        controllerWriteInterface = writeInterfaceLoader.getController();
+
+   /*
+        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
+     */
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,8 +102,12 @@ public class ClientInterface extends Application{
         return serverConnectionManager;
     }
 
+    public static void setLog(User user){
+        loggedUser = user;
+    }
+
     public static void resetLog(){
-        loggedUser = null;
+        setLog(null);
     }
 
     public static User getLog(){ return loggedUser; }
@@ -126,6 +138,43 @@ public class ClientInterface extends Application{
         });
     }
 
+    public static void postNewAnswer(String postId, String body) {
+        Answer answer = new Answer(body);
+        try {
+            serverConnectionManager.send(new MessageAnswer(OperationCD.Create, answer, postId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void upvoteAnswer(String postId, String answerId) {
+        try {
+            serverConnectionManager.send(
+                    new MessageVote(
+                            OperationCD.Create,
+                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            +1
+                    )
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void downvoteAnswer(String postId, String answerId) {
+        try {
+            serverConnectionManager.send(
+                    new MessageVote(
+                            OperationCD.Create,
+                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            -1
+                    )
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
     //                                          PROFILE INTERFACE APIs                                                //
@@ -140,6 +189,7 @@ public class ClientInterface extends Application{
         }
     }
 
+
     public static void registrationResponseHandler(User u, StatusCode stc){
         Platform.runLater(() -> {
             if(stc.equals(StatusCode.Message_Ok)){
@@ -148,7 +198,6 @@ public class ClientInterface extends Application{
             }
         });
     }
-
 
     public static void main(String[] args) {
 
