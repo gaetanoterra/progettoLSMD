@@ -1,9 +1,7 @@
 package it.unipi.dii.client;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
-import it.unipi.dii.Libraries.Messages.MessageSignUp;
-import it.unipi.dii.Libraries.Messages.Parameter;
-import it.unipi.dii.Libraries.Messages.StatusCode;
+import it.unipi.dii.Libraries.Answer;
+import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
 
@@ -17,6 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class ClientInterface extends Application{
@@ -197,6 +196,13 @@ public class ClientInterface extends Application{
                 controllerPostSearchInterface.setLoggedInterface(u.getDisplayName(),u.getProfileImage());
             }
         });
+    }
+    public static void fillProfileInterface(User u) {
+        controllerProfileInterface.fillProfileInterface(u);
+    }
+
+    public static void loginResponseHandler(MessageLogin msg){
+        controllerSignInInterface.handleLogInResponse(msg);
     }
 
     public static void main(String[] args) {

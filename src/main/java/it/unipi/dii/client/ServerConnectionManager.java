@@ -61,7 +61,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)message;
-                        ClientInterface.registrationResponseHandler(messageSignUp);
+                        ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
                         break;
 
                     case Message_Get_Experts:
