@@ -1,6 +1,7 @@
 package it.unipi.dii.server.databaseDriver;
 
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
@@ -726,14 +727,14 @@ public class DocumentDBManager {
                 .append("Tags", post.getTags())
                 .append("ViewCount", post.getViews());
 
-        postsCollection.insertOne(doc);
-
-        return true;
+        InsertOneResult result = postsCollection.insertOne(doc);
+        post.setPostId(result.getInsertedId().asObjectId().getValue().toString());
+        return result.wasAcknowledged();
     }
 
     public boolean insertUser(User user){
 
-        Document us = new Document("DisplayName", user.getDisplayName())
+        Document userDoc = new Document("DisplayName", user.getDisplayName())
                 .append("Password", user.getPassword())
                 .append("CreationDate", user.getCreationDate())
                 .append("LastAccessDate", user.getLastAccessDate())
@@ -744,7 +745,10 @@ public class DocumentDBManager {
                 .append("followerNumber", user.getFollowersNumber())
                 .append("Reputation", user.getReputation())
                 .append("type", user.getType());
-        return usersCollection.insertOne(us).wasAcknowledged();
+
+        InsertOneResult result = usersCollection.insertOne(userDoc);
+        user.setUserId(result.getInsertedId().asObjectId().getValue().toString());
+        return result.wasAcknowledged();
     }
 
     //

@@ -81,8 +81,9 @@ public class DBManager {
                 .setFollowersNumber(0)
                 .setReputation(0);
         boolean insertedUser = documentDBManager.insertUser(newUser);
-        if(insertedUser)
+        if(insertedUser) {
             graphDBManager.insertUser(newUser);
+        }
         return insertedUser;
     }
 
@@ -134,7 +135,11 @@ public class DBManager {
 
     public boolean insertPost(Post newPost){
         boolean insertedPost = documentDBManager.insertPost(newPost);
-        graphDBManager.insertPost(newPost);
+        if (insertedPost) {
+            // in insertPost il post è stato modificato aggiungendo l'id
+            graphDBManager.insertPost(newPost);
+        }
+
         return insertedPost;
     }
 

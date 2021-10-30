@@ -71,6 +71,7 @@ public class ClientManager extends Thread{
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
                         User signupUser = messageSignUp.getUser();
                         if(dbManager.insertUser(signupUser)){
+                            loggedUser = dbManager.getUserData(signupUser.getDisplayName());
                             send(new MessageSignUp(dbManager.getUserData(signupUser.getDisplayName()), StatusCode.Message_Ok));
                         }
                         else{
