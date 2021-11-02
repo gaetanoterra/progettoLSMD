@@ -228,6 +228,12 @@ public class ClientManager extends Thread{
                         send(messageAnalyticMPTagsLocation);
                         break;
 
+                    case Message_Analytics_User_Rank:
+                        MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) msg;
+                        messageAnalyticUserRanking.setUsers(dbManager.getUsersRank());
+                        send(messageAnalyticUserRanking);
+                        break;
+
                 }
             }
 

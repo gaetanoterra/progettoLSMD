@@ -46,9 +46,7 @@ public class DBManager {
     }
 
     //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
-    public User[] getUsersRank(){
-        return documentDBManager.getUsersRank();
-    }
+    public User[] getUsersRank(){ return documentDBManager.getUsersRank(); }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername

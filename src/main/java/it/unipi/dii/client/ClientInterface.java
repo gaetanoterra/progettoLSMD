@@ -34,6 +34,8 @@ public class ClientInterface extends Application{
     private static ControllerWrite controllerWriteInterface;
 
 
+    //TODO: necessario un metodo e una variabile che teng conto dell'ultima interfaccia visitata per implementare i back buttons (forse mantenere la pagina all'interno dei vari controller). allo switch della pagina si chiama un metodo init dove si inizializza la lastPageVisited
+
     @Override
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
@@ -244,6 +246,10 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static void initAnalyticsInterface(PageType pageType) throws IOException {
+        controllerAnalysisInterface.initAnalyticsInterface(pageType);
+    }
+
     public static void fillMPTagChart(Map<String, Integer> tags){
         controllerAnalysisInterface.resetTagList();
         controllerAnalysisInterface.fillTagList(tags);
@@ -254,6 +260,11 @@ public class ClientInterface extends Application{
         controllerAnalysisInterface.resetTagLocationList();
         controllerAnalysisInterface.fillTagLocationList(tags);
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
+    }
+
+    public static void fillUserRanking(User[] users){
+        controllerAnalysisInterface.resetMPUsersList();
+        controllerAnalysisInterface.fillMPUsersList(users);
     }
 }
 

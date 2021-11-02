@@ -10,7 +10,8 @@ public enum PageType {
     MESSAGE (6),
     READ_POST (7),
     CREATE_ANSWER(8),
-    FULLPOST(9);
+    FULLPOST(9),
+    EXTERNAL_PROFILE(10); //profilo di un utente che non sono io
     private final int pagetype;
 
     PageType (int pagetype){

@@ -313,7 +313,7 @@ public class DocumentDBManager {
         }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson matchStage = match(in("OwnerUserId", (String[])userIdList.toArray()));
+        Bson matchStage = match(in("OwnerUserId", (userIdList.toArray(new String[userIdList.size()]))));
         Bson unwindStage = unwind("Tags");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupStage = group("$Tags", sum("totaleTags",1));
@@ -698,7 +698,7 @@ public class DocumentDBManager {
             user.add(u);
         });
 
-        return (User[]) user.toArray();
+        return user.toArray(new User[user.size()]);
     }
 
     public boolean insertAnswer(Answer answer, String postId){
