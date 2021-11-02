@@ -6,10 +6,13 @@ import it.unipi.dii.Libraries.Messages.MessageAnalyticMPTagsLocation;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 
@@ -25,6 +28,7 @@ public class ControllerAnalysisInterface {
     private ServerConnectionManager serverConnectionManager = ClientInterface.getServerConnectionManager();
     private ObservableMap<String, Integer> tagObservableMap;
     private ObservableList<String> tagLocationObservableList;
+    private ObservableList<String> usersObservableList;
 
     @FXML
     private Label label_username;
@@ -36,20 +40,29 @@ public class ControllerAnalysisInterface {
     private TextField text_field_location;
 
     @FXML
-    private PieChart pie_chart_mptags, pie_chart_mptags_location;
+    private BarChart<String, Integer> bar_chart_mptags;
 
     @FXML
-    private TableView table_view_mpusers;
+    private ListView list_view_mptags_location, list_view_mpusers;
 
     //metodi most popular tags section
+    public void initTagsChart(){
+        bar_chart_mptags.setData((ObservableList<XYChart.Series<String, Integer>>) tagObservableMap);
+    }
+
     public void resetTagList(){ this.tagObservableMap.clear(); }
 
     public void fillTagList(Map<String, Integer> tags){ tagObservableMap.putAll(tags); }
 
     //metodi most popular tags per location section
+    //TODO: questo metodo è chiamato quando si switcha all'interfaccia analysis
+    public void initTagsLocationList(){
+        list_view_mptags_location.setItems(tagLocationObservableList);
+    }
+
     public void resetTagLocationList(){ this.tagLocationObservableList.removeAll(); }
 
-    public void fillTagLocationList(String[] tags){ tagLocationObservableList.setAll(tags); }
+    public void fillTagLocationList(String[] tags){ tagLocationObservableList = FXCollections.observableArrayList(tags); }
 
     //metodi dei Buttons
     //button used to go back to the profile interface
