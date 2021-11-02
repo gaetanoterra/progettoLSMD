@@ -620,7 +620,7 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class));
-                            p.setViews(doc.getLong("ViewCount"));
+                            p.setViews(Long.parseLong(doc.getString("ViewCount")));
                             postArrayList.add(p);
                         }
         );

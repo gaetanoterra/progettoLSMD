@@ -30,13 +30,10 @@ public class DBManager {
     /*
     --------------------------- ANALYTICS ---------------------------
      */
-    public Map<User, Post[]> findMostAnsweredTopUserPosts(){
-        return documentDBManager.findMostAnsweredTopUserPosts();
-    }
+    //TODO: questa va fatta con il graphDB
+    public Map<User, Post[]> findMostAnsweredTopUserPosts(){ return documentDBManager.findMostAnsweredTopUserPosts(); }
 
-    public User[] findTopExpertsByTag(String tagName, int numExperts){
-        return documentDBManager.findTopExpertsByTag(tagName, numExperts);
-    }
+    public User[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
     //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
     //per i most popular tags per lcation inserire nella pagina delle analytics una piechart che mostra i top 10, con una casella di testo per modificare la location
@@ -61,9 +58,7 @@ public class DBManager {
 
     //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getRecommendedUsers(String username, String tagName){
-        return graphDBManager.getRecommendedUsers(username, tagName);
-    }
+    public String[] getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
 
     /*
     --------------------------- USERS ---------------------------
