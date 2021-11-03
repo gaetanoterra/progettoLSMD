@@ -1,5 +1,6 @@
 package it.unipi.dii.server.databaseDriver;
 
+import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.Libraries.Answer;
@@ -19,11 +20,6 @@ import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
-
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
@@ -297,7 +293,7 @@ public class DocumentDBManager {
         ArrayList<String> userIdList = new ArrayList<>();
 
         usersCollection.find(eq("Location", location)).forEach(document -> {
-            userIdList.add(document.getObjectId("_id").toString());
+            userIdList.add(document.getInteger("Id").toString());
         });
 
         /*try (MongoCursor<Document> cursor = usersCollection.find(eq("Location", location)).iterator())
@@ -314,7 +310,7 @@ public class DocumentDBManager {
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
         Bson matchStage = match(in("OwnerUserId", (userIdList.toArray(new String[userIdList.size()]))));
-        Bson unwindStage = unwind("Tags");
+        Bson unwindStage = unwind("$Tags");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupStage = group("$Tags", sum("totaleTags",1));
         Bson sortStage = sort(descending("totaleTags"));
@@ -332,16 +328,16 @@ public class DocumentDBManager {
                 tagList.add(doc.getString("_id"))
         );
 
-        /*try (MongoCursor<Document> cursor = postsCollection.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
+        /*try (MongoCursor<Document> cursor = postsCollection.aggregate(Arrays.asList(matchStage, unwindStage, groupStage, sortStage, limitStage)).iterator())
         {
             while (cursor.hasNext())
             {
                 Document doc = cursor.next();
-                tagList.add(doc.getString("tagList"));
+                tagList.add(doc.getString("_id"));
             }
         }*/
 
-        return (String[]) ((tagList.toArray().length == 0)? null : tagList.toArray());
+        return ((tagList.toArray(new String[tagList.size()]).length == 0)? null : tagList.toArray(new String[tagList.size()]));
     }
 
     //restituisco gli id degli utenti più esperti

@@ -8,6 +8,7 @@ import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -71,7 +72,14 @@ public class ControllerAnalysisInterface {
 
     public void resetTagList(){ if(tagObservableMap != null) tagObservableMap.clear(); }
 
-    public void fillTagList(Map<String, Integer> tags){ tagObservableMap.putAll(tags); }
+    public void fillTagList(Map<String, Integer> tags){
+        Platform.runLater(
+                () -> {
+                    tagObservableMap.putAll(tags);
+                }
+        );
+
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -84,10 +92,15 @@ public class ControllerAnalysisInterface {
         list_view_mptags_location.setItems(tagLocationObservableList);
     }
 
-    public void resetTagLocationList(){ if(tagLocationObservableList != null) tagLocationObservableList.removeAll(); }
+    public void resetTagLocationList(){ if(tagLocationObservableList != null) tagLocationObservableList.clear(); }
 
+    //Platform.runLater is needed to avoid an IllegalStateException
     public void fillTagLocationList(String[] tags){
-        tagLocationObservableList.addAll(tags);
+        Platform.runLater(
+                () -> {
+                    tagLocationObservableList.addAll(tags);
+                }
+        );
     }
 
 
@@ -108,9 +121,14 @@ public class ControllerAnalysisInterface {
 
     public void fillMPUsersList(User[] users){ 
         usersRankingArray = users;
-        for (User u: usersRankingArray) {
-            usersRankingList.add(u.getDisplayName());
-        }
+
+        Platform.runLater(
+                () -> {
+                    for (User u: usersRankingArray) {
+                        usersRankingList.add(u.getDisplayName());
+                    }
+                }
+        );
     }
 
     //TODO: necessario metodo che selezionando un utente della lista apre il suo profilo (va modificata la switchScene aggiungendo l'utente su cui switchare, servirà anche per aprire un Post specifico)
