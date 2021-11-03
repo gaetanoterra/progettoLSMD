@@ -252,19 +252,32 @@ public class ClientInterface extends Application{
 
     public static void fillMPTagChart(Map<String, Integer> tags){
         controllerAnalysisInterface.resetTagList();
-        controllerAnalysisInterface.fillTagList(tags);
+        if(tags != null)
+            controllerAnalysisInterface.fillTagList(tags);
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 
     public static void fillMPTagLocationChart(String[] tags){
         controllerAnalysisInterface.resetTagLocationList();
-        controllerAnalysisInterface.fillTagLocationList(tags);
+        if(tags != null)
+            controllerAnalysisInterface.fillTagLocationList(tags);
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 
     public static void fillUserRanking(User[] users){
         controllerAnalysisInterface.resetMPUsersList();
-        controllerAnalysisInterface.fillMPUsersList(users);
+        if(users != null)
+            controllerAnalysisInterface.fillMPUsersList(users);
+    }
+
+    public static void fillExpertsByTag(String[] users){
+        controllerAnalysisInterface.resetExpertUsersList();
+        if(users != null)
+            controllerAnalysisInterface.fillExpertUsersList(users);
+    }
+
+    public static void loadExternalProfile(User user){
+        controllerAnalysisInterface.loadExternalProfile(user);
     }
 }
 

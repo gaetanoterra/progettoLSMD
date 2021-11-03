@@ -60,12 +60,13 @@ public class ServerConnectionManager extends Thread {
                         return;
 
                     case Message_Signup:
-                        MessageSignUp messageSignUp = (MessageSignUp)message;
+                        MessageSignUp messageSignUp = (MessageSignUp) message;
                         ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
                         break;
 
                     case Message_Get_Experts:
-
+                        MessageGetExpertsByTag messageGetExpertsByTag = (MessageGetExpertsByTag) message;
+                        ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getUsersList());
                         break;
 
                     case Message_Get_Post_Data:
@@ -80,6 +81,14 @@ public class ServerConnectionManager extends Thread {
                             case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
                             case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
                         }
+                        break;
+
+                    case Message_Get_User_Data:
+                        MessageGetUserData messageGetUserData = (MessageGetUserData) message;
+                        if(messageGetUserData.getProfileType() == true)
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0)); //da modificare per il personal profile
+                        else
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0));
                         break;
 
                     case Message_Get_Top_Users_Posts:

@@ -341,12 +341,12 @@ public class DocumentDBManager {
     }
 
     //restituisco gli id degli utenti più esperti
-    public User[] findTopExpertsByTag(String tag, int num){
-        ArrayList<ObjectId> userIdList = new ArrayList<>();
+    public String[] findTopExpertsByTag(String tag, int num){
+        ArrayList<String> userIdList = new ArrayList<>();
         ArrayList<User> userList = new ArrayList<>();
 
         Bson matchTag = match(eq("Tags", tag));
-        Bson unwindAnswers = unwind("Answers");
+        Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupByOwnerUserId = group("$Answers.OwnerUserId", sum("totaleRisposteUtente",1));
         Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
@@ -363,10 +363,10 @@ public class DocumentDBManager {
                         limitStage
                 )
         ).forEach(doc ->
-                userIdList.add(doc.getObjectId("_id"))
+                userIdList.add(doc.getString("Answer.OwnerDisplayName"))
         );
 
-        usersCollection.find(in("_id", (ObjectId[])userIdList.toArray())).forEach(document -> {
+        /*usersCollection.find(in("Id", userIdList.toArray(new String[userIdList.size()]))).forEach(document -> {
             User user = new User()
                     .setUserId(document.getObjectId("_id").toString())
                     .setDisplayName(document.getString("DisplayName"))
@@ -381,9 +381,9 @@ public class DocumentDBManager {
                     .setAboutMe(document.getString("AboutMe"))
                     .setWebsiteURL(document.getString("WebsiteUrl"));
             userList.add(user);
-        });
+        });*/
 
-        return (User[]) ((userList.toArray().length == 0)? null : userList.toArray());
+        return ((userIdList.toArray(new String[userIdList.size()]).length == 0)? null : userIdList.toArray(new String[userIdList.size()]));
     }
 
     //TODO: questa è una query analytics, quindi definire un messaggio e un opcode
@@ -667,7 +667,7 @@ public class DocumentDBManager {
                     .setAboutMe(userDoc.getString("AboutMe"))
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"));
 
-            System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
+            //System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
         }
 
         return user;
@@ -818,4 +818,16 @@ public class DocumentDBManager {
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", -1));
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
     }
+
+    //TODO: possibili analytics
+    //TODO
+    //TODO
+    //TODO
+    //TODO
+    //trovare la location più social, cioè trovare le location dove gli utenti hanno più followers e followed
+
+    //trovare possibili troll, cioè utenti che hanno tante risposte (rispondono tanto) ma che hanno poche risposte accettate
+    /* quindi devo trovare per ogni utente tutte le sue risposte e per ogni utente tutte le risposte accettate date da lui
+    * perciò in una prima query faccio un unwind sulle Answers e raggruppo sull'Answers.OwnerUserId sommando le risposte => ho il numero totale di risposte per ogni utenre
+    * in un'altra query per ogni utente trovato sopra*/
 }

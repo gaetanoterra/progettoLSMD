@@ -81,12 +81,12 @@ public class ClientManager extends Thread{
 
                     case Message_Get_Experts:
                         MessageGetExpertsByTag msgExperts = (MessageGetExpertsByTag)msg;
-                        User[] expertUsers = dbManager.findTopExpertsByTag(
+                        String[] expertUsers = dbManager.findTopExpertsByTag(
                                 msgExperts.getTag(),
                                 DEFAULT_NUM_EXPERTS
                         );
 
-                        send(new MessageGetExpertsByTag(msgExperts.getTag(), (ArrayList<User>)Arrays.asList(expertUsers)));
+                        send(new MessageGetExpertsByTag(msgExperts.getTag(), expertUsers));
                         break;
 
                     case Message_Post:
@@ -197,7 +197,7 @@ public class ClientManager extends Thread{
                         User userToSearch = msgGetUserData.getObject().get(0);
                         String displayName = userToSearch.getDisplayName();
                         User userWithCompleteData = dbManager.getUserData(displayName);
-                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData))));
+                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData)), msgGetUserData.getProfileType()));
                         break;
 
                     case Message_Get_Post_Data:

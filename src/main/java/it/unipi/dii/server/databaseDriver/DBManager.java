@@ -33,7 +33,7 @@ public class DBManager {
     //TODO: questa va fatta con il graphDB
     public Map<User, Post[]> findMostAnsweredTopUserPosts(){ return documentDBManager.findMostAnsweredTopUserPosts(); }
 
-    public User[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
+    public String[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
     //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
     //per i most popular tags per lcation inserire nella pagina delle analytics una piechart che mostra i top 10, con una casella di testo per modificare la location
