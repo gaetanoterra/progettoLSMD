@@ -62,5 +62,7 @@ public class ControllerProfileInterface {
     @FXML
     private void eventButtonLogout(ActionEvent actionEvent) {
     }
-    public void fillProfileInterface(User u){}
+    public void fillProfileInterface(User u){
+
+    }
 }

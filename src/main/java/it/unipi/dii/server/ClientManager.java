@@ -197,7 +197,7 @@ public class ClientManager extends Thread{
                         User userToSearch = msgGetUserData.getObject().get(0);
                         String displayName = userToSearch.getDisplayName();
                         User userWithCompleteData = dbManager.getUserData(displayName);
-                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData)), msgGetUserData.getProfileType()));
+                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData)), msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
                         break;
 
                     case Message_Get_Post_Data:

@@ -5,7 +5,6 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.web.*?>
 
 <AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerExternalUserInterface">
 <children>
@@ -28,14 +27,14 @@
                                     <Image url="@../images/anonymous_user.png" />
                                 </image>
                             </ImageView>
-                            <Label fx:id="displayNameLabel" text="Username">
+                            <Label fx:id="label_display_name" text="Username">
                                 <font>
                                     <Font size="16.0" />
                                 </font>
                             </Label>
                         </children>
                     </VBox>
-                    <WebView fx:id="aboutMeWebView" prefHeight="189.0" prefWidth="306.0" />
+                  <TextArea fx:id="text_area_aboutme" prefHeight="200.0" prefWidth="200.0" />
                     <GridPane prefHeight="189.0" prefWidth="220.0">
                         <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -52,10 +51,10 @@
                             <Label text="Creation date:" GridPane.rowIndex="1" />
                             <Label text="Reputation:" GridPane.rowIndex="2" />
                             <Label text="web site:" GridPane.rowIndex="3" />
-                            <Label prefHeight="16.0" prefWidth="121.0" GridPane.columnIndex="1" />
-                            <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                            <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                            <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                            <Label fx:id="label_location" prefHeight="16.0" prefWidth="121.0" GridPane.columnIndex="1" />
+                            <Label fx:id="label_creation_date" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                            <Label fx:id="label_reputation" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            <Label fx:id="label_website" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         </children>
                     </GridPane>
                 </children>

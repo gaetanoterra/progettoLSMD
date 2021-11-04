@@ -36,7 +36,6 @@ public class ControllerPostSearchInterface {
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
-
     }
 
     @FXML

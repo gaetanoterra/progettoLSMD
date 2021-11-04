@@ -32,6 +32,7 @@ public class ClientInterface extends Application{
     private static ControllerProfileInterface controllerProfileInterface;
     private static ControllerAnalysisInterface controllerAnalysisInterface;
     private static ControllerWrite controllerWriteInterface;
+    private static ControllerExternalUserInterface controllerExternalUserInterface;
 
 
     //TODO: necessario un metodo e una variabile che teng conto dell'ultima interfaccia visitata per implementare i back buttons (forse mantenere la pagina all'interno dei vari controller). allo switch della pagina si chiama un metodo init dove si inizializza la lastPageVisited
@@ -81,6 +82,10 @@ public class ClientInterface extends Application{
         FXMLLoader writeInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/write.fxml"));
         scenes[PageType.WRITE.ordinal()] = new Scene(writeInterfaceLoader.load());
         controllerWriteInterface = writeInterfaceLoader.getController();
+
+        FXMLLoader externalUserInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/externalUserInterface.fxml"));
+        scenes[PageType.EXTERNAL_PROFILE.ordinal()] = new Scene(externalUserInterfaceLoader.load());
+        controllerExternalUserInterface = externalUserInterfaceLoader.getController();
 
    /*
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
@@ -276,8 +281,35 @@ public class ClientInterface extends Application{
             controllerAnalysisInterface.fillExpertUsersList(users);
     }
 
-    public static void loadExternalProfile(User user){
-        controllerAnalysisInterface.loadExternalProfile(user);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                         EXTERNAL PROFILE APIs                                                  //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public static void loadExternalProfile(User user, PageType lastPageVisited) throws IOException {
+        controllerExternalUserInterface.initialize(user, lastPageVisited);
+        Platform.runLater(() -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
+    }
+
+    public static void fillUserPostInterface(ArrayList<Post> posts, String username){
+        if (loggedUser != null) {
+            if (loggedUser.getDisplayName().equals(username))
+                fillPersonalUserPostInterface(posts);
+            else
+                fillExternalUserPostInterface(posts);
+        }
+        else
+            fillExternalUserPostInterface(posts);
+    }
+
+    private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
+
+    }
+
+    public static void fillExternalUserPostInterface(ArrayList<Post> posts){
+        controllerExternalUserInterface.fillExternalUserPosts(posts);
     }
 }
 

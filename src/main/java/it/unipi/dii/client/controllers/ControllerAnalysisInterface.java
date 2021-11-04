@@ -17,6 +17,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -37,6 +38,8 @@ public class ControllerAnalysisInterface {
     private ObservableList<String> usersRankingList;
     private ObservableList<String> usersExpertsList;
     private PageType lastPageVisited;
+    private Map<User, Pair<String,Integer>[]> hotTopics;
+    private ObservableMap<User, Pair<String, Integer>[]> hotTopicsObservableMap;
 
     @FXML
     private Label label_username;
@@ -51,7 +54,10 @@ public class ControllerAnalysisInterface {
     private BarChart<String, Integer> bar_chart_mptags;
 
     @FXML
-    private ListView list_view_mptags_location, list_view_mpusers, list_view_experts;
+    private ListView<String> list_view_mptags_location, list_view_mpusers, list_view_experts;
+
+    @FXML
+    private TableView table_view_hot_topics;
 
     //TODO: metodo da chiamare allo switch in questa interfaccia
     public void initAnalyticsInterface(PageType pageType) throws IOException {
@@ -131,13 +137,9 @@ public class ControllerAnalysisInterface {
 
     //TODO: necessario metodo che selezionando un utente della lista apre il suo profilo (va modificata la switchScene aggiungendo l'utente su cui switchare, servirà anche per aprire un Post specifico)
     public void eventSelectItem(MouseEvent mouseEvent) throws IOException {
-        serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_mpusers.getSelectionModel().getSelectedItem().toString(), null, null, null, null))), false));
+        serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_mpusers.getSelectionModel().getSelectedItem().toString(), null, null, null, null))), false, PageType.ANALYSIS_INTERFACE));
     }
 
-    public void loadExternalProfile(User user) {
-        Platform.runLater(
-                () -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -172,26 +174,57 @@ public class ControllerAnalysisInterface {
     }
 
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                         HOT TOPICS                                                             //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void initHotTopicsMap() throws IOException {
+        hotTopicsObservableMap = FXCollections.observableMap(hotTopics);
+        //table_view_hot_topics.setItems(hotTopicsObservableMap);
+    }
+
+    public void resetHotTopicsMap(){ if(usersExpertsList != null) usersExpertsList.removeAll(); }
+
+    public void fillHotTopicsMap(String[] users){
+        usersExpertsArray = users;
+
+        Platform.runLater(
+                () -> {
+                    for (String u: usersExpertsArray) {
+                        usersExpertsList.add(u);
+                    }
+                }
+        );
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
     //                                         BUTTONS' METHODS                                                       //
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @FXML
     public void eventButtonBack(ActionEvent actionEvent) throws IOException, InterruptedException {
         ClientInterface.switchScene(lastPageVisited);
     }
 
+    @FXML
     public void eventButtonUpdate(ActionEvent actionEvent) throws IOException, InterruptedException {
         resetTagList();
         serverConnectionManager.send(new MessageAnalyticMPTags(null));
     }
 
+    @FXML
     public void eventButtonSearch(ActionEvent actionEvent) throws  IOException, InterruptedException {
         resetTagLocationList();
         serverConnectionManager.send(new MessageAnalyticMPTagsLocation(text_field_location.getText(), 10, null));
     }
 
+    @FXML
     public void eventSearchExperts(ActionEvent actionEvent) throws IOException {
         resetExpertUsersList();
         serverConnectionManager.send(new MessageGetExpertsByTag(text_field_experts.getText(), null));

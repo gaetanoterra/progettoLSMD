@@ -77,7 +77,7 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
                         switch (messageGetPostByParameter.getParameter()){
-                            case Username -> {}
+                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostByParameter.getPostArrayList(), messageGetPostByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
                             case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
                             case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
                         }
@@ -86,9 +86,9 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_User_Data:
                         MessageGetUserData messageGetUserData = (MessageGetUserData) message;
                         if(messageGetUserData.getProfileType() == true)
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0)); //da modificare per il personal profile
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType()); //da modificare per il personal profile
                         else
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0));
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
                         break;
 
                     case Message_Get_Top_Users_Posts:

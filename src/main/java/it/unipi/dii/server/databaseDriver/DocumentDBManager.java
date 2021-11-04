@@ -404,7 +404,7 @@ public class DocumentDBManager {
         //50 at most users, the most followed ones
         */
         Bson sortByFollowersDesc = sort(descending("followerNumber"));
-        Bson limitUsers = limit(50);
+        Bson limitUsers = limit(10);
         usersCollection.aggregate(
                 Arrays.asList(
                         sortByFollowersDesc,
