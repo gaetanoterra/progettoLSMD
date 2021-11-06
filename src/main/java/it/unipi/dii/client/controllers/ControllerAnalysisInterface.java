@@ -2,7 +2,6 @@ package it.unipi.dii.client.controllers;
 
 
 import it.unipi.dii.Libraries.Messages.*;
-import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
@@ -12,14 +11,12 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +63,7 @@ public class ControllerAnalysisInterface {
         //initTagsChart();
         initTagsLocationList();
         initExpertUsersList();
+        initHotTopicsMap();
     }
 
 
@@ -182,22 +180,25 @@ public class ControllerAnalysisInterface {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void initHotTopicsMap() throws IOException {
-        hotTopicsObservableMap = FXCollections.observableMap(hotTopics);
+        //hotTopicsObservableMap = FXCollections.observableMap(hotTopics);
+        serverConnectionManager.send(new MessageAnalyticHotTopics(null));
         //table_view_hot_topics.setItems(hotTopicsObservableMap);
     }
 
     public void resetHotTopicsMap(){ if(usersExpertsList != null) usersExpertsList.removeAll(); }
 
-    public void fillHotTopicsMap(String[] users){
-        usersExpertsArray = users;
+    public void fillHotTopicsMap(Map<User, Pair<String, Integer>[]> map){
+        hotTopics = map;
 
-        Platform.runLater(
+        System.out.println(map);
+        /*Platform.runLater(
                 () -> {
                     for (String u: usersExpertsArray) {
                         usersExpertsList.add(u);
                     }
                 }
-        );
+        );*/
+
     }
 
 

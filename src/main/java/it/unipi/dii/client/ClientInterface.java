@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -279,6 +280,11 @@ public class ClientInterface extends Application{
         controllerAnalysisInterface.resetExpertUsersList();
         if(users != null)
             controllerAnalysisInterface.fillExpertUsersList(users);
+    }
+
+    public static void fillHotTopicsUsers(Map<User, Pair<String, Integer>[]> map){
+        controllerAnalysisInterface.resetHotTopicsMap();
+        controllerAnalysisInterface.fillHotTopicsMap(map);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

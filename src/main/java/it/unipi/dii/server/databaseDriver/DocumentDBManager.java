@@ -412,7 +412,7 @@ public class DocumentDBManager {
                 )
         ).forEach(document -> {
             User user = new User()
-                    .setUserId(document.getObjectId("_id").toString())
+                    .setUserId(Integer.toString(document.getInteger("Id")))
                     .setDisplayName(document.getString("DisplayName"))
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))
@@ -463,7 +463,7 @@ public class DocumentDBManager {
             postsCollection.aggregate(Arrays.asList(matchOwnerUserId, unwindAnswers, unwindTags, groupByTag, sortByCountDesc, limitTags, projectTagCount)).forEach(doc ->
                     list.add(new Pair<>(doc.getString("tag"), doc.getInteger("count")))
             );
-            result.put(user, (Pair<String, Integer>[]) list.toArray());
+            result.put(user, list.toArray(new Pair[list.size()]));
         });
         return result;
     }

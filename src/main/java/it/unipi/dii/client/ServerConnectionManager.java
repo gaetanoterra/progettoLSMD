@@ -108,6 +108,12 @@ public class ServerConnectionManager extends Thread {
                         MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) message;
                         ClientInterface.fillUserRanking(messageAnalyticUserRanking.getUsers());
                         break;
+
+                    case Message_Analytic_Hot_Topics:
+                        MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) message;
+                        ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
+                        break;
+                        
                 }
 
             }

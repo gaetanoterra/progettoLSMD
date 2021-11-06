@@ -234,6 +234,13 @@ public class ClientManager extends Thread{
                         send(messageAnalyticUserRanking);
                         break;
 
+                    case Message_Analytic_Hot_Topics:
+                        MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) msg;
+                        messageAnalyticHotTopics.setMap(dbManager.findHotTopicsforTopUsers());
+                        send(messageAnalyticHotTopics);
+                        break;
+
+
                 }
             }
 

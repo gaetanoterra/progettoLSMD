@@ -3,6 +3,7 @@ package it.unipi.dii.server.databaseDriver;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
+import javafx.util.Pair;
 
 import java.time.Instant;
 import java.util.*;
@@ -47,6 +48,8 @@ public class DBManager {
 
     //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
     public User[] getUsersRank(){ return documentDBManager.getUsersRank(); }
+
+    public Map<User, Pair<String, Integer>[]> findHotTopicsforTopUsers(){ return documentDBManager.findHotTopicsForTopUsers(); }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
