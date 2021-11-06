@@ -14,11 +14,13 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +38,9 @@ public class ControllerAnalysisInterface {
     private ObservableList<String> usersExpertsList;
     private PageType lastPageVisited;
     private Map<User, Pair<String,Integer>[]> hotTopics;
-    private ObservableMap<User, Pair<String, Integer>[]> hotTopicsObservableMap;
+    private ObservableList<Map<String, String>> hotTopicsObservableMap;
+    private ObservableList<String> hotUsersList;
+    private ObservableList<String> hotTagsList;
 
     @FXML
     private Label label_username;
@@ -54,7 +58,10 @@ public class ControllerAnalysisInterface {
     private ListView<String> list_view_mptags_location, list_view_mpusers, list_view_experts;
 
     @FXML
-    private TableView table_view_hot_topics;
+    private TableView<Map<String, String>> table_view_hot_topics;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> table_column_user, table_column_tags;
 
     //TODO: metodo da chiamare allo switch in questa interfaccia
     public void initAnalyticsInterface(PageType pageType) throws IOException {
@@ -180,25 +187,40 @@ public class ControllerAnalysisInterface {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void initHotTopicsMap() throws IOException {
-        //hotTopicsObservableMap = FXCollections.observableMap(hotTopics);
+        hotTopicsObservableMap = FXCollections.observableArrayList();
         serverConnectionManager.send(new MessageAnalyticHotTopics(null));
-        //table_view_hot_topics.setItems(hotTopicsObservableMap);
+
+        table_column_user.setCellValueFactory(new MapValueFactory("User"));
+        table_column_tags.setCellValueFactory(new MapValueFactory("Tags"));
     }
 
-    public void resetHotTopicsMap(){ if(usersExpertsList != null) usersExpertsList.removeAll(); }
+    public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.removeAll(); }
 
     public void fillHotTopicsMap(Map<User, Pair<String, Integer>[]> map){
         hotTopics = map;
+        List<Pair<String, Integer>[]> lista = new ArrayList<>(map.values());
+        for (User u:map.keySet()) {
+            Map<String, String> rawData = new HashMap<>();
+            Pair<String, Integer>[] elem = lista.remove(0);
+            String s = "";
 
-        System.out.println(map);
-        /*Platform.runLater(
-                () -> {
-                    for (String u: usersExpertsArray) {
-                        usersExpertsList.add(u);
-                    }
-                }
-        );*/
+            for (Pair<String, Integer> e:elem) {
+                s = s + e.getKey() + "(" + e.getValue() + ") ";
+            }
 
+            rawData.put("User", u.getDisplayName());
+            rawData.put("Tags", s);
+
+            hotTopicsObservableMap.add(rawData);
+        }
+
+        table_view_hot_topics.setItems(hotTopicsObservableMap);
+    }
+
+    public void eventShowHotUser(MouseEvent mouseEvent) {
+
+        //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);
+        System.out.println(table_view_hot_topics.getSelectionModel().getSelectedItem());
     }
 
 
