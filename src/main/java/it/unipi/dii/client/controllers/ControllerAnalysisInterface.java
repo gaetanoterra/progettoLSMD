@@ -36,11 +36,8 @@ public class ControllerAnalysisInterface {
     private String[] usersExpertsArray;
     private ObservableList<String> usersRankingList;
     private ObservableList<String> usersExpertsList;
-    private PageType lastPageVisited;
-    private Map<User, Pair<String,Integer>[]> hotTopics;
     private ObservableList<Map<String, String>> hotTopicsObservableMap;
-    private ObservableList<String> hotUsersList;
-    private ObservableList<String> hotTagsList;
+    private PageType lastPageVisited;
 
     @FXML
     private Label label_username;
@@ -197,7 +194,6 @@ public class ControllerAnalysisInterface {
     public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.removeAll(); }
 
     public void fillHotTopicsMap(Map<User, Pair<String, Integer>[]> map){
-        hotTopics = map;
         List<Pair<String, Integer>[]> lista = new ArrayList<>(map.values());
         for (User u:map.keySet()) {
             Map<String, String> rawData = new HashMap<>();

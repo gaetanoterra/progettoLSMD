@@ -43,8 +43,7 @@ public class ControllerPostSearchInterface {
         textfield_search.requestFocus();
 
         postsListView.setItems(this.postObservableList);
-        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
-
+        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.POSTSEARCHINTERFACE));
     }
 
     public void setLoggedInterface(String username, String imageUrl){

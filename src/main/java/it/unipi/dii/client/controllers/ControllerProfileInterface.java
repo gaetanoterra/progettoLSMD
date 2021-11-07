@@ -46,7 +46,7 @@ public class ControllerProfileInterface {
     @FXML
     private void initialize(){
         this.myPostsListView.setItems(this.postObservableList);
-        this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
+        this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.PROFILE_INTERFACE));
     }
 
     @FXML

@@ -31,6 +31,11 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
 
     private FXMLLoader pbvFXMLLoader;
     private String mongoPostID;
+    private PageType pageType;
+
+    public ControllerPostBriefViewCell(PageType postsearchinterface) {
+        pageType = postsearchinterface;
+    }
 
 
     @Override
@@ -56,7 +61,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
             titleTextLabel.setText(post.getTitle());
             this.mongoPostID = post.getPostId();
 
-            this.anchorPanePost.setOnMouseClicked(arg0 -> ClientInterface.getFullPostInterface(mongoPostID));
+            this.anchorPanePost.setOnMouseClicked(arg0 -> ClientInterface.getFullPostInterface(mongoPostID, pageType));
 
             if(tagsListHBox.getChildren().isEmpty())
                 for(String tag:post.getTags()){tagsListHBox.getChildren().add(new Label(tag));}
@@ -65,5 +70,4 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
             setGraphic(anchorPanePost);
         }
     }
-
 }

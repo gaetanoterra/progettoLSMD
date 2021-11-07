@@ -129,12 +129,13 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void getFullPostInterface(String id) {
+    public static void getFullPostInterface(String id, PageType pageType) {
         try {
             serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        controllerFullPostInterface.setLastPage(pageType);
         ClientInterface.switchScene(PageType.FULLPOST);
     }
 

@@ -47,7 +47,7 @@ public class ControllerExternalUserInterface {
         this.text_area_aboutme.setEditable(false);
 
         myPostsListView.setItems(postObservableList);
-        this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
+        this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.EXTERNAL_PROFILE));
         fillExternalUserInterface();
 
         //sending the request for user posts
