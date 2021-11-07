@@ -430,12 +430,10 @@ public class DocumentDBManager {
             Bson matchOwnerUserId = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
             Bson unwindAnswers = unwind("$Answers");
             Bson unwindTags = unwind("$Tags");
-            Bson groupByTag = new Document("$group",
-                    new Document("_id", "$Tags").append("count",
-                            new Document("$sum", 1)));
+            Bson groupByTag = group("$Tags", sum("count", 1));
             Bson sortByCountDesc = sort(descending("count"));
             Bson limitTags = limit(3);
-            Bson projectTagCount = project(fields(Projections.computed("tag","_id"), include("count")));
+            Bson projectTagCount = project(fields(include("_id", "count")));
                 /*
                 db.posts.aggregate([
                         {$match:
@@ -461,7 +459,7 @@ public class DocumentDBManager {
          */
             ArrayList<Pair<String, Integer>> list = new ArrayList<>();
             postsCollection.aggregate(Arrays.asList(matchOwnerUserId, unwindAnswers, unwindTags, groupByTag, sortByCountDesc, limitTags, projectTagCount)).forEach(doc ->
-                    list.add(new Pair<>(doc.getString("tag"), doc.getInteger("count")))
+                    list.add(new Pair<>(doc.getString("_id"), doc.getInteger("count")))
             );
             result.put(user, list.toArray(new Pair[list.size()]));
         });
