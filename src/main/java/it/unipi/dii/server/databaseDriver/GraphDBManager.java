@@ -52,7 +52,7 @@ public class GraphDBManager {
         try (Session session = dbConnection.session())
         {
             session.readTransaction(tx -> {
-                Result result = tx.run( "MATCH (:User)-[r:VOTES]->(a:Answer)-[:ANSWERS_TO]->(q:Question) " +
+                Result result = tx.run( "MATCH (:User)-[r:VOTE]->(a:Answer)-[:ANSWERS_TO]->(q:Question) " +
                         "RETURN q.QuestionId as QuestionId, a.answerId as AnswerId, sum(r.VoteTypeId) AS Vote " +
                         "ORDER BY Vote DESC " +
                         "LIMIT 10; ");
@@ -213,8 +213,8 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
-                                "CREATE (u)-[:VOTES {voteTypeId: $voteTypeId}]->(a); ",
-                        parameters("userId", userId, "answerId", answerId, "voteTypeId", voteAnswer));
+                                "MERGE (u)-[:VOTE {VoteTypeId: $voteAnswer}]->(a); ",
+                        parameters("userId", userId, "answerId", answerId, "voteAnswer", voteAnswer));
                 return null;
             });
         }
@@ -242,13 +242,13 @@ public class GraphDBManager {
                return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:Answer {answerId = $answerId})-[r:ANSWERS_TO]->(:Question {questionId = $questionId}) " +
+                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
                                 "DELETE r; ",
                         parameters( "questionId", postId, "answerId", answer.getAnswerId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:User {userId = $userId})-[r:POSTS_ANSWER]->(:Answer {answerId = $answerId}) " +
+                tx.run("MATCH (:User {userId: $userId})-[r:POSTS_ANSWER]->(:Answer {answerId: $answerId}) " +
                                 "DELETE r; ",
                         parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
                 return null;
@@ -260,7 +260,7 @@ public class GraphDBManager {
     public void removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (fr:User {userId = $userIdFollower})-[r:FOLLOWS]->(fd:User {userId = $userIdFollowed}) " +
+                tx.run("MATCH (fr:User {userId: $userIdFollower})-[r:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
                                 "DELETE r; ",
                         parameters("userIdFollower", userIdFollower, "userIdFollowed", userIdFollowed));
                 return null;
@@ -301,7 +301,7 @@ public class GraphDBManager {
     public void removeRelationVote(String userId, String answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:User {userId = $userId})-[r:VOTES]->(:Answer {answerId = $answerId})" +
+                tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId})" +
                                 "DELETE r",
                         parameters("userId", userId, "answerId", answerId));
                 return null;
@@ -312,7 +312,7 @@ public class GraphDBManager {
     public void removeUser(String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId = $userId})-[:FOLLOWS]-(:User), " +
+                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOWS]-(:User), " +
                 "(u)-[:POSTS_QUESTION]->(q:Question), " +
                 "(u)-[:POSTS_ANSWER]->(a:Answer), " +
                 "DETACH DELETE u, q, a;",
@@ -325,6 +325,22 @@ public class GraphDBManager {
                         "DELETE t");
                 return null;
             });
+        }
+    }
+
+    public int getVote(String userId, String answerId){
+        try(Session session = dbConnection.session()){
+            int voto = (int) session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId})" +
+                                "return r.VoteTypeId as Voto LIMIT 1",
+                        parameters("userId", userId, "answerId", answerId));
+                if (result.hasNext()) {
+                    // esiste un voto
+                    return result.single().get("Voto",0);
+                }
+                return 0;
+            });
+            return voto;
         }
     }
 

@@ -9,6 +9,7 @@ import javafx.util.Pair;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
@@ -701,16 +702,37 @@ public class DocumentDBManager {
         return (User[]) user.toArray();
     }
 
-    public boolean insertAnswer(Answer answer, String postId){
+    private String generateTempIdAnswer(String postId, String userId) {
+        //millisecondi da epoch + id del post + id dell'utente
+        // - L
+        return Instant.now().toEpochMilli() + postId + userId;
+    }
 
-        Document doc = new Document("Id", answer.getAnswerId())
+    public boolean insertAnswer(Answer answer, String postId){
+        // strategia: visto che una risposta deve avere un id (per lato neo4j), e che usare l'indice
+        // della posizione nell'array come id può essere difficile da usare (visto che per usare come id l'indice
+        // devo prima trovare il documento nell'array e perché usare l'indice vuol dire che in neo4j bisogna usare
+        // la tripletta utente-indice-post per identificare una risposta), ho deciso di proseguire cosi'.
+        // 1) Creare un documento temporaneo, così da ottenere l'objectId associato
+        // 2) Usare l'objectId come nuovo id della risposta, e inserire il documento
+        // 3) Rimuovere il documento temporaneo
+        // - L
+
+        // 1)
+        String tempId = generateTempIdAnswer(postId, answer.getOwnerUserId());
+        Document doc = new Document("TempId", tempId);
+        InsertOneResult result = postsCollection.insertOne(doc);
+        // 2)
+        answer.setAnswerId(result.getInsertedId().asObjectId().getValue().toString());
+        doc = new Document("Id", answer.getAnswerId())
                 .append("CreationDate", answer.getCreationDate())
                 .append("Score", answer.getScore())
                 .append("OwnerUserId", answer.getOwnerUserId())
                 .append("Body", answer.getBody())
                 .append("OwnerDisplayName", answer.getOwnerUserName());
-
         postsCollection.updateOne(eq("_id", new ObjectId(postId)), Updates.push("Answers", doc));
+        // 3)
+        postsCollection.deleteOne(eq("TempId", tempId));
 
         return true;
     }

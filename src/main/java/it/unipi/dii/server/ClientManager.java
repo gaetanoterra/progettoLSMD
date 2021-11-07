@@ -102,12 +102,15 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Answer:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageAnswer msgAnswer = (MessageAnswer)msg;
                         Answer answer = msgAnswer.getAnswer();
 
                         switch (msgAnswer.getOperation()) {
                             case Create -> {
-                                answer.setAnswerId("test");
+                                // id della risposta e' settato in dbManager
                                 answer.setCreationDate(Instant.now().toEpochMilli());
                                 answer.setScore(0);
                                 answer.setOwnerUserName(loggedUser.getDisplayName());
@@ -145,6 +148,9 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Vote:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageVote msgVote = (MessageVote)msg;
                         answer = msgVote.getAnswer();
 
