@@ -28,7 +28,7 @@ public class MessageLogin extends Message {
     @Override
     public String toString() {
         return "MessageLogin{" +
-                "username=" + user +
+                "username=" + user.getDisplayName() +
                 '}';
     }
 }

@@ -29,7 +29,7 @@ public class MessagePost extends MessageCreateDelete{
     @Override
     public String toString() {
         return "MessagePost{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

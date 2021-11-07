@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="608.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface">
+<AnchorPane prefHeight="608.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface">
    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="684.0" prefWidth="849.0">
       <BorderPane prefHeight="61.0" prefWidth="849.0">
          <top>
@@ -64,6 +64,11 @@
                </HBox.margin>
             </Button>
             <Button fx:id="refreshButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#eventButtonRefresh" text="Refresh">
+               <HBox.margin>
+                  <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="backButton" alignment="BASELINE_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#eventButtonBack" text="Go back">
                <HBox.margin>
                   <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
                </HBox.margin>

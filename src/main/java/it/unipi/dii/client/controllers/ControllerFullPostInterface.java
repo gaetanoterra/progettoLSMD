@@ -33,7 +33,7 @@ public class ControllerFullPostInterface {
     private ListView<Answer> answersListView;
 
     @FXML
-    private Button postYourAnswerButton, refreshButton;
+    private Button postYourAnswerButton, refreshButton, backButton;
 
     private ObservableList<Answer> answerObservableList;
     private ServerConnectionManager serverConnectionManager;
@@ -81,5 +81,10 @@ public class ControllerFullPostInterface {
     public void eventButtonRefresh(ActionEvent actionEvent) {
         //riscarica il post dal postId
         ClientInterface.getFullPostInterface(currentPostId);
+    }
+
+    public void eventButtonBack(ActionEvent actionEvent) {
+        //torna a post search interface
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
     }
 }

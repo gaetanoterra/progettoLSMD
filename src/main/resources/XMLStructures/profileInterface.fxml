@@ -62,11 +62,11 @@
                         <Label text="Location:" />
                         <Label text="Creation date:" GridPane.rowIndex="1" />
                         <Label text="Reputation:" GridPane.rowIndex="2" />
-                        <Label text="web site:" GridPane.rowIndex="3" />
-                        <Label prefHeight="16.0" prefWidth="121.0" GridPane.columnIndex="1" />
-                        <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Web site:" GridPane.rowIndex="3" />
+                        <Label fx:id="locationLabel" prefHeight="16.0" prefWidth="121.0" GridPane.columnIndex="1" />
+                        <Label fx:id="creationDateLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="reputationLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="webSiteLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                      </children>
                   </GridPane>
                </children>

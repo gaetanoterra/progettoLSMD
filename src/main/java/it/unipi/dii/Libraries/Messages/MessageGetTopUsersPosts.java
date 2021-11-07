@@ -24,7 +24,7 @@ public class MessageGetTopUsersPosts extends Message {
     @Override
     public String toString() {
         return "MessageGetTopUsersPosts{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

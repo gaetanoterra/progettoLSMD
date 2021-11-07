@@ -26,7 +26,7 @@ public class MessageGetUserData extends MessageReadObjectQuery {
     @Override
     public String toString() {
         return "MessageGetUserData{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

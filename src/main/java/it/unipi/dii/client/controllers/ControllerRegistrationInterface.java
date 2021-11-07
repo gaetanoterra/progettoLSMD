@@ -1,15 +1,15 @@
 package it.unipi.dii.client.controllers;
 
 import it.unipi.dii.Libraries.Messages.MessageSignUp;
+import it.unipi.dii.Libraries.Messages.StatusCode;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-
-import java.io.IOException;
 
 public class ControllerRegistrationInterface {
 
@@ -42,6 +42,21 @@ public class ControllerRegistrationInterface {
                         webSiteURLTextField.getText(),
                         passwordTextField.getText())
         );
+    }
+
+    public void handleRegistrationResponse(MessageSignUp msg) {
+        Platform.runLater(() -> {
+            if (msg.getStatus().equals(StatusCode.Message_Ok)){
+                clientServerManager.setLoggedUser(msg.getUser());
+                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+                ClientInterface.setLog(msg.getUser());
+                ClientInterface.fillProfileInterface(msg.getUser());
+                ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(msg.getUser());
+            }
+            else {
+                System.out.println("Failed registration");
+            }
+        });
     }
 
     public void setErroneousUserName(){

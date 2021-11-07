@@ -52,8 +52,6 @@ public class ClientManager extends Thread{
                             loggedUser = user;
                             user.setLastAccessDate(Instant.now().toEpochMilli());
                             dbManager.updateUserData(user);
-                            //aggiorno la lastAcessDate dell'utente loggato a questo istante
-                            //loggedUser.setLastAccessDate(new Date());
                             send(new MessageLogin(user, StatusCode.Message_Ok));
                         }
                         else
@@ -61,11 +59,9 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Logout:
+                        send(new MessageLogOut(loggedUser.getDisplayName()));
                         loggedUser = null;
-                        this.clientInputStream.close();
-                        this.clientOutputStream.close();
-                        this.socketUser.close();
-                        return;
+                        break;
 
                     case Message_Signup:
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
@@ -232,8 +228,17 @@ public class ClientManager extends Thread{
             }
 
         }catch( SocketException | EOFException eof) {
-            System.out.println((this.loggedUser != null) ? this.loggedUser : "Anonymous user " + "just closed the connection");
+            System.out.println(((this.loggedUser != null) ? this.loggedUser.getDisplayName() : "Anonymous user") + " just closed the connection");
         } catch (IOException | OpcodeNotValidException | ClassNotFoundException ioe) {ioe.printStackTrace();}
+
+        try {
+            this.clientInputStream.close();
+            this.clientOutputStream.close();
+            this.socketUser.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
