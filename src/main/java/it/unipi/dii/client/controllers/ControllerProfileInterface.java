@@ -8,12 +8,12 @@ import it.unipi.dii.client.ServerConnectionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 
-//classe preposta a gestire l'interfaccia del profilo utente
 public class ControllerProfileInterface {
 
     private ServerConnectionManager serverConnectionManager;
@@ -23,19 +23,21 @@ public class ControllerProfileInterface {
     @FXML
     private ListView<Post> myPostsListView;
     @FXML
-    private Button button_logout;
-    @FXML
     private Label displayNameLabel;
     @FXML
     private WebView aboutMeWebView;
     @FXML
-    private Button button_browse;
-    @FXML
     private ImageView profileImageImageView;
     @FXML
-    private Button button_write;
-    @FXML
     private ListView<User> peopleYouMightKnowListView;
+    @FXML
+    private ImageView lensImageView;
+    @FXML
+    private ImageView writePostImageview;
+    @FXML
+    private ListView yourAnswersListView;
+    @FXML
+    private ImageView logOutImageView;
 
 
     public ControllerProfileInterface() {
@@ -43,24 +45,37 @@ public class ControllerProfileInterface {
         this.postObservableList = FXCollections.observableArrayList();
     }
 
-    @FXML
+    @Deprecated
     private void initialize(){
         this.myPostsListView.setItems(this.postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
     }
 
-    @FXML
+    @Deprecated
     private void eventButtonBrowse(ActionEvent actionEvent) {
 
     }
 
-    @FXML
+    @Deprecated
     private void eventButtonWrite(ActionEvent actionEvent) {
 
     }
 
-    @FXML
+    @Deprecated
     private void eventButtonLogout(ActionEvent actionEvent) {
     }
     public void fillProfileInterface(User u){}
+
+    @FXML
+    public void logOut(Event event) {
+    }
+
+    @FXML
+    public void switchToWritePostInterface(Event event) {
+    }
+
+    @FXML
+    public void switchToPostSearchInterface(Event event) {
+    }
+
 }

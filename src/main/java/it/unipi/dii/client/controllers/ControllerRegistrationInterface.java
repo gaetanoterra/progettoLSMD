@@ -31,7 +31,7 @@ public class ControllerRegistrationInterface {
     public ControllerRegistrationInterface(){
         this.clientServerManager = ClientInterface.getServerConnectionManager();
     }
-//(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
+
     @FXML
     public void eventButtonRegister(ActionEvent actionEvent) {
         ClientInterface.sendRegistrationRequest(

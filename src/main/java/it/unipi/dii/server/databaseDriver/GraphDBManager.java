@@ -13,12 +13,12 @@ import org.neo4j.driver.Record;
 //classe preposta ad effettuare le query del graph database
 public class GraphDBManager {
 
-    private Driver dbConnection;
+    private final Driver dbConnection;
 
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "pseudostackoverdb";
+        String password = "NEO4J";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -33,8 +33,7 @@ public class GraphDBManager {
         {
             return session.readTransaction(tx -> {
                 Map<String, Integer> tags = new HashMap<>();
-                tx.run(
-                        "MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
+                tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
                         "RETURN t.name as Name, count(*) AS NQuestions " +
                         "ORDER BY NQuestions DESC " +
                         "LIMIT 10; "
@@ -52,7 +51,8 @@ public class GraphDBManager {
         try (Session session = dbConnection.session())
         {
             session.readTransaction(tx -> {
-                Result result = tx.run( "MATCH (:User)-[r:VOTES]->(a:Answer)-[:ANSWERS_TO]->(q:Question) " +
+                Result result = tx.run(
+                        "MATCH (:User)-[r:VOTES]->(a:Answer)-[:ANSWERS_TO]->(q:Question) " +
                         "RETURN q.QuestionId as QuestionId, a.answerId as AnswerId, sum(r.VoteTypeId) AS Vote " +
                         "ORDER BY Vote DESC " +
                         "LIMIT 10; ");
@@ -67,16 +67,55 @@ public class GraphDBManager {
         }
     }
 
+    public ArrayList<Post> findUserPosts(){
+        try (Session session = dbConnection.session())
+        {
+            return session.readTransaction(tx -> {
+                Result result = tx.run("""
+                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question) <-[:BELONGS_TO]-
+                                        (a:Answer) RETURN q.Title as title, count(a) as number_of_answers
+                                        """);
+                ArrayList<Post> posts = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    posts.add( new Post().setTitle(r.get("title").asString())
+                                         .setAnswersNumber(r.get("number_of_answers").asInt())
+                    );
+                }
+                return posts;
+            });
+        }
+    }
+
+    public ArrayList<Answer> findUserAnswers(){
+        try (Session session = dbConnection.session())
+        {
+            return session.readTransaction(tx -> {
+                Result result = tx.run("""
+                                        MATCH (u:User{userId:"29"})-[:ANSWERS_WITH]->(a:Answer)<-[v:VOTE]-(uv:User)
+                                        RETURN a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC
+                                        """);
+                ArrayList<Answer> answers = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    answers.add( new Answer(r.get("body").asString()).setScore(r.get("score").asInt()));
+                 }
+                return answers;
+            });
+        }
+    }
     //si potrebbe aggiungere l'immagine del profilo (se inserita nel graph) alle cose da prendere
     //funzione che effettua la query per trovare gli utenti correlati all'utente username
     public String[] getCorrelatedUsers(String username){
         ArrayList<String> users = new ArrayList<>();
 
         try (Session session = dbConnection.session())
-        {
+        {  //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2)
             return (String[]) session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run( "MATCH (u3:User)<-[:FOLLOWS]-(u2:User)<-[:FOLLOWS]-(u:User {userId: $userId}) " +
-                                "WHERE u3 <> u and u3 <> u2 //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2) " +
+                                "WHERE u3 <> u and u3 <> u2  " +
                                 "RETURN distinct u3.displayName AS Username " +
                                 "LIMIT 10; ",
                         parameters( "userId", username) );

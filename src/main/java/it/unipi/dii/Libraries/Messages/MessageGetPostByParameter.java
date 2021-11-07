@@ -25,6 +25,7 @@ public class MessageGetPostByParameter extends Message{
         this.value = value;
         this.postArrayList = new ArrayList<>(Arrays.asList(post));
     }
+
     public MessageGetPostByParameter(Parameter parameter, String value, ArrayList<Post> post){
         this.opcode = Opcode.Message_Get_Posts_By_Parameter;
         this.parameter = parameter;

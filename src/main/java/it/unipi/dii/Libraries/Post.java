@@ -16,6 +16,8 @@ public class Post implements Serializable {
     private String ownerUserId;
     private List<String> tags;
     private Long views;
+
+
     private int answersNumber;
 
     public Post(){
@@ -125,6 +127,11 @@ public class Post implements Serializable {
 
     public Post setOwnerUserName(String ownerUserName) {
         this.ownerUserName = ownerUserName;
+        return this;
+    }
+
+    public Post setAnswersNumber(int answersNumber) {
+        this.answersNumber = answersNumber;
         return this;
     }
 
