@@ -30,7 +30,7 @@ public class ControllerAnalysisInterface {
     //TODO: quando premo update aggiorno la pie chart dei most popular tags
 
     private ServerConnectionManager serverConnectionManager = ClientInterface.getServerConnectionManager();
-    private ObservableMap<String, Integer> tagObservableMap;
+    private ObservableList<XYChart.Series<String, Integer>> tagObservableMap;
     private ObservableList<String> tagLocationObservableList;
     private User[] usersRankingArray;
     private String[] usersExpertsArray;
@@ -64,7 +64,7 @@ public class ControllerAnalysisInterface {
     public void initAnalyticsInterface(PageType pageType) throws IOException {
         lastPageVisited = pageType;
         initMPUsersList();
-        //initTagsChart();
+        initTagsChart();
         initTagsLocationList();
         initExpertUsersList();
         initHotTopicsMap();
@@ -77,8 +77,10 @@ public class ControllerAnalysisInterface {
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void initTagsChart(){
-        bar_chart_mptags.setData((ObservableList<XYChart.Series<String, Integer>>) tagObservableMap);
+    public void initTagsChart() throws IOException {
+        tagObservableMap = FXCollections.observableArrayList();
+        bar_chart_mptags.setAnimated(false);
+        serverConnectionManager.send(new MessageAnalyticMPTags(null));
     }
 
     public void resetTagList(){
@@ -86,8 +88,18 @@ public class ControllerAnalysisInterface {
     }
 
     public void fillTagList(Map<String, Integer> tags){
-        Platform.runLater(() -> { tagObservableMap.putAll(tags); });
+        List<Integer> values = new ArrayList<>(tags.values());
+
+        for (String tag:tags.keySet()) {
+            XYChart.Series serie = new XYChart.Series();
+            serie.getData().add(new XYChart.Data(tag, values.remove(0)));
+            Platform.runLater(() -> {tagObservableMap.add(serie);});
+        }
+
+        Platform.runLater(() -> {bar_chart_mptags.setData(tagObservableMap);});
     }
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -154,7 +166,7 @@ public class ControllerAnalysisInterface {
         list_view_experts.setItems(usersExpertsList);
     }
 
-    public void resetExpertUsersList(){ if(usersExpertsList != null) usersExpertsList.removeAll(); }
+    public void resetExpertUsersList(){ if(usersExpertsList != null) usersExpertsList.clear(); }
 
     public void fillExpertUsersList(String[] users){
         usersExpertsArray = users;
@@ -191,7 +203,7 @@ public class ControllerAnalysisInterface {
         table_column_tags.setCellValueFactory(new MapValueFactory("Tags"));
     }
 
-    public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.removeAll(); }
+    public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
 
     public void fillHotTopicsMap(Map<User, Pair<String, Integer>[]> map){
         List<Pair<String, Integer>[]> lista = new ArrayList<>(map.values());
