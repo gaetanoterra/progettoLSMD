@@ -41,7 +41,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
 
         this.titleLabel.setText(post.getTitle());
         this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
-        this.deleteBinImageview.setOnMouseClicked(mouseEvent -> {deleteQuestion();});
+        this.deleteBinImageview.setOnMouseClicked(mouseEvent -> deleteQuestion());
     }
 
     private void deleteQuestion(){}

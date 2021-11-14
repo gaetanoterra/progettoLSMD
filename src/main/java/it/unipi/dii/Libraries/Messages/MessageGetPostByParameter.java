@@ -42,7 +42,7 @@ public class MessageGetPostByParameter extends Message{
     @Override
     public String toString() {
         return "MessageGetPostByParameter{" +
-                "parameter=" + parameter +
+                "parameter=" + parameter.name() +
                 '}';
     }
 }

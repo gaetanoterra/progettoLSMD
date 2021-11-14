@@ -15,7 +15,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+
+import static it.unipi.dii.client.ClientInterface.DEFAULT_USERNAME;
 
 public class ControllerPostSearchInterface {
 
@@ -23,7 +26,7 @@ public class ControllerPostSearchInterface {
     private ObservableList<Post> postObservableList;
 
     @FXML
-    private Button signin_button, signup_button, search_button, button_analytics;
+    private Button signin_button, signup_button, search_button, profile_button, button_analytics;
     @FXML
     private TextField textfield_search;
     @FXML
@@ -36,28 +39,42 @@ public class ControllerPostSearchInterface {
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
+
     }
 
     @FXML
     private void initialize(){
         textfield_search.requestFocus();
-
+        setLoggedOutInterface();
         postsListView.setItems(this.postObservableList);
         postsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.POSTSEARCHINTERFACE));
     }
 
     public void setLoggedInterface(String username, String imageUrl){
         if(imageUrl != null)
-            this.profileImageView.setImage(new Image(imageUrl));
+            profileImageView.setImage(new Image(imageUrl));
         usernameLabel.setText(username);
         signin_button.setDisable(true);
         signup_button.setDisable(true);
+        profile_button.setDisable(false);
+        resetInterface();
+    }
 
+    public void setLoggedOutInterface(){
+        URL urlImageAnonymous = getClass().getResource("/images/anonymous_user.png");
+        if (urlImageAnonymous != null) {
+            profileImageView.setImage(new Image(urlImageAnonymous.toString()));
+        }
+        usernameLabel.setText(DEFAULT_USERNAME);
+        signin_button.setDisable(false);
+        signup_button.setDisable(false);
+        profile_button.setDisable(true);
+        resetInterface();
     }
 
     //rendo di nuovo disponibili i bottoni e scollego l'interfaccia dall'utente
     public void resetInterface(){
-        this.postObservableList.removeAll();
+        this.postObservableList.clear();
     }
 
     //metodo per inserire i post nel panello
@@ -66,12 +83,12 @@ public class ControllerPostSearchInterface {
     }
 
     @FXML
-    public void eventButtonSignIn(ActionEvent event) throws IOException {
+    public void eventButtonSignIn(ActionEvent event) {
         ClientInterface.switchScene(PageType.SIGN_IN);
     }
 
     @FXML
-    public void eventButtonSignUp(ActionEvent event) throws IOException {
+    public void eventButtonSignUp(ActionEvent event) {
         ClientInterface.switchScene(PageType.SIGN_UP);
     }
 
@@ -82,9 +99,9 @@ public class ControllerPostSearchInterface {
        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
     }
 
-    public void eventAnalytics(ActionEvent actionEvent) throws IOException {
-        resetInterface();
-        ClientInterface.switchScene(PageType.ANALYSIS_INTERFACE);
-        ClientInterface.initAnalyticsInterface(PageType.POSTSEARCHINTERFACE);
+    @FXML
+    public void eventButtonProfile(ActionEvent event) {
+        ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
+
 }

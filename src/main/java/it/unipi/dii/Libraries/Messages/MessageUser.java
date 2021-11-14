@@ -35,7 +35,7 @@ public class MessageUser extends MessageCreateDelete{
     @Override
     public String toString() {
         return "MessageUser{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

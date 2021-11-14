@@ -16,7 +16,7 @@ import java.io.IOException;
 //classe preposta a gestire l'interfaccia del login
 public class ControllerSignInInterface {
 
-    ServerConnectionManager serverConnectionManager = ClientInterface.getServerConnectionManager();
+    ServerConnectionManager serverConnectionManager;
 
     @FXML
     private Label errorMessageSignInLabel;
@@ -29,9 +29,13 @@ public class ControllerSignInInterface {
     @FXML
     private Button button_signup_signin;
 
+    public ControllerSignInInterface(){
+        this.serverConnectionManager = ClientInterface.getServerConnectionManager();
+    }
+
     //invio opcode, username e password a client.ClientServerManager, il quale effettuerà la richiesta a server.ClientManager
     @FXML
-    public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException, InterruptedException {
+    public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException {
         serverConnectionManager.send(new MessageLogin(new User()
                                                             .setPassword(signInPasswordField.getText())
                                                             .setDisplayName(textfield_signin_username.getText())));

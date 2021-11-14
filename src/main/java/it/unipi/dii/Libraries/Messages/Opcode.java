@@ -35,7 +35,7 @@ public enum Opcode {
     @Override
     public String toString() {
         return "Opcode{" +
-                "opcode=" + opcode +
+                "opcode=" + this.name() +
                 '}';
     }
 }

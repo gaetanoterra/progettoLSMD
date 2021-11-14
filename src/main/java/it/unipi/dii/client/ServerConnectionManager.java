@@ -15,8 +15,7 @@ public class ServerConnectionManager extends Thread {
     private  ObjectInputStream messageInputStream;
     private Socket clientSocket;
     private static boolean waiting = true; //vedo se sto aspettando la risposta del server
-    private boolean last_server_answer = false;
-    private  int portNumber;
+    private int portNumber;
     private User loggedUser;
 
     public ServerConnectionManager(int porta, InetAddress in) throws IOException{
@@ -48,20 +47,21 @@ public class ServerConnectionManager extends Thread {
                         MessageLogin msgl = (MessageLogin) message;
 
                         //se ricevo l'utente devo chiamare una funzione che inserisca i dati dell'utente nell'interfaccia
-                        if(msgl.getStatus() == StatusCode.Message_Ok) {
-                            last_server_answer = true;
-                        }
                         ClientInterface.loginResponseHandler(msgl);
                         break;
 
                     case Message_Logout:
-                        ClientInterface.resetLog();
+                        ClientInterface.logoutResponseHandler();
                         // ClientInterface.getControllerAnonymousInterface().resetInterface();
-                        return;
+                        break;
 
                     case Message_Signup:
+                        /*
                         MessageSignUp messageSignUp = (MessageSignUp) message;
                         ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
+                        */
+                        MessageSignUp messageSignUp = (MessageSignUp)message;
+                        ClientInterface.registrationResponseHandler(messageSignUp);
                         break;
 
                     case Message_Get_Experts:

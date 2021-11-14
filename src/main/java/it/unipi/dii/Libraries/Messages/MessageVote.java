@@ -35,7 +35,7 @@ public class MessageVote extends MessageCreateDelete{
     @Override
     public String toString() {
         return "MessageVote{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

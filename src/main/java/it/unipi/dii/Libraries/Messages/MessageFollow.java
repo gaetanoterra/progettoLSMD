@@ -29,7 +29,7 @@ public class MessageFollow extends MessageCreateDelete{
     @Override
     public String toString() {
         return "MessageFollow{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

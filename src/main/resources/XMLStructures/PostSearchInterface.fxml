@@ -24,21 +24,28 @@
                <Insets right="210.0" />
             </HBox.margin>
          </ImageView>
-         <Button fx:id="button_analytics" mnemonicParsing="false" onAction="#eventAnalytics" text="Button" />
-         <Button id="signin_button" fx:id="signin_button" alignment="CENTER" mnemonicParsing="false" onAction="#eventButtonSignIn" prefHeight="36.0" prefWidth="82.0" text="Sign In">
+         <Button id="signin_button" fx:id="signin_button" alignment="CENTER" mnemonicParsing="false" onAction="#eventButtonSignIn" prefHeight="36.0" prefWidth="150.0" text="Sign In" textAlignment="CENTER">
             <font>
                <Font name="Courier New" size="14.0" />
             </font>
             <HBox.margin>
-               <Insets top="16.0" />
+               <Insets left="10.0" top="16.0" />
             </HBox.margin>
          </Button>
-         <Button fx:id="signup_button" mnemonicParsing="false" onAction="#eventButtonSignUp" prefHeight="36.0" prefWidth="82.0" text="Sign Up">
+         <Button fx:id="signup_button" mnemonicParsing="false" onAction="#eventButtonSignUp" prefHeight="36.0" prefWidth="150.0" text="Sign Up" textAlignment="CENTER">
             <font>
                <Font name="Courier New" size="14.0" />
             </font>
             <HBox.margin>
-               <Insets left="25.0" top="16.0" />
+               <Insets left="10.0" top="16.0" />
+            </HBox.margin>
+         </Button>
+         <Button fx:id="profile_button" mnemonicParsing="false" onAction="#eventButtonProfile" prefHeight="36.0" prefWidth="150.0" text="Profile" textAlignment="CENTER">
+            <font>
+               <Font name="Courier New" size="14.0" />
+            </font>
+            <HBox.margin>
+               <Insets left="10.0" right="5.0" top="16.0" />
             </HBox.margin>
          </Button>
       </children>

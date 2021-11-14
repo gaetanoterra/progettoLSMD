@@ -22,6 +22,7 @@ import java.util.Map;
 public class ClientInterface extends Application{
 
     private static User loggedUser;
+    public final static String DEFAULT_USERNAME = "Anonymous";
     private static ServerConnectionManager serverConnectionManager;
     private static Scene[] scenes;
     private static Stage mainStage;
@@ -123,6 +124,11 @@ public class ClientInterface extends Application{
         controllerPostSearchInterface.setLoggedInterface(u.getDisplayName(), u.getProfileImage());
     }
 
+    public static void resetPostSearchInterface() {
+        controllerPostSearchInterface.setLoggedOutInterface();
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
     //                                          FULL POST INTERFACE APIs                                              //
@@ -198,20 +204,20 @@ public class ClientInterface extends Application{
     }
 
 
-    public static void registrationResponseHandler(User u, StatusCode stc){
-        Platform.runLater(() -> {
-            if(stc.equals(StatusCode.Message_Ok)){
-                switchScene(PageType.POSTSEARCHINTERFACE);
-                controllerPostSearchInterface.setLoggedInterface(u.getDisplayName(),u.getProfileImage());
-            }
-        });
+    public static void registrationResponseHandler(MessageSignUp msg){
+        controllerSignUpInterface.handleRegistrationResponse(msg);
     }
+
     public static void fillProfileInterface(User u) {
         controllerProfileInterface.fillProfileInterface(u);
     }
 
     public static void loginResponseHandler(MessageLogin msg){
         controllerSignInInterface.handleLogInResponse(msg);
+    }
+
+    public static void logoutResponseHandler(){
+        controllerProfileInterface.handleLogOutResponse();
     }
 
     public static void main(String[] args) {

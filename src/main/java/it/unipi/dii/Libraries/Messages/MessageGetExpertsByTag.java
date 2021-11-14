@@ -33,7 +33,7 @@ public class MessageGetExpertsByTag extends Message {
     @Override
     public String toString() {
         return "MessageGetExpertsByTag{" +
-                "opcode=" + opcode +
+                "opcode=" + opcode.name() +
                 '}';
     }
 }

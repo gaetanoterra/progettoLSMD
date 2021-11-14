@@ -28,7 +28,7 @@ public class MessageGetPostData extends MessageReadObjectQuery {
     @Override
     public String toString() {
         return "MessageGetPostData{\n" +
-               "opcode=" + opcode + "\n" +
+               "opcode=" + opcode.name() + "\n" +
                "object=" + this.post +
                "\n}";
     }
