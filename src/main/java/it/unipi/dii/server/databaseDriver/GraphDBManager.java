@@ -18,7 +18,7 @@ public class GraphDBManager {
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "NEO4J";
+        String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -271,7 +271,11 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
-                                "MERGE (u)-[:VOTE {VoteTypeId: $voteAnswer}]->(a); ",
+                                "MERGE (u)-[r:VOTE]->(a) " +
+                                "ON CREATE " +
+                                "SET r.VoteTypeId = $voteAnswer " +
+                                "ON MATCH " +
+                                "SET r.VoteTypeId = $voteAnswer;",
                         parameters("userId", userId, "answerId", answerId, "voteAnswer", voteAnswer));
                 return null;
             });

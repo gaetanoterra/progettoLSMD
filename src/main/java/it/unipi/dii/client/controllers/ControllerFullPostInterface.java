@@ -92,8 +92,4 @@ public class ControllerFullPostInterface {
         lastPage = pageType;
     }
 
-    public void eventButtonBack(ActionEvent actionEvent) {
-        //torna a post search interface
-        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
-    }
 }

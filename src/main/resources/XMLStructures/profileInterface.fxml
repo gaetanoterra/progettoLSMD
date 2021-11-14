@@ -45,9 +45,6 @@
                      <Font size="16.0" />
                   </font>
                </Label>
-               <Button fx:id="button_browse" mnemonicParsing="false" onAction="#eventButtonBrowse" prefHeight="26.0" prefWidth="76.0" text="Browse" />
-               <Button fx:id="button_write" mnemonicParsing="false" onAction="#eventButtonWrite" prefHeight="26.0" prefWidth="67.0" text="Write" />
-               <Button fx:id="button_logout" mnemonicParsing="false" onAction="#eventButtonLogout" prefHeight="26.0" prefWidth="82.0" text="Log Out" />
             </VBox>
             <WebView fx:id="aboutMeWebView" prefHeight="187.0" prefWidth="324.0" />
             <GridPane prefHeight="189.0" prefWidth="220.0">

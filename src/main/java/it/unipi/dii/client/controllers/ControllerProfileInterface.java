@@ -70,25 +70,6 @@ public class ControllerProfileInterface {
         this.peopleYouMightKnowListView.setCellFactory(plv->new ControllerFriendOfFriendsViewCell());
     }
 
-    @FXML
-    private void eventButtonBrowse(ActionEvent actionEvent) {
-        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
-    }
-
-    @FXML
-    private void eventButtonWrite(ActionEvent actionEvent) {
-        ClientInterface.switchScene(PageType.WRITE);
-    }
-
-    @FXML
-    private void eventButtonLogout(ActionEvent actionEvent) {
-        try {
-            serverConnectionManager.send(new MessageLogOut(ClientInterface.getLog().getDisplayName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void fillProfileInterface(User u){
         //private ListView<Post> myPostsListView;
         //private ListView<User> peopleYouMightKnowListView;
@@ -105,14 +86,21 @@ public class ControllerProfileInterface {
 
     @FXML
     public void logOut(Event event) {
+        try {
+            serverConnectionManager.send(new MessageLogOut(ClientInterface.getLog().getDisplayName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void switchToWritePostInterface(Event event) {
+        ClientInterface.switchScene(PageType.WRITE);
     }
 
     @FXML
     public void switchToPostSearchInterface(Event event) {
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
     }
 
 
