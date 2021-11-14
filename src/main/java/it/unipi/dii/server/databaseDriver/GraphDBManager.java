@@ -18,7 +18,7 @@ public class GraphDBManager {
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "NEO4J";
+        String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -176,7 +176,7 @@ public class GraphDBManager {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollower = new ArrayList<>();
-                tx.run("MATCH (fr:User)-[:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
+                tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {userId: $userIdFollowed}) " +
                                 "RETURN fr.userId as userIdFollower ",
                         parameters("userIdFollowed", userId))
                 .stream().forEach(record ->
@@ -191,13 +191,28 @@ public class GraphDBManager {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollowed = new ArrayList<>();
-                tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOWS]->(fd:User) " +
+                tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOW]->(fd:User) " +
                                 "RETURN fd.userId as userIdFollowed ",
                         parameters("userIdFollower", userId))
                         .stream().forEach(record ->
                         userIdsFollowed.add(record.get("userIdFollowed").asString())
                 );
                 return userIdsFollowed;
+            });
+        }
+    }
+
+    public ArrayList<String> getUserDisplayNameFollower(String userId) {
+        try(Session session = dbConnection.session()){
+            return session.writeTransaction(tx -> {
+                ArrayList<String> userIdsFollower = new ArrayList<>();
+                tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {displayName: $userIdFollowed}) " +
+                                "RETURN fr.displayName as userIdFollower ",
+                        parameters("userIdFollowed", userId))
+                        .stream().forEach(record ->
+                        userIdsFollower.add(record.get("userIdFollower").asString())
+                );
+                return userIdsFollower;
             });
         }
     }

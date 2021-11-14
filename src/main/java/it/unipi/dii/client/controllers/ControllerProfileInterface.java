@@ -1,7 +1,7 @@
 package it.unipi.dii.client.controllers;
 
 
-import it.unipi.dii.Libraries.Messages.MessageLogOut;
+import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static it.unipi.dii.client.ClientInterface.DEFAULT_USERNAME;
 
@@ -36,8 +37,8 @@ public class ControllerProfileInterface {
     @FXML
     private ImageView profileImageImageView;
     @FXML
-    private ListView<User> peopleYouMightKnowListView;
-    private ObservableList<User> userObservableList;
+    private ListView<String> peopleYouMightKnowListView;
+    private ObservableList<String> userObservableList;
     @FXML
     private ImageView lensImageView;
     @FXML
@@ -63,14 +64,17 @@ public class ControllerProfileInterface {
     }
 
     @FXML
-    private void initialize(){
+    private void initialize() {
         this.myPostsListView.setItems(this.postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.PROFILE_INTERFACE));
         this.peopleYouMightKnowListView.setItems(this.userObservableList);
-        this.peopleYouMightKnowListView.setCellFactory(plv->new ControllerFriendOfFriendsViewCell());
+        //this.peopleYouMightKnowListView.setCellFactory(plv->new ControllerFriendOfFriendsViewCell());
+
     }
 
-    public void fillProfileInterface(User u){
+    public void fillProfileInterface(User u) throws IOException {
+        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetUserFollowers(null, u.getDisplayName()));
         //private ListView<Post> myPostsListView;
         //private ListView<User> peopleYouMightKnowListView;
         if (u.getProfileImage() != null) {
@@ -82,6 +86,16 @@ public class ControllerProfileInterface {
         creationDateLabel.setText(User.convertMillisToDate(u.getCreationDate()).toString());
         reputationLabel.setText(Integer.toString(u.getReputation()));
         webSiteLabel.setText(u.getWebsiteURL());
+    }
+
+    public void fillPersonalUserPostInterface(ArrayList<Post> posts){
+        postObservableList.clear();
+        postObservableList.addAll(posts);
+    }
+
+    public void fillPersonalUserFollowers(ArrayList<String> users){
+        userObservableList.clear();
+        userObservableList.addAll(users);
     }
 
     @FXML

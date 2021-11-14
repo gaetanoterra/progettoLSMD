@@ -55,7 +55,11 @@ public class ControllerSignInInterface {
                 serverConnectionManager.setLoggedUser(messageLogin.getUser());
                 ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
                 ClientInterface.setLog(messageLogin.getUser());
-                ClientInterface.fillProfileInterface(messageLogin.getUser());
+                try {
+                    ClientInterface.fillProfileInterface(messageLogin.getUser());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(messageLogin.getUser());
             }
             else {

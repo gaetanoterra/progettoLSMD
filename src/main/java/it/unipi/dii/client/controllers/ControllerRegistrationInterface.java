@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.io.IOException;
+
 public class ControllerRegistrationInterface {
 
     ServerConnectionManager clientServerManager;
@@ -50,7 +52,11 @@ public class ControllerRegistrationInterface {
                 clientServerManager.setLoggedUser(msg.getUser());
                 ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
                 ClientInterface.setLog(msg.getUser());
-                ClientInterface.fillProfileInterface(msg.getUser());
+                try {
+                    ClientInterface.fillProfileInterface(msg.getUser());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(msg.getUser());
             }
             else {

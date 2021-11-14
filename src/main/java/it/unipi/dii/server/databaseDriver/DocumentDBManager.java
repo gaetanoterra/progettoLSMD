@@ -538,7 +538,7 @@ public class DocumentDBManager {
     public ArrayList<Post> getPostByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
-        postsCollection.find(all("OwnerUserId", username)).forEach(doc -> {
+        this.postsCollection.find(all("OwnerDisplayName", username)).forEach(doc -> {
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     doc.getString("Title"),
@@ -768,7 +768,7 @@ public class DocumentDBManager {
     }
 
     //
-    private boolean checkUser(String displayName) {
+    public boolean checkUser(String displayName) {
         boolean res = false;
 
         long count = usersCollection.countDocuments(eq("DisplayName", displayName));

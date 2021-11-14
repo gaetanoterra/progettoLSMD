@@ -69,16 +69,20 @@ public class DBManager {
     }
 
     public boolean insertUser(User newUser){
-        newUser.setCreationDate(Instant.now().toEpochMilli())
-                .setLastAccessDate(Instant.now().toEpochMilli())
-                .setFollowedNumber(0)
-                .setFollowersNumber(0)
-                .setReputation(0);
-        boolean insertedUser = documentDBManager.insertUser(newUser);
-        if(insertedUser) {
-            graphDBManager.insertUser(newUser);
+        if(!documentDBManager.checkUser(newUser.getDisplayName())) {
+            newUser.setCreationDate(Instant.now().toEpochMilli())
+                    .setLastAccessDate(Instant.now().toEpochMilli())
+                    .setFollowedNumber(0)
+                    .setFollowersNumber(0)
+                    .setReputation(0);
+            boolean insertedUser = documentDBManager.insertUser(newUser);
+            if (insertedUser) {
+                graphDBManager.insertUser(newUser);
+            }
+            return insertedUser;
         }
-        return insertedUser;
+        else
+            return false;
     }
 
     public boolean removeUser(User user){
@@ -209,6 +213,10 @@ public class DBManager {
         documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
         return true;
+    }
+
+    public ArrayList<String> getFollowers(String displayName){
+        return graphDBManager.getUserDisplayNameFollower(displayName);
     }
 
 }

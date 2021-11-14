@@ -191,7 +191,7 @@ public class ClientManager extends Thread{
                                             postArrayList.size() +
                                             " posts"
                         );
-                        send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
+                        send(new MessageGetPostByParameter(msgParameter.getParameter(), ((MessageGetPostByParameter) msg).getValue(),  postArrayList));
                         break;
 
                     case Message_Get_User_Data:
@@ -242,6 +242,11 @@ public class ClientManager extends Thread{
                         send(messageAnalyticHotTopics);
                         break;
 
+                    case Message_Get_User_Followers:
+                        MessageGetUserFollowers messageGetUserFollowers = (MessageGetUserFollowers) msg;
+                        messageGetUserFollowers.setUserList(dbManager.getFollowers(messageGetUserFollowers.getUser()));
+                        send(messageGetUserFollowers);
+                        break;
 
                 }
             }

@@ -50,7 +50,6 @@ public class ControllerFullPostInterface {
     private void initialize(){
         answersListView.setItems(this.answerObservableList);
         answersListView.setCellFactory(alv->new ControllerAnswerCell());
-
     }
 
     public void resetInterface() {

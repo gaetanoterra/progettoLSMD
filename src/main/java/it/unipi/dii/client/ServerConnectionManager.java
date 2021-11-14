@@ -113,6 +113,11 @@ public class ServerConnectionManager extends Thread {
                         MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) message;
                         ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
                         break;
+
+                    case Message_Get_User_Followers:
+                        MessageGetUserFollowers messageGetUserFollowers = (MessageGetUserFollowers) message;
+                        ClientInterface.fillUserFollowerList(messageGetUserFollowers.getObject());
+                        break;
                         
                 }
 
@@ -145,4 +150,5 @@ public class ServerConnectionManager extends Thread {
         this.loggedUser = loggedUser;
     }
 
+    public User getLoggedUser() { return loggedUser; }
 }

@@ -208,8 +208,12 @@ public class ClientInterface extends Application{
         controllerSignUpInterface.handleRegistrationResponse(msg);
     }
 
-    public static void fillProfileInterface(User u) {
+    public static void fillProfileInterface(User u) throws IOException {
         controllerProfileInterface.fillProfileInterface(u);
+    }
+
+    public static void fillUserFollowerList(ArrayList<String> users){
+        controllerProfileInterface.fillPersonalUserFollowers(users);
     }
 
     public static void loginResponseHandler(MessageLogin msg){
@@ -318,7 +322,7 @@ public class ClientInterface extends Application{
     }
 
     private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
-
+        controllerProfileInterface.fillPersonalUserPostInterface(posts);
     }
 
     public static void fillExternalUserPostInterface(ArrayList<Post> posts){
