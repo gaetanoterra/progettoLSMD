@@ -23,7 +23,7 @@ public class ControllerPostSearchInterface {
     private ObservableList<Post> postObservableList;
 
     @FXML
-    private Button signin_button, signup_button, search_button;
+    private Button signin_button, signup_button, search_button, button_analytics;
     @FXML
     private TextField textfield_search;
     @FXML
@@ -36,7 +36,6 @@ public class ControllerPostSearchInterface {
     public ControllerPostSearchInterface(){
         this.postObservableList = FXCollections.observableArrayList();
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
-
     }
 
     @FXML
@@ -44,8 +43,7 @@ public class ControllerPostSearchInterface {
         textfield_search.requestFocus();
 
         postsListView.setItems(this.postObservableList);
-        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell());
-
+        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.POSTSEARCHINTERFACE));
     }
 
     public void setLoggedInterface(String username, String imageUrl){
@@ -84,4 +82,9 @@ public class ControllerPostSearchInterface {
        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
     }
 
+    public void eventAnalytics(ActionEvent actionEvent) throws IOException {
+        resetInterface();
+        ClientInterface.switchScene(PageType.ANALYSIS_INTERFACE);
+        ClientInterface.initAnalyticsInterface(PageType.POSTSEARCHINTERFACE);
+    }
 }

@@ -60,12 +60,13 @@ public class ServerConnectionManager extends Thread {
                         return;
 
                     case Message_Signup:
-                        MessageSignUp messageSignUp = (MessageSignUp)message;
+                        MessageSignUp messageSignUp = (MessageSignUp) message;
                         ClientInterface.registrationResponseHandler(messageSignUp.getUser(), messageSignUp.getStatus());
                         break;
 
                     case Message_Get_Experts:
-
+                        MessageGetExpertsByTag messageGetExpertsByTag = (MessageGetExpertsByTag) message;
+                        ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getUsersList());
                         break;
 
                     case Message_Get_Post_Data:
@@ -76,10 +77,18 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
                         switch (messageGetPostByParameter.getParameter()){
-                            case Username -> {}
+                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostByParameter.getPostArrayList(), messageGetPostByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
                             case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
                             case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
                         }
+                        break;
+
+                    case Message_Get_User_Data:
+                        MessageGetUserData messageGetUserData = (MessageGetUserData) message;
+                        if(messageGetUserData.getProfileType() == true)
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType()); //da modificare per il personal profile
+                        else
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
                         break;
 
                     case Message_Get_Top_Users_Posts:
@@ -94,6 +103,17 @@ public class ServerConnectionManager extends Thread {
                         MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) message;
                         ClientInterface.fillMPTagLocationChart(messageAnalyticMPTagsLocation.getTags());
                         break;
+
+                    case Message_Analytics_User_Rank:
+                        MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) message;
+                        ClientInterface.fillUserRanking(messageAnalyticUserRanking.getUsers());
+                        break;
+
+                    case Message_Analytic_Hot_Topics:
+                        MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) message;
+                        ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
+                        break;
+                        
                 }
 
             }

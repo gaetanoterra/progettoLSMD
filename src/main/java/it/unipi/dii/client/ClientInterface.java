@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,7 +33,10 @@ public class ClientInterface extends Application{
     private static ControllerProfileInterface controllerProfileInterface;
     private static ControllerAnalysisInterface controllerAnalysisInterface;
     private static ControllerWrite controllerWriteInterface;
+    private static ControllerExternalUserInterface controllerExternalUserInterface;
 
+
+    //TODO: necessario un metodo e una variabile che teng conto dell'ultima interfaccia visitata per implementare i back buttons (forse mantenere la pagina all'interno dei vari controller). allo switch della pagina si chiama un metodo init dove si inizializza la lastPageVisited
 
     @Override
     public void start (Stage primaryStage) throws Exception{
@@ -80,6 +84,10 @@ public class ClientInterface extends Application{
         scenes[PageType.WRITE.ordinal()] = new Scene(writeInterfaceLoader.load());
         controllerWriteInterface = writeInterfaceLoader.getController();
 
+        FXMLLoader externalUserInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/externalUserInterface.fxml"));
+        scenes[PageType.EXTERNAL_PROFILE.ordinal()] = new Scene(externalUserInterfaceLoader.load());
+        controllerExternalUserInterface = externalUserInterfaceLoader.getController();
+
    /*
         interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
      */
@@ -121,12 +129,13 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void getFullPostInterface(String id) {
+    public static void getFullPostInterface(String id, PageType pageType) {
         try {
             serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        controllerFullPostInterface.setLastPage(pageType);
         ClientInterface.switchScene(PageType.FULLPOST);
     }
 
@@ -244,16 +253,70 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static void initAnalyticsInterface(PageType pageType) throws IOException {
+        controllerAnalysisInterface.initAnalyticsInterface(pageType);
+    }
+
     public static void fillMPTagChart(Map<String, Integer> tags){
         controllerAnalysisInterface.resetTagList();
-        controllerAnalysisInterface.fillTagList(tags);
+        if(tags != null)
+            controllerAnalysisInterface.fillTagList(tags);
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 
     public static void fillMPTagLocationChart(String[] tags){
         controllerAnalysisInterface.resetTagLocationList();
-        controllerAnalysisInterface.fillTagLocationList(tags);
+        if(tags != null)
+            controllerAnalysisInterface.fillTagLocationList(tags);
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
+    }
+
+    public static void fillUserRanking(User[] users){
+        controllerAnalysisInterface.resetMPUsersList();
+        if(users != null)
+            controllerAnalysisInterface.fillMPUsersList(users);
+    }
+
+    public static void fillExpertsByTag(String[] users){
+        controllerAnalysisInterface.resetExpertUsersList();
+        if(users != null)
+            controllerAnalysisInterface.fillExpertUsersList(users);
+    }
+
+    public static void fillHotTopicsUsers(Map<User, Pair<String, Integer>[]> map){
+        controllerAnalysisInterface.resetHotTopicsMap();
+        controllerAnalysisInterface.fillHotTopicsMap(map);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                         EXTERNAL PROFILE APIs                                                  //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public static void loadExternalProfile(User user, PageType lastPageVisited) throws IOException {
+        controllerExternalUserInterface.initialize(user, lastPageVisited);
+        Platform.runLater(() -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
+    }
+
+    public static void fillUserPostInterface(ArrayList<Post> posts, String username){
+        if (loggedUser != null) {
+            if (loggedUser.getDisplayName().equals(username))
+                fillPersonalUserPostInterface(posts);
+            else
+                fillExternalUserPostInterface(posts);
+        }
+        else
+            fillExternalUserPostInterface(posts);
+    }
+
+    private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
+
+    }
+
+    public static void fillExternalUserPostInterface(ArrayList<Post> posts){
+        controllerExternalUserInterface.fillExternalUserPosts(posts);
     }
 }
 

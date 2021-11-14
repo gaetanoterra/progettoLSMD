@@ -29,12 +29,32 @@ public class GraphDBManager {
 
     //funzione che effettua la query per trovare i tag più "popolari"
     public Map<String,Integer> findMostPopularTags(){
-        try (Session session = dbConnection.session())
+        try (Session session = dbConnection.session()){
+            Map<String, Integer> tags = new HashMap<>();
+
+            List<Record> records = session.readTransaction(new TransactionWork<List<Record>>() {
+                @Override
+                public List<Record> execute (Transaction tx){
+                    return tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
+                                    "RETURN t.tagNames as Name, count(*) AS NQuestions " +
+                                    "ORDER BY NQuestions DESC " +
+                                    "LIMIT 10").list();
+                }
+            });
+
+            for(final Record record : records){
+                tags.put(record.get("Name").asString(), record.get("NQuestions").asInt());
+            }
+            return tags;
+        }
+
+        /*try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
                 Map<String, Integer> tags = new HashMap<>();
-                tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
-                        "RETURN t.name as Name, count(*) AS NQuestions " +
+                tx.run(
+                        "MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
+                        "RETURN t.tagNames as Name, count(*) AS NQuestions " +
                         "ORDER BY NQuestions DESC " +
                         "LIMIT 10; "
                 ).stream().forEach(record ->
@@ -42,7 +62,7 @@ public class GraphDBManager {
                 );
                 return tags;
             });
-        }
+        }*/
     }
 
     //TODO: Su graphdb la query per cercare le risposte più votate non è utilizzata

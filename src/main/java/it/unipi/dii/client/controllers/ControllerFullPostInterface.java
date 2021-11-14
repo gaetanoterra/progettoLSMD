@@ -38,6 +38,7 @@ public class ControllerFullPostInterface {
     private ObservableList<Answer> answerObservableList;
     private ServerConnectionManager serverConnectionManager;
     private String currentPostId;
+    private PageType lastPage;
 
 
     public ControllerFullPostInterface() {
@@ -80,6 +81,14 @@ public class ControllerFullPostInterface {
 
     public void eventButtonRefresh(ActionEvent actionEvent) {
         //riscarica il post dal postId
-        ClientInterface.getFullPostInterface(currentPostId);
+        ClientInterface.getFullPostInterface(currentPostId, lastPage);
+    }
+
+    public void eventButtonBack(ActionEvent actionEvent) {
+        ClientInterface.switchScene(lastPage);
+    }
+
+    public void setLastPage(PageType pageType) {
+        lastPage = pageType;
     }
 }

@@ -81,12 +81,12 @@ public class ClientManager extends Thread{
 
                     case Message_Get_Experts:
                         MessageGetExpertsByTag msgExperts = (MessageGetExpertsByTag)msg;
-                        User[] expertUsers = dbManager.findTopExpertsByTag(
+                        String[] expertUsers = dbManager.findTopExpertsByTag(
                                 msgExperts.getTag(),
                                 DEFAULT_NUM_EXPERTS
                         );
 
-                        send(new MessageGetExpertsByTag(msgExperts.getTag(), (ArrayList<User>)Arrays.asList(expertUsers)));
+                        send(new MessageGetExpertsByTag(msgExperts.getTag(), expertUsers));
                         break;
 
                     case Message_Post:
@@ -197,7 +197,7 @@ public class ClientManager extends Thread{
                         User userToSearch = msgGetUserData.getObject().get(0);
                         String displayName = userToSearch.getDisplayName();
                         User userWithCompleteData = dbManager.getUserData(displayName);
-                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData))));
+                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData)), msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
                         break;
 
                     case Message_Get_Post_Data:
@@ -227,6 +227,19 @@ public class ClientManager extends Thread{
                         messageAnalyticMPTagsLocation.setTags(dbManager.findMostPopularTagsByLocation(messageAnalyticMPTagsLocation.getLocation(), messageAnalyticMPTagsLocation.getNumTags()));
                         send(messageAnalyticMPTagsLocation);
                         break;
+
+                    case Message_Analytics_User_Rank:
+                        MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) msg;
+                        messageAnalyticUserRanking.setUsers(dbManager.getUsersRank());
+                        send(messageAnalyticUserRanking);
+                        break;
+
+                    case Message_Analytic_Hot_Topics:
+                        MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) msg;
+                        messageAnalyticHotTopics.setMap(dbManager.findHotTopicsforTopUsers());
+                        send(messageAnalyticHotTopics);
+                        break;
+
 
                 }
             }

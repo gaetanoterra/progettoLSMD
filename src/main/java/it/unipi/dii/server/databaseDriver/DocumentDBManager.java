@@ -1,5 +1,6 @@
 package it.unipi.dii.server.databaseDriver;
 
+import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.Libraries.Answer;
@@ -19,11 +20,6 @@ import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
-
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
@@ -297,7 +293,7 @@ public class DocumentDBManager {
         ArrayList<String> userIdList = new ArrayList<>();
 
         usersCollection.find(eq("Location", location)).forEach(document -> {
-            userIdList.add(document.getObjectId("_id").toString());
+            userIdList.add(document.getInteger("Id").toString());
         });
 
         /*try (MongoCursor<Document> cursor = usersCollection.find(eq("Location", location)).iterator())
@@ -313,8 +309,8 @@ public class DocumentDBManager {
         }*/
 
         //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson matchStage = match(in("OwnerUserId", (String[])userIdList.toArray()));
-        Bson unwindStage = unwind("Tags");
+        Bson matchStage = match(in("OwnerUserId", (userIdList.toArray(new String[userIdList.size()]))));
+        Bson unwindStage = unwind("$Tags");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupStage = group("$Tags", sum("totaleTags",1));
         Bson sortStage = sort(descending("totaleTags"));
@@ -332,25 +328,25 @@ public class DocumentDBManager {
                 tagList.add(doc.getString("_id"))
         );
 
-        /*try (MongoCursor<Document> cursor = postsCollection.aggregate(Arrays.asList(m, u, g, s, l)).iterator())
+        /*try (MongoCursor<Document> cursor = postsCollection.aggregate(Arrays.asList(matchStage, unwindStage, groupStage, sortStage, limitStage)).iterator())
         {
             while (cursor.hasNext())
             {
                 Document doc = cursor.next();
-                tagList.add(doc.getString("tagList"));
+                tagList.add(doc.getString("_id"));
             }
         }*/
 
-        return (String[]) ((tagList.toArray().length == 0)? null : tagList.toArray());
+        return ((tagList.toArray(new String[tagList.size()]).length == 0)? null : tagList.toArray(new String[tagList.size()]));
     }
 
     //restituisco gli id degli utenti più esperti
-    public User[] findTopExpertsByTag(String tag, int num){
-        ArrayList<ObjectId> userIdList = new ArrayList<>();
+    public String[] findTopExpertsByTag(String tag, int num){
+        ArrayList<String> userIdList = new ArrayList<>();
         ArrayList<User> userList = new ArrayList<>();
 
         Bson matchTag = match(eq("Tags", tag));
-        Bson unwindAnswers = unwind("Answers");
+        Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupByOwnerUserId = group("$Answers.OwnerUserId", sum("totaleRisposteUtente",1));
         Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
@@ -367,10 +363,10 @@ public class DocumentDBManager {
                         limitStage
                 )
         ).forEach(doc ->
-                userIdList.add(doc.getObjectId("_id"))
+                userIdList.add(doc.getString("Answer.OwnerDisplayName"))
         );
 
-        usersCollection.find(in("_id", (ObjectId[])userIdList.toArray())).forEach(document -> {
+        /*usersCollection.find(in("Id", userIdList.toArray(new String[userIdList.size()]))).forEach(document -> {
             User user = new User()
                     .setUserId(document.getObjectId("_id").toString())
                     .setDisplayName(document.getString("DisplayName"))
@@ -385,9 +381,9 @@ public class DocumentDBManager {
                     .setAboutMe(document.getString("AboutMe"))
                     .setWebsiteURL(document.getString("WebsiteUrl"));
             userList.add(user);
-        });
+        });*/
 
-        return (User[]) ((userList.toArray().length == 0)? null : userList.toArray());
+        return ((userIdList.toArray(new String[userIdList.size()]).length == 0)? null : userIdList.toArray(new String[userIdList.size()]));
     }
 
     //TODO: questa è una query analytics, quindi definire un messaggio e un opcode
@@ -408,7 +404,7 @@ public class DocumentDBManager {
         //50 at most users, the most followed ones
         */
         Bson sortByFollowersDesc = sort(descending("followerNumber"));
-        Bson limitUsers = limit(50);
+        Bson limitUsers = limit(10);
         usersCollection.aggregate(
                 Arrays.asList(
                         sortByFollowersDesc,
@@ -416,7 +412,7 @@ public class DocumentDBManager {
                 )
         ).forEach(document -> {
             User user = new User()
-                    .setUserId(document.getObjectId("_id").toString())
+                    .setUserId(Integer.toString(document.getInteger("Id")))
                     .setDisplayName(document.getString("DisplayName"))
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))
@@ -434,12 +430,10 @@ public class DocumentDBManager {
             Bson matchOwnerUserId = match(eq("Answers.OwnerUserId", userId)); //ownerUserId è di tipo String
             Bson unwindAnswers = unwind("$Answers");
             Bson unwindTags = unwind("$Tags");
-            Bson groupByTag = new Document("$group",
-                    new Document("_id", "$Tags").append("count",
-                            new Document("$sum", 1)));
+            Bson groupByTag = group("$Tags", sum("count", 1));
             Bson sortByCountDesc = sort(descending("count"));
             Bson limitTags = limit(3);
-            Bson projectTagCount = project(fields(Projections.computed("tag","_id"), include("count")));
+            Bson projectTagCount = project(fields(include("_id", "count")));
                 /*
                 db.posts.aggregate([
                         {$match:
@@ -465,9 +459,9 @@ public class DocumentDBManager {
          */
             ArrayList<Pair<String, Integer>> list = new ArrayList<>();
             postsCollection.aggregate(Arrays.asList(matchOwnerUserId, unwindAnswers, unwindTags, groupByTag, sortByCountDesc, limitTags, projectTagCount)).forEach(doc ->
-                    list.add(new Pair<>(doc.getString("tag"), doc.getInteger("count")))
+                    list.add(new Pair<>(doc.getString("_id"), doc.getInteger("count")))
             );
-            result.put(user, (Pair<String, Integer>[]) list.toArray());
+            result.put(user, list.toArray(new Pair[list.size()]));
         });
         return result;
     }
@@ -620,7 +614,7 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class));
-                            p.setViews(doc.getLong("ViewCount"));
+                            p.setViews(Long.parseLong(doc.getString("ViewCount")));
                             postArrayList.add(p);
                         }
         );
@@ -671,7 +665,7 @@ public class DocumentDBManager {
                     .setAboutMe(userDoc.getString("AboutMe"))
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"));
 
-            System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
+            //System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
         }
 
         return user;
@@ -698,7 +692,7 @@ public class DocumentDBManager {
             user.add(u);
         });
 
-        return (User[]) user.toArray();
+        return user.toArray(new User[user.size()]);
     }
 
     public boolean insertAnswer(Answer answer, String postId){
@@ -822,4 +816,16 @@ public class DocumentDBManager {
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", -1));
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
     }
+
+    //TODO: possibili analytics
+    //TODO
+    //TODO
+    //TODO
+    //TODO
+    //trovare la location più social, cioè trovare le location dove gli utenti hanno più followers e followed
+
+    //trovare possibili troll, cioè utenti che hanno tante risposte (rispondono tanto) ma che hanno poche risposte accettate
+    /* quindi devo trovare per ogni utente tutte le sue risposte e per ogni utente tutte le risposte accettate date da lui
+    * perciò in una prima query faccio un unwind sulle Answers e raggruppo sull'Answers.OwnerUserId sommando le risposte => ho il numero totale di risposte per ogni utenre
+    * in un'altra query per ogni utente trovato sopra*/
 }

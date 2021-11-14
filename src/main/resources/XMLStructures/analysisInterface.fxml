@@ -1,43 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerAnalysisInterface">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerAnalysisInterface">
    <children>
-      <HBox layoutX="20.0" layoutY="66.0" prefHeight="268.0" prefWidth="561.0">
+      <VBox prefHeight="700.0" prefWidth="800.0">
          <children>
-            <VBox alignment="TOP_CENTER" prefHeight="268.0" prefWidth="201.0">
+            <HBox prefHeight="36.0" prefWidth="800.0">
                <children>
-                  <PieChart fx:id="pie_chart_mptags" />
-                  <Button fx:id="button_update" contentDisplay="CENTER" mnemonicParsing="false" onAction="#eventButtonUpdate" text="Update" />
+                  <Button fx:id="button_back" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#eventButtonBack" prefHeight="25.0" prefWidth="70.0" text="Back">
+                     <HBox.margin>
+                        <Insets left="10.0" top="5.0" />
+                     </HBox.margin></Button>
                </children>
-            </VBox>
-            <VBox prefHeight="268.0" prefWidth="201.0">
+            </HBox>
+            <HBox prefHeight="340.0" prefWidth="790.0">
                <children>
-                  <PieChart fx:id="pie_chart_mptags_location" />
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <VBox prefHeight="416.0" prefWidth="254.0">
                      <children>
-                        <TextField fx:id="text_field_location" text="location" />
-                        <Button fx:id="button_search" mnemonicParsing="false" onAction="#eventButtonSearch" prefHeight="39.0" prefWidth="69.0" text="Search" />
+                        <Label text="Most Popular Tags per Location">
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ListView fx:id="list_view_mptags_location" prefHeight="348.0" prefWidth="234.0">
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </VBox.margin>
+                        </ListView>
+                        <HBox prefHeight="33.0" prefWidth="254.0">
+                           <children>
+                              <TextField fx:id="text_field_location" prefHeight="25.0" prefWidth="123.0" text="location">
+                                 <HBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button fx:id="button_search" mnemonicParsing="false" onAction="#eventButtonSearch" text="Search" />
+                           </children>
+                        </HBox>
                      </children>
-                  </HBox>
+                  </VBox>
+                  <VBox prefHeight="416.0" prefWidth="250.0">
+                     <children>
+                        <Label text="Experts by Tag">
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ListView fx:id="list_view_experts" onMouseClicked="#eventSelectExpert" prefHeight="416.0" prefWidth="206.0">
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </VBox.margin>
+                        </ListView>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="text_field_experts" prefHeight="25.0" prefWidth="123.0">
+                                 <HBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button fx:id="button_search_experts" mnemonicParsing="false" onAction="#eventSearchExperts" text="Search" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="341.0" prefWidth="253.0">
+                     <children>
+                        <Label text="User Ranking">
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ListView fx:id="list_view_mpusers" onMouseClicked="#eventSelectItem" prefHeight="348.0" prefWidth="273.0">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </VBox.margin>
+                        </ListView>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
-            <VBox prefHeight="268.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="326.0" prefWidth="800.0">
                <children>
-                  <Label text="User Ranking" />
-                  <TableView fx:id="table_view_mpusers" prefHeight="254.0" prefWidth="161.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                  </TableView>
+                  <VBox alignment="TOP_CENTER" prefHeight="306.0" prefWidth="429.0">
+                     <children>
+                        <BarChart fx:id="bar_chart_mptags" prefHeight="261.0" prefWidth="502.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </VBox.margin>
+                        </BarChart>
+                        <Button fx:id="button_update" contentDisplay="CENTER" mnemonicParsing="false" onAction="#eventButtonUpdate" text="Update">
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="306.0" prefWidth="372.0">
+                     <children>
+                        <Label text="Hot Topics of Top Users">
+                           <padding>
+                              <Insets bottom="10.0" right="10.0" />
+                           </padding>
+                        </Label>
+                        <TableView fx:id="table_view_hot_topics" onMouseClicked="#eventShowHotUser" prefHeight="279.0" prefWidth="295.0">
+                          <columns>
+                            <TableColumn fx:id="table_column_user" prefWidth="75.0" text="User" />
+                            <TableColumn fx:id="table_column_tags" prefWidth="291.0" text="Tags" />
+                          </columns>
+                           <VBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </VBox.margin>
+                        </TableView>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
-         </children></HBox>
-      <Button fx:id="button_back" layoutX="419.0" layoutY="14.0" mnemonicParsing="false" onAction="#eventButtonBack" text="Back" />
-      <Label fx:id="label_username" layoutX="32.0" layoutY="18.0" prefHeight="17.0" prefWidth="88.0" text="Username" />
+               <padding>
+                  <Insets bottom="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

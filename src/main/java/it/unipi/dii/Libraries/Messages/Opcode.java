@@ -20,7 +20,8 @@ public enum Opcode {
     Message_Analytics_Most_Popular_Tags             (15),
     Message_Analytics_User_Rank                     (16),
     Message_Analytics_Correlated_Users              (17),
-    Message_Analytics_Recommended_Users             (18);
+    Message_Analytics_Recommended_Users             (18),
+    Message_Analytic_Hot_Topics                     (19);
     private final byte opcode;
 
     Opcode(int opcode){

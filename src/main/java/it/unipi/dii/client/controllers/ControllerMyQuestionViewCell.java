@@ -39,7 +39,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
             }
         }
 
-        this.titleLabel.setText(post.gettitle());
+        this.titleLabel.setText(post.getTitle());
         this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
         this.deleteBinImageview.setOnMouseClicked(mouseEvent -> {deleteQuestion();});
     }
