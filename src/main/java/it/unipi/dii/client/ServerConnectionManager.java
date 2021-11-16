@@ -118,7 +118,11 @@ public class ServerConnectionManager extends Thread {
                         MessageGetUserFollowers messageGetUserFollowers = (MessageGetUserFollowers) message;
                         ClientInterface.fillUserFollowerList(messageGetUserFollowers.getObject());
                         break;
-                        
+
+                    case Message_Get_Answer_Data:
+                        MessageGetAnswerData messageGetAnswerData = (MessageGetAnswerData) message;
+                        ClientInterface.fillPersonalAnswersList(messageGetAnswerData.getAnswers());
+                        break;
                 }
 
             }

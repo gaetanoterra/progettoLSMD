@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,6 +32,9 @@ public class ControllerProfileInterface {
     private ListView<Post> myPostsListView;
     private ObservableList<Post> postObservableList;
     @FXML
+    private ListView<Post> myAnswersListView;
+    private ObservableList<Post> answerObservableList;
+    @FXML
     private Label displayNameLabel;
     @FXML
     private WebView aboutMeWebView;
@@ -43,8 +47,6 @@ public class ControllerProfileInterface {
     private ImageView lensImageView;
     @FXML
     private ImageView writePostImageview;
-    @FXML
-    private ListView yourAnswersListView;
     @FXML
     private ImageView logOutImageView;
     @FXML
@@ -61,6 +63,7 @@ public class ControllerProfileInterface {
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
         this.postObservableList = FXCollections.observableArrayList();
         this.userObservableList = FXCollections.observableArrayList();
+        this.answerObservableList = FXCollections.observableArrayList();
     }
 
     @FXML
@@ -68,13 +71,17 @@ public class ControllerProfileInterface {
         this.myPostsListView.setItems(this.postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.PROFILE_INTERFACE));
         this.peopleYouMightKnowListView.setItems(this.userObservableList);
+        this.peopleYouMightKnowListView.setOrientation(Orientation.VERTICAL);
         //this.peopleYouMightKnowListView.setCellFactory(plv->new ControllerFriendOfFriendsViewCell());
-
+        this.myAnswersListView.setItems(this.answerObservableList);
+        this.myAnswersListView.setCellFactory(plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE));
+        this.myAnswersListView.setOrientation(Orientation.VERTICAL);
     }
 
     public void fillProfileInterface(User u) throws IOException {
         serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetUserFollowers(null, u.getDisplayName()));
+        serverConnectionManager.send(new MessageGetUserFollowers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetAnswerData(null, serverConnectionManager.getLoggedUser().getDisplayName()));
         //private ListView<Post> myPostsListView;
         //private ListView<User> peopleYouMightKnowListView;
         if (u.getProfileImage() != null) {
@@ -89,13 +96,28 @@ public class ControllerProfileInterface {
     }
 
     public void fillPersonalUserPostInterface(ArrayList<Post> posts){
-        postObservableList.clear();
-        postObservableList.addAll(posts);
+        Platform.runLater(() -> {
+            postObservableList.clear();
+            postObservableList.addAll(posts);
+
+            for (Post p:postObservableList) {
+                System.out.println(p.getTags());
+            }
+        });
     }
 
     public void fillPersonalUserFollowers(ArrayList<String> users){
-        userObservableList.clear();
-        userObservableList.addAll(users);
+        Platform.runLater(() -> {
+            userObservableList.clear();
+            userObservableList.addAll(users);
+        });
+    }
+
+    public void fillPersonaleUserAnswers(ArrayList<Post> answers){
+        Platform.runLater(() -> {
+            answerObservableList.clear();
+            answerObservableList.addAll(answers);
+        });
     }
 
     @FXML

@@ -542,7 +542,7 @@ public class DocumentDBManager {
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     doc.getString("Title"),
-                    doc.getList("Answers", Answer.class),
+                    (List<Answer>) (List<?>)doc.getList("Answers", Object.class),
                     doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
@@ -551,7 +551,7 @@ public class DocumentDBManager {
             posts.add(p);
         });
 
-        System.out.println("found " + posts.size() + " posts matching the username given as input");
+        System.out.println("found " + posts.size() + " posts matching the username " + username);
         return posts;
     }
 
@@ -837,6 +837,27 @@ public class DocumentDBManager {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", -1));
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
+    }
+
+    //seleziono l'id del post e non della risposta per poi poter aprire il post
+    public ArrayList<Post> getAnswers(String displayName) {
+        ArrayList<Post> answers = new ArrayList<>();
+        this.postsCollection.find(all("Answers.OwnerDisplayName", displayName)).forEach(doc -> {
+            Post p = new Post(
+                    doc.getObjectId("_id").toString(),
+                    null,
+                    (List<Answer>) (List<?>)doc.getList("Answers", Object.class),
+                    doc.getLong("Answers.CreationDate"),
+                    doc.getString("Answers.Body"),
+                    doc.getString("Answers.OwnerUserId"),
+                    null
+            );
+            System.out.println(p);
+            answers.add(p);
+        });
+
+        System.out.println("found " + answers.size() + " posts matching the username given as input");
+        return answers;
     }
 
     //TODO: possibili analytics

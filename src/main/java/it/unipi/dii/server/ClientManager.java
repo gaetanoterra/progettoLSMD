@@ -248,6 +248,11 @@ public class ClientManager extends Thread{
                         send(messageGetUserFollowers);
                         break;
 
+                    case Message_Get_Answer_Data:
+                        MessageGetAnswerData messageGetAnswerData = (MessageGetAnswerData) msg;
+                        messageGetAnswerData.setAnswers(dbManager.getAnswers(messageGetAnswerData.getDisplayName()));
+                        send(messageGetAnswerData);
+                        break;
                 }
             }
 

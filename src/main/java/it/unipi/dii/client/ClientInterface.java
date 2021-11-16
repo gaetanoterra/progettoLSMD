@@ -216,6 +216,10 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillPersonalUserFollowers(users);
     }
 
+    public static void fillPersonalAnswersList(ArrayList<Post> answers){
+        controllerProfileInterface.fillPersonaleUserAnswers(answers);
+    }
+
     public static void loginResponseHandler(MessageLogin msg){
         controllerSignInInterface.handleLogInResponse(msg);
     }

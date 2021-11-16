@@ -164,6 +164,10 @@ public class DBManager {
         return true;
     }
 
+    public ArrayList<Post> getAnswers(String displayName){
+        return documentDBManager.getAnswers(displayName);
+    }
+
     /*
     --------------------------- VOTES ---------------------------
      */
