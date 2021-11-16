@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 public class ControllerRegistrationInterface {
 
@@ -27,6 +28,8 @@ public class ControllerRegistrationInterface {
     private TextArea aboutMeTextArea;
     @FXML
     private TextField userNameTextField;
+    @FXML
+    private Label errorRegistrationLabel;
 
     public ControllerRegistrationInterface(){
         this.clientServerManager = ClientInterface.getServerConnectionManager();
@@ -52,9 +55,12 @@ public class ControllerRegistrationInterface {
                 ClientInterface.setLog(msg.getUser());
                 ClientInterface.fillProfileInterface(msg.getUser());
                 ClientInterface.updatePostSearchInterfaceWithLoggedUserInfos(msg.getUser());
+                errorRegistrationLabel.setText("");
             }
             else {
                 System.out.println("Failed registration");
+                errorRegistrationLabel.setText("Username already present");
+                errorRegistrationLabel.setTextFill(Color.web("#0076a3"));
             }
         });
     }

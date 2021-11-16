@@ -1,5 +1,6 @@
 package it.unipi.dii.server.databaseDriver;
 
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.InsertOneResult;
@@ -762,9 +763,15 @@ public class DocumentDBManager {
                 .append("Reputation", user.getReputation())
                 .append("type", user.getType());
 
-        InsertOneResult result = usersCollection.insertOne(userDoc);
-        user.setUserId(result.getInsertedId().asObjectId().getValue().toString());
-        return result.wasAcknowledged();
+        try {
+            InsertOneResult result = usersCollection.insertOne(userDoc);
+            user.setUserId(result.getInsertedId().asObjectId().getValue().toString());
+            return result.wasAcknowledged();
+        }
+        catch (MongoWriteException mwe) {
+            System.out.println("Username " + user.getDisplayName() + " already exists");
+            return false;
+        }
     }
 
     //
