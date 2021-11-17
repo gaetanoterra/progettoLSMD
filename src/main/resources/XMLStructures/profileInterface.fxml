@@ -72,26 +72,32 @@
                      </AnchorPane>
                   </content>
                </Tab>
-               <Tab text="Your Answers">
+               <Tab text="Correlated Users">
                   <content>
                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
                            <VBox>
                               <children>
-                                 <ListView fx:id="myAnswersListView" maxWidth="-Infinity" orientation="HORIZONTAL" prefHeight="357.0" prefWidth="789.0" />
+                                 <ListView fx:id="list_view_correlated_users" maxWidth="-Infinity" onMouseClicked="#eventSelectItemCorrelated" orientation="HORIZONTAL" prefHeight="357.0" prefWidth="789.0" />
                               </children>
                            </VBox>
                         </children>
                      </AnchorPane>
                   </content>
                </Tab>
-               <Tab text="People You Follow">
+               <Tab text="Recommended Users by Tag">
                   <content>
                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
                            <VBox prefHeight="406.0" prefWidth="800.0">
                               <children>
-                                 <ListView fx:id="peopleYouMightKnowListView" orientation="HORIZONTAL" prefHeight="378.0" prefWidth="800.0" />
+                                 <ListView fx:id="list_view_recommended_users" onMouseClicked="#eventSelectItemRecommended" orientation="HORIZONTAL" prefHeight="378.0" prefWidth="800.0" />
+                              <HBox prefHeight="39.0" prefWidth="800.0">
+                                 <children>
+                                    <TextField fx:id="text_field_recommended_users" text="Inserire tag" />
+                                    <Button fx:id="button_search_recommended_users" mnemonicParsing="false" onAction="#eventSearchRecommendedUsers" text="Search" />
+                                 </children>
+                              </HBox>
                               </children>
                            </VBox>
                         </children>

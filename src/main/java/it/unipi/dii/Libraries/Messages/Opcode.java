@@ -22,8 +22,8 @@ public enum Opcode {
     Message_Analytics_Correlated_Users              (17),
     Message_Analytics_Recommended_Users             (18),
     Message_Analytic_Hot_Topics                     (19),
-    Message_Get_User_Followers                      (20),
-    Message_Get_Answer_Data                         (21);
+    Message_Get_Correlated_Users                    (20),
+    Message_Get_Recommended_Users                   (21);
     private final byte opcode;
 
     Opcode(int opcode){

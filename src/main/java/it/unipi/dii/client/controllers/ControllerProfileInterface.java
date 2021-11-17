@@ -16,12 +16,12 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static it.unipi.dii.client.ClientInterface.DEFAULT_USERNAME;
+import java.util.List;
 
 
 public class ControllerProfileInterface {
@@ -32,8 +32,11 @@ public class ControllerProfileInterface {
     private ListView<Post> myPostsListView;
     private ObservableList<Post> postObservableList;
     @FXML
-    private ListView<Post> myAnswersListView;
-    private ObservableList<Post> answerObservableList;
+    private ListView<String> list_view_correlated_users;
+    private ObservableList<String> userCorrelatedObservableList;
+    @FXML
+    private ListView<String> list_view_recommended_users;
+    private ObservableList<String> userRecommendedObservableList;
     @FXML
     private Label displayNameLabel;
     @FXML
@@ -41,14 +44,9 @@ public class ControllerProfileInterface {
     @FXML
     private ImageView profileImageImageView;
     @FXML
-    private ListView<String> peopleYouMightKnowListView;
-    private ObservableList<String> userObservableList;
+    private Button button_search_recommended_users;
     @FXML
-    private ImageView lensImageView;
-    @FXML
-    private ImageView writePostImageview;
-    @FXML
-    private ImageView logOutImageView;
+    private TextField text_field_recommended_users;
     @FXML
     private Label locationLabel;
     @FXML
@@ -62,26 +60,25 @@ public class ControllerProfileInterface {
     public ControllerProfileInterface() {
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
         this.postObservableList = FXCollections.observableArrayList();
-        this.userObservableList = FXCollections.observableArrayList();
-        this.answerObservableList = FXCollections.observableArrayList();
+        this.userCorrelatedObservableList = FXCollections.observableArrayList();
+        this.userRecommendedObservableList = FXCollections.observableArrayList();
     }
 
     @FXML
     private void initialize() {
         this.myPostsListView.setItems(this.postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.PROFILE_INTERFACE));
-        this.peopleYouMightKnowListView.setItems(this.userObservableList);
-        this.peopleYouMightKnowListView.setOrientation(Orientation.VERTICAL);
+        this.list_view_correlated_users.setItems(this.userCorrelatedObservableList);
+        this.list_view_correlated_users.setOrientation(Orientation.VERTICAL);
         //this.peopleYouMightKnowListView.setCellFactory(plv->new ControllerFriendOfFriendsViewCell());
-        this.myAnswersListView.setItems(this.answerObservableList);
-        this.myAnswersListView.setCellFactory(plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE));
-        this.myAnswersListView.setOrientation(Orientation.VERTICAL);
+        this.list_view_recommended_users.setItems(this.userRecommendedObservableList);
+        //this.list_view_recommended_users.setCellFactory(plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE));
+        this.list_view_recommended_users.setOrientation(Orientation.VERTICAL);
     }
 
     public void fillProfileInterface(User u) throws IOException {
         serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetUserFollowers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetAnswerData(null, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
         //private ListView<Post> myPostsListView;
         //private ListView<User> peopleYouMightKnowListView;
         if (u.getProfileImage() != null) {
@@ -106,20 +103,21 @@ public class ControllerProfileInterface {
         });
     }
 
-    public void fillPersonalUserFollowers(ArrayList<String> users){
+    public void fillPersonalCorrelatedUsers(ArrayList<String> users){
         Platform.runLater(() -> {
-            userObservableList.clear();
-            userObservableList.addAll(users);
+            userCorrelatedObservableList.clear();
+            userCorrelatedObservableList.addAll(users);
         });
     }
 
-    public void fillPersonaleUserAnswers(ArrayList<Post> answers){
+    public void fillPersonalRecommendedUsers(ArrayList<String> users){
         Platform.runLater(() -> {
-            answerObservableList.clear();
-            answerObservableList.addAll(answers);
+            if (users != null) {
+                userRecommendedObservableList.clear();
+                userRecommendedObservableList.addAll(users);
+            }
         });
     }
-
     @FXML
     public void logOut(Event event) {
         try {
@@ -146,5 +144,17 @@ public class ControllerProfileInterface {
             ClientInterface.resetPostSearchInterface();
             ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
         });
+    }
+
+    public void eventSearchRecommendedUsers(ActionEvent actionEvent) throws IOException {
+        serverConnectionManager.send(new MessageGetRecommendedUsers(serverConnectionManager.getLoggedUser().getDisplayName(), text_field_recommended_users.getText(), null));
+    }
+
+    public void eventSelectItemCorrelated(MouseEvent mouseEvent) throws IOException {
+        serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_correlated_users.getSelectionModel().getSelectedItem(), null, null, null, null))), true, PageType.PROFILE_INTERFACE));
+    }
+
+    public void eventSelectItemRecommended(MouseEvent mouseEvent) throws IOException {
+        serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_recommended_users.getSelectionModel().getSelectedItem(), null, null, null, null))), true, PageType.PROFILE_INTERFACE));
     }
 }

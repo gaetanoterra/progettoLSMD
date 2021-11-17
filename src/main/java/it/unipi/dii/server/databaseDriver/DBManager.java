@@ -51,13 +51,13 @@ public class DBManager {
 
     //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getCorrelatedUsers(String username){
+    public ArrayList<String> getCorrelatedUsers(String username){
         return graphDBManager.getCorrelatedUsers(username);
     }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
+    public ArrayList<String> getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
 
     /*
     --------------------------- USERS ---------------------------
@@ -164,10 +164,6 @@ public class DBManager {
         return true;
     }
 
-    public ArrayList<Post> getAnswers(String displayName){
-        return documentDBManager.getAnswers(displayName);
-    }
-
     /*
     --------------------------- VOTES ---------------------------
      */
@@ -219,8 +215,7 @@ public class DBManager {
         return true;
     }
 
-    public ArrayList<String> getFollowers(String displayName){
-        return graphDBManager.getUserDisplayNameFollower(displayName);
+    public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
+        return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
     }
-
 }

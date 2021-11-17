@@ -2,11 +2,11 @@ package it.unipi.dii.Libraries.Messages;
 
 import java.util.ArrayList;
 
-public class MessageGetUserFollowers extends Message {
+public class MessageGetCorrelatedUsers extends Message {
     private ArrayList<String> userList;
     private String user;
-    public MessageGetUserFollowers(ArrayList<String> userList, String user){
-        this.opcode = Opcode.Message_Get_User_Followers;
+    public MessageGetCorrelatedUsers(ArrayList<String> userList, String user){
+        this.opcode = Opcode.Message_Get_Correlated_Users;
         this.userList = userList;
         this.user = user;
     }

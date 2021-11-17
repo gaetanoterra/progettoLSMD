@@ -2,8 +2,6 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
-import it.unipi.dii.client.controllers.ControllerAnalysisInterface;
-import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -91,6 +89,16 @@ public class ServerConnectionManager extends Thread {
                             ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
                         break;
 
+                    case Message_Follow:
+                        MessageFollow messageFollow = (MessageFollow) message;
+                        switch (messageFollow.getOperation()){
+                            case Create -> ClientInterface.setUnfollowUser();
+                            case Delete -> ClientInterface.setFollowUser();
+                            case Check -> ClientInterface.setFollowUnfollowUser(messageFollow.getUser());
+                        }
+
+                        break;
+
                     case Message_Get_Top_Users_Posts:
                         break;
 
@@ -114,14 +122,14 @@ public class ServerConnectionManager extends Thread {
                         ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
                         break;
 
-                    case Message_Get_User_Followers:
-                        MessageGetUserFollowers messageGetUserFollowers = (MessageGetUserFollowers) message;
-                        ClientInterface.fillUserFollowerList(messageGetUserFollowers.getObject());
+                    case Message_Get_Correlated_Users:
+                        MessageGetCorrelatedUsers messageGetCorrelatedUsers = (MessageGetCorrelatedUsers) message;
+                        ClientInterface.fillCorrelatedUsersList(messageGetCorrelatedUsers.getObject());
                         break;
 
-                    case Message_Get_Answer_Data:
-                        MessageGetAnswerData messageGetAnswerData = (MessageGetAnswerData) message;
-                        ClientInterface.fillPersonalAnswersList(messageGetAnswerData.getAnswers());
+                    case Message_Get_Recommended_Users:
+                        MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) message;
+                        ClientInterface.fillPersonalRecommendedUsers(messageGetRecommendedUsers.getUsers());
                         break;
                 }
 

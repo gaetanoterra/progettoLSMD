@@ -615,7 +615,7 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class));
-                            p.setViews(doc.getLong("ViewCount"));
+                            p.setViews(Long.parseLong(doc.getString("ViewCount")));
                             postArrayList.add(p);
                         }
         );
@@ -829,30 +829,34 @@ public class DocumentDBManager {
 
     public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", 1));
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", 1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followerNumber", 1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followedNumber", 1));
     }
 
     public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", -1));
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followerNumber", -1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followedNumber", -1));
     }
 
+    /*
     //seleziono l'id del post e non della risposta per poi poter aprire il post
     public ArrayList<Post> getAnswers(String displayName) {
         ArrayList<Post> answers = new ArrayList<>();
         this.postsCollection.find(all("Answers.OwnerDisplayName", displayName)).forEach(doc -> {
+            System.out.println(doc);
+            System.out.println(doc.getString("Answers[0]"));
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     null,
-                    (List<Answer>) (List<?>)doc.getList("Answers", Object.class),
+                    null,
                     doc.getLong("Answers.CreationDate"),
                     doc.getString("Answers.Body"),
                     doc.getString("Answers.OwnerUserId"),
                     null
             );
             System.out.println(p);
+
             answers.add(p);
         });
 
@@ -860,6 +864,7 @@ public class DocumentDBManager {
         return answers;
     }
 
+     */
     //TODO: possibili analytics
     //TODO
     //TODO

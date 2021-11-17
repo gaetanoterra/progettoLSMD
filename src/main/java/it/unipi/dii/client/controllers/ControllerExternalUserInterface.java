@@ -1,22 +1,23 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
-import it.unipi.dii.Libraries.Messages.Opcode;
-import it.unipi.dii.Libraries.Messages.Parameter;
+import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 //classe preposta a gestire l'interfaccia del profilo utente
 public class ControllerExternalUserInterface {
@@ -25,6 +26,7 @@ public class ControllerExternalUserInterface {
     private User user;
     private PageType lastPageVisited;
     private ObservableList<Post> postObservableList;
+    private boolean followed;
 
     @FXML
     private Label label_display_name = new Label(), label_location = new Label(), label_creation_date = new Label(), label_reputation = new Label(), label_website = new Label();
@@ -34,6 +36,8 @@ public class ControllerExternalUserInterface {
     private TextArea text_area_aboutme;
     @FXML
     private ImageView profileImageImageView;
+    @FXML
+    private Button button_follow;
 
 
     public ControllerExternalUserInterface() {
@@ -52,6 +56,9 @@ public class ControllerExternalUserInterface {
 
         //sending the request for user posts
         this.serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, user.getDisplayName()));
+        this.serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Check, user));
+
+        System.out.println("followed: " + followed);
     }
 
     private void fillExternalUserInterface() {
@@ -76,4 +83,34 @@ public class ControllerExternalUserInterface {
     private void eventButtonBack(ActionEvent actionEvent) {
         ClientInterface.switchScene(lastPageVisited);
     }
+
+    public void eventFollow(ActionEvent actionEvent) throws IOException {
+        if (followed)
+            serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Delete, user));
+        else
+            serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Create, user));
+    }
+
+    public void setUnfollowUser() {
+        Platform.runLater(()-> {
+            button_follow.setText("Unfollow");
+            followed = true;
+        });
+
+    }
+
+    public void setFollowUser() {
+        Platform.runLater(()-> {
+            button_follow.setText("Follow");
+            followed = false;
+        });
+    }
+
+    public void setFollowUnfolloUser(User user) {
+        if (user != null)
+            setUnfollowUser();
+        else
+            setFollowUser();
+    }
+
 }

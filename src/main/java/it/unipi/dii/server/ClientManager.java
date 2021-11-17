@@ -138,13 +138,17 @@ public class ClientManager extends Thread{
                     case Message_Follow:
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
-                            case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getUserId(),
-                                                                                        msgFollow.getUser().getUserId());
-                            case Delete -> dbManager.removeFollowRelationAndUpdate(loggedUser.getUserId(),
-                                                                                        msgFollow.getUser().getUserId());
+                            case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                            case Delete -> dbManager.removeFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                            case Check -> {boolean result = dbManager.checkFollowRelation(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                                            if (!result)
+                                                msgFollow.setUser(null);
+                            }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Follow" +
                                                                                 msgFollow.getOperation() + " not valid");
                         }
+
+                        send(msgFollow);
                         break;
 
                     case Message_Vote:
@@ -242,16 +246,16 @@ public class ClientManager extends Thread{
                         send(messageAnalyticHotTopics);
                         break;
 
-                    case Message_Get_User_Followers:
-                        MessageGetUserFollowers messageGetUserFollowers = (MessageGetUserFollowers) msg;
-                        messageGetUserFollowers.setUserList(dbManager.getFollowers(messageGetUserFollowers.getUser()));
-                        send(messageGetUserFollowers);
+                    case Message_Get_Correlated_Users:
+                        MessageGetCorrelatedUsers messageGetCorrelatedUsers = (MessageGetCorrelatedUsers) msg;
+                        messageGetCorrelatedUsers.setUserList(dbManager.getCorrelatedUsers(messageGetCorrelatedUsers.getUser()));
+                        send(messageGetCorrelatedUsers);
                         break;
 
-                    case Message_Get_Answer_Data:
-                        MessageGetAnswerData messageGetAnswerData = (MessageGetAnswerData) msg;
-                        messageGetAnswerData.setAnswers(dbManager.getAnswers(messageGetAnswerData.getDisplayName()));
-                        send(messageGetAnswerData);
+                    case Message_Get_Recommended_Users:
+                        MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) msg;
+                        messageGetRecommendedUsers.setUsers(dbManager.getRecommendedUsers(messageGetRecommendedUsers.getDisplayName(), messageGetRecommendedUsers.getTag()));
+                        send(messageGetRecommendedUsers);
                         break;
                 }
             }

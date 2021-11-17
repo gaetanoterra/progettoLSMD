@@ -2,7 +2,8 @@ package it.unipi.dii.Libraries.Messages;
 
 public enum OperationCD {
     Create  (0),
-    Delete  (1);
+    Delete  (1),
+    Check   (2);
 
     private final byte operation;
     OperationCD(int operation){

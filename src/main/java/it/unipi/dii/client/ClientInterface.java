@@ -212,14 +212,13 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillProfileInterface(u);
     }
 
-    public static void fillUserFollowerList(ArrayList<String> users){
-        controllerProfileInterface.fillPersonalUserFollowers(users);
+    public static void fillCorrelatedUsersList(ArrayList<String> users){
+        controllerProfileInterface.fillPersonalCorrelatedUsers(users);
     }
 
-    public static void fillPersonalAnswersList(ArrayList<Post> answers){
-        controllerProfileInterface.fillPersonaleUserAnswers(answers);
+    public static void fillPersonalRecommendedUsers(ArrayList<String> users){
+        controllerProfileInterface.fillPersonalRecommendedUsers(users);
     }
-
     public static void loginResponseHandler(MessageLogin msg){
         controllerSignInInterface.handleLogInResponse(msg);
     }
@@ -331,6 +330,18 @@ public class ClientInterface extends Application{
 
     public static void fillExternalUserPostInterface(ArrayList<Post> posts){
         controllerExternalUserInterface.fillExternalUserPosts(posts);
+    }
+
+    public static void setUnfollowUser() {
+        controllerExternalUserInterface.setUnfollowUser();
+    }
+
+    public static void setFollowUser() {
+        controllerExternalUserInterface.setFollowUser();
+    }
+
+    public static void setFollowUnfollowUser(User user) {
+        controllerExternalUserInterface.setFollowUnfolloUser(user);
     }
 }
 
