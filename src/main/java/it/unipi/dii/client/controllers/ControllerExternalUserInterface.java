@@ -57,8 +57,6 @@ public class ControllerExternalUserInterface {
         //sending the request for user posts
         this.serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, user.getDisplayName()));
         this.serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Check, user));
-
-        System.out.println("followed: " + followed);
     }
 
     private void fillExternalUserInterface() {

@@ -462,8 +462,24 @@ public class GraphDBManager {
     }
 
     public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
-        boolean followed;
-        try(Session session = dbConnection.session()){
+        boolean followed = false;
+
+        try (Session session = dbConnection.session()) {
+            List<Record> records = session.readTransaction(new TransactionWork<List<Record>>() {
+                @Override
+                public List<Record> execute(Transaction tx) {
+                    return tx.run("MATCH (u:User {displayName: $displayName})-[r:FOLLOW]->(u2:User {displayName: $displayNameToCheck})" +
+                                    "return r as count LIMIT 1",
+                            parameters("displayName", displayName, "displayNameToCheck", displayNameToCheck)).list();
+                }
+            });
+            for (final Record record : records) {
+                followed = true;
+            }
+
+            return followed;
+        }
+        /*try(Session session = dbConnection.session()){
             session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (u:User {displayName: $displayName})-[r:FOLLOW]->(u2:User {displayName: $displayNameToCheck})" +
                                 "return r as count LIMIT 1",
@@ -474,6 +490,6 @@ public class GraphDBManager {
                 followed = false;
             });
             return false;
-        }
+        }*/
     }
 }
