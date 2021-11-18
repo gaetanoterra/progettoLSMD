@@ -24,7 +24,6 @@ import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
 
 import com.mongodb.BasicDBObject;
-import org.bson.types.ObjectId;
 
 //TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
@@ -473,7 +472,7 @@ public class DocumentDBManager {
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(eq("CreationDate", data)).forEach(doc -> {
             Post p = new Post(
-                    doc.getObjectId("_id").toString(),
+                    doc.getString("Id"),
                     doc.getString("Title"),
                     doc.getList("Answers", Answer.class),
                     doc.getLong("CreationDate"),
@@ -492,7 +491,7 @@ public class DocumentDBManager {
         ArrayList<Answer> answersList = new ArrayList<>();
 
         Document document = this.postsCollection.find(
-                                        eq("_id", new ObjectId(postId))).first();
+                                        eq("Id", postId)).first();
 
         if(document == null) {
             System.out.println("Found no document marching the id " + postId);
@@ -533,7 +532,7 @@ public class DocumentDBManager {
 
     private void increaseViewsPost(String postId) {
         // Assuming the document already exists in the MongoDB collection
-        this.postsCollection.updateOne(eq("_id", new ObjectId(postId)), inc("ViewCount", 1));
+        this.postsCollection.updateOne(eq("Id", postId), inc("ViewCount", 1));
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
@@ -541,7 +540,7 @@ public class DocumentDBManager {
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(all("OwnerUserId", username)).forEach(doc -> {
             Post p = new Post(
-                    doc.getObjectId("_id").toString(),
+                    doc.getString("Id"),
                     doc.getString("Title"),
                     doc.getList("Answers", Answer.class),
                     doc.getLong("CreationDate"),
@@ -561,7 +560,7 @@ public class DocumentDBManager {
         ArrayList<Post> postArrayList = new ArrayList<>();
         postsCollection.find(all("Tags", tags)).forEach(doc -> {
             Post p = new Post(
-                    doc.getObjectId("_id").toString(),
+                    doc.getString("Id"),
                     doc.getString("Title"),
                     doc.getList("Answers", Answer.class),
                     doc.getLong("CreationDate"),
@@ -604,14 +603,14 @@ public class DocumentDBManager {
                             ))
                         )
                         .projection(new Document("Title",1)
-                                    .append("_id", 1)
+                                    .append("Id", 1)
                                     .append("ViewCount", 1)
                                     .append("OwnerUserId", 1)
                                     .append("Tags" , 1)
                                     .append("AnswersNumber",new BasicDBObject("$size","$Answers"))
                         )
                         .forEach(doc -> {
-                            Post p = new Post(doc.getObjectId("_id").toString(),
+                            Post p = new Post(doc.getString("Id"),
                                               doc.getString("Title"),
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
@@ -627,7 +626,7 @@ public class DocumentDBManager {
 
     public User getUserById(String userId) {
 
-        Document userDoc = usersCollection.find(eq("_id", new ObjectId(userId))).first();
+        Document userDoc = usersCollection.find(eq("Id", userId)).first();
         User user = new User();
 
         if(userDoc != null) {
@@ -654,7 +653,7 @@ public class DocumentDBManager {
         User user = new User();
 
         if(userDoc != null) {
-            user.setUserId(userDoc.getObjectId("_id").toString())
+            user.setUserId(userDoc.getString("Id"))
                     .setDisplayName(displayName)
                     .setPassword(userDoc.getString("Password"))
                     .setFollowersNumber(userDoc.getInteger("followerNumber"))
@@ -678,7 +677,7 @@ public class DocumentDBManager {
         ArrayList<User> user = new ArrayList<>();
         usersCollection.find().sort(descending("Reputation")).limit(10).forEach(document -> {
             User u = new User()
-                    .setUserId(document.getObjectId("_id").toString())
+                    .setUserId(document.getString("Id"))
                     .setDisplayName(document.getString("DisplayName"))
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))
@@ -725,7 +724,7 @@ public class DocumentDBManager {
                 .append("OwnerUserId", answer.getOwnerUserId())
                 .append("Body", answer.getBody())
                 .append("OwnerDisplayName", answer.getOwnerUserName());
-        postsCollection.updateOne(eq("_id", new ObjectId(postId)), Updates.push("Answers", doc));
+        postsCollection.updateOne(eq("Id", postId), Updates.push("Answers", doc));
         // 3)
         postsCollection.deleteOne(eq("TempId", tempId));
 
@@ -766,6 +765,8 @@ public class DocumentDBManager {
         try {
             InsertOneResult result = usersCollection.insertOne(userDoc);
             user.setUserId(result.getInsertedId().asObjectId().getValue().toString());
+            // set user id as the objectId
+            usersCollection.updateOne(eq("_id", result.getInsertedId().asObjectId().getValue()), set("Id", user.getUserId()));
             return result.wasAcknowledged();
         }
         catch (MongoWriteException mwe) {
@@ -788,33 +789,43 @@ public class DocumentDBManager {
 
     public boolean removeAnswer(Answer answer, String postId){
 
-        /*Document doc = new Document("_id", answer.getAnswerId()).append("CreationDate", answer.getCreationDate()).append("Score", answer.getScore()).append("OwnerUserId", answer.getOwnerUserId());
-        postsCollection.updateOne(eq("_id", postId), Updates.pull("Answers", doc));*/
-
-        //provare uno dei due
-        BasicDBObject match = new BasicDBObject("_id", new ObjectId(postId));
-        BasicDBObject update = new BasicDBObject("Answers", new BasicDBObject("Id", answer.getAnswerId()));
-        postsCollection.updateOne(match, new BasicDBObject("$pull", update));
+        postsCollection.updateOne(
+                new Document("Id", postId),
+                new Document("$pull",
+                        new Document("Answers",
+                                new Document("Id", answer.getAnswerId())
+                        )
+                )
+        );
 
         return true;
     }
 
     public boolean removePost(Post post){
-        postsCollection.deleteOne(eq("_id", new ObjectId(post.getPostId())));
+        postsCollection.deleteOne(eq("Id", post.getPostId()));
         return true;
     }
 
     public boolean removeUser(String userId){
         //addio utente
-        usersCollection.deleteOne(eq("_id", new ObjectId(userId)));
+        usersCollection.deleteOne(eq("Id", userId));
         //addio post scritti da lui
-        //TODO: Rimuovere tutti i post dell'utente
+        postsCollection.deleteMany(eq("OwnerUserId", userId));
+        //addio risposte scritte da lui
+        postsCollection.updateMany(
+                new Document(),
+                new Document("$pull",
+                        new Document("Answers",
+                                new Document("OwnerUserId", userId)
+                        )
+                )
+        );
         return true;
     }
 
     public boolean updateUserData(User user){
         usersCollection.updateOne(
-                eq("_id", new ObjectId(user.getUserId())),
+                eq("Id", user.getUserId()),
                 Updates.combine(
                         set("Password", user.getPassword()),
                         set("Location", user.getLocation()),
@@ -828,7 +839,7 @@ public class DocumentDBManager {
 
     public void updateVotesAnswer(String postId, String answerId, int vote) {
         postsCollection.updateOne(
-                and(eq("_id", new ObjectId(postId)), eq("Answers.Id", answerId)),
+                and(eq("Id", postId), eq("Answers.Id", answerId)),
                 Updates.inc("Answers.$.Score", vote)
         );
     }
@@ -836,14 +847,14 @@ public class DocumentDBManager {
 
     public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", 1));
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", 1));
+        usersCollection.updateOne(eq("Id", userIdFollower), inc("followerNumber", 1));
+        usersCollection.updateOne(eq("Id", userIdFollowed), inc("followedNumber", 1));
     }
 
     public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollower)), inc("followerNumber", -1));
-        usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
+        usersCollection.updateOne(eq("Id", userIdFollower), inc("followerNumber", -1));
+        usersCollection.updateOne(eq("Id", userIdFollowed), inc("followedNumber", -1));
     }
 
     //TODO: possibili analytics

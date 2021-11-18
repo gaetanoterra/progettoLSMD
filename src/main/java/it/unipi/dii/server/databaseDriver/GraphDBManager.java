@@ -133,7 +133,7 @@ public class GraphDBManager {
         try (Session session = dbConnection.session())
         {  //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2)
             return (String[]) session.readTransaction((TransactionWork<List<String>>) tx -> {
-                Result result = tx.run( "MATCH (u3:User)<-[:FOLLOWS]-(u2:User)<-[:FOLLOWS]-(u:User {userId: $userId}) " +
+                Result result = tx.run( "MATCH (u3:User)<-[:FOLLOW]-(u2:User)<-[:FOLLOW]-(u:User {userId: $userId}) " +
                                 "WHERE u3 <> u and u3 <> u2  " +
                                 "RETURN distinct u3.displayName AS Username " +
                                 "LIMIT 10; ",
@@ -176,7 +176,7 @@ public class GraphDBManager {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollower = new ArrayList<>();
-                tx.run("MATCH (fr:User)-[:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
+                tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {userId: $userIdFollowed}) " +
                                 "RETURN fr.userId as userIdFollower ",
                         parameters("userIdFollowed", userId))
                 .stream().forEach(record ->
@@ -191,7 +191,7 @@ public class GraphDBManager {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollowed = new ArrayList<>();
-                tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOWS]->(fd:User) " +
+                tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOW]->(fd:User) " +
                                 "RETURN fd.userId as userIdFollowed ",
                         parameters("userIdFollower", userId))
                         .stream().forEach(record ->
@@ -212,7 +212,7 @@ public class GraphDBManager {
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (a:Answer {answerId: $answerId}), " +
-                                "(q:Question {questionId: $questionId}) " +
+                                "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (a)-[:ANSWERS_TO]->(q); ",
                         parameters("answerId", answer.getAnswerId(), "questionId", postId));
                 return null;
@@ -220,7 +220,7 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
-                                "CREATE (u)-[:POSTS_ANSWER]->(a); ",
+                                "CREATE (u)-[:ANSWERS_WITH]->(a); ",
                         parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
                 return null;
             });
@@ -234,7 +234,7 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fd:User {userId: $userIdFollowed), " +
                                 "(fr:User {userId: $userIdFollower) " +
-                                "CREATE (fr)-[:FOLLOWS]->(fd); ",
+                                "CREATE (fr)-[:FOLLOW]->(fd); ",
                         parameters("userIdFollowed", userIdFollowed, "userIdFollower", userIdFollower));
                 return null;
             });
@@ -245,19 +245,19 @@ public class GraphDBManager {
     public void insertPost(Post post){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
-               tx.run("CREATE (q:Question {questionId: $questionId}); ",
+               tx.run("CREATE (q:Question {QuestionId: $questionId}); ",
                        parameters("questionId", post.getPostId()));
                return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
-                                "(q:Question {questionId: $questionId}) " +
+                                "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (u)-[:POSTS_QUESTION]->(q); ",
                         parameters("userId", post.getOwnerUserId(), "questionId", post.getPostId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (q:Question {questionId: $questionId}) " +
+                tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                                 "FOREACH (tagName IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {name: tagName})); ",
                         parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
                 return null;
@@ -298,22 +298,10 @@ public class GraphDBManager {
     public void removeAnswer(Answer answer, String postId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-               tx.run("MATCH (a:Answer {answerId: $answerId}) " +
+               tx.run("MATCH (q: Question {QuestionId: $questionId})<-[ANSWERS_TO]-(a:Answer {answerId: $answerId}) " +
                        "DETACH DELETE a; ",
-                       parameters("answerId", answer.getAnswerId()));
+                       parameters("questionId", postId, "answerId", answer.getAnswerId()));
                return null;
-            });
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
-                                "DELETE r; ",
-                        parameters( "questionId", postId, "answerId", answer.getAnswerId()));
-                return null;
-            });
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:User {userId: $userId})-[r:POSTS_ANSWER]->(:Answer {answerId: $answerId}) " +
-                                "DELETE r; ",
-                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
-                return null;
             });
         }
     }
@@ -322,7 +310,7 @@ public class GraphDBManager {
     public void removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (fr:User {userId: $userIdFollower})-[r:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
+                tx.run("MATCH (fr:User {userId: $userIdFollower})-[r:FOLLOW]->(fd:User {userId: $userIdFollowed}) " +
                                 "DELETE r; ",
                         parameters("userIdFollower", userIdFollower, "userIdFollowed", userIdFollowed));
                 return null;
@@ -339,16 +327,10 @@ public class GraphDBManager {
          */
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
-                                "DETACH DELETE a; ",
+                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(q:Question {QuestionId: $questionId}) " +
+                                "DETACH DELETE a, q; ",
                         parameters("questionId", post.getPostId()));
                 return null;
-            });
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-               tx.run("MATCH (q:Question {questionId: $questionId}) " +
-                       "DETACH DELETE q; ",
-                       parameters("questionId", post.getPostId()));
-               return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (t:Tag) " +
@@ -363,7 +345,7 @@ public class GraphDBManager {
     public void removeRelationVote(String userId, String answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId})" +
+                tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId}) " +
                                 "DELETE r",
                         parameters("userId", userId, "answerId", answerId));
                 return null;
@@ -374,10 +356,10 @@ public class GraphDBManager {
     public void removeUser(String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOWS]-(:User), " +
-                "(u)-[:POSTS_QUESTION]->(q:Question), " +
-                "(u)-[:POSTS_ANSWER]->(a:Answer), " +
-                "DETACH DELETE u, q, a;",
+                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOW]-(:User), " +
+                "(u)-[:POSTS_QUESTION]->(q:Question)<-[:ANSWERS_WITH]-(a2:Answer), " +
+                "(u)-[:ANSWERS_WITH]->(a:Answer), " +
+                "DETACH DELETE u, q, a, a2; ",
               parameters("userId", userId));
               return null;
             });
@@ -393,7 +375,7 @@ public class GraphDBManager {
     public int getVote(String userId, String answerId){
         try(Session session = dbConnection.session()){
             int voto = (int) session.readTransaction(tx -> {
-                Result result = tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId})" +
+                Result result = tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId}) " +
                                 "return r.VoteTypeId as Voto LIMIT 1",
                         parameters("userId", userId, "answerId", answerId));
                 if (result.hasNext()) {

@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class User implements Serializable {
 
-    //TODO nel database ci sono 3 identificativi (_id, Id, AccountId) e manca lastAccessDate e type
+    // usare Id su mongo
     private String userId;
     private String password;
     private String displayName;
@@ -14,11 +14,13 @@ public class User implements Serializable {
     private Integer reputation;
     private Long creationDate;
     private Long lastAccessDate;
+    // TODO utente admin dove?
     private String type = "generic_user";
     private String location;
     private String aboutMe;
     private String websiteURL;
     private String profileImage;
+
 
     public User(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd){
         this.userId = userId;
@@ -36,6 +38,14 @@ public class User implements Serializable {
     public User(){
         this(null,null,null,null,null);
     }
+
+    public boolean isAdmin() {
+        if (this.type != null) {
+            return this.type.equals("admin");
+        }
+        return false;
+    }
+
     public String getUserId(){
         return this.userId;
     }

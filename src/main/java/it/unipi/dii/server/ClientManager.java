@@ -76,6 +76,9 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Experts:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageGetExpertsByTag msgExperts = (MessageGetExpertsByTag)msg;
                         String[] expertUsers = dbManager.findTopExpertsByTag(
                                 msgExperts.getTag(),
@@ -86,6 +89,9 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Post:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessagePost msgPost = (MessagePost)msg;
                         Post post = msgPost.getPost();
 
@@ -96,7 +102,14 @@ public class ClientManager extends Thread{
                                 post.setViews(0L);
                                 dbManager.insertPost(post);
                             }
-                            case Delete -> dbManager.removePost(post);
+                            case Delete -> {
+                                if (loggedUser.isAdmin()) {
+                                    dbManager.removePost(post);
+                                }
+                                else {
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                }
+                            }
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
                         }
                         break;
@@ -117,25 +130,45 @@ public class ClientManager extends Thread{
                                 answer.setOwnerUserId(loggedUser.getUserId());
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
-                            case Delete -> dbManager.removeAnswer(answer, msgAnswer.getPostId());
+                            case Delete -> {
+                                if (loggedUser.isAdmin()) {
+                                    dbManager.removeAnswer(answer, msgAnswer.getPostId());
+                                }
+                                else {
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                }
+                            }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Answer " +
                                                                             msgAnswer.getOperation() + " not valid");
                         }
                         break;
 
                     case Message_User:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageUser msgUser = (MessageUser)msg;
                         user = msgUser.getUser();
 
                         switch (msgUser.getOperation()) {
                             case Create -> dbManager.insertUser(user);
-                            case Delete -> dbManager.removeUser(user);
+                            case Delete -> {
+                                if (loggedUser.isAdmin()) {
+                                    dbManager.removeUser(user);
+                                }
+                                else {
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                }
+                            }
                             default -> throw new OpcodeNotValidException("Opcode of Message_User " +
                                                                                 msgUser.getOperation() + " not valid");
                         }
                         break;
 
                     case Message_Follow:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
                             case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getUserId(),
@@ -203,15 +236,22 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Post_Data:
+                        //TODO: Non usato
 
                         break;
 
                     case Message_Get_Top_Users_Posts:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         send(new MessageGetTopUsersPosts(
                                 (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts()));
                         break;
 
                     case Message_Update_User_data:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageUser messageUser = (MessageUser)msg;
                         User updatedUser = messageUser.getUser();
                         dbManager.updateUserData(updatedUser);
@@ -219,24 +259,36 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Analytics_Most_Popular_Tags:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) msg;
                         messageAnalyticMPTags.setTags(dbManager.findMostPopularTags());
                         send(messageAnalyticMPTags);
                         break;
 
                     case Message_Analytics_Most_Popular_Tags_Location:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) msg;
                         messageAnalyticMPTagsLocation.setTags(dbManager.findMostPopularTagsByLocation(messageAnalyticMPTagsLocation.getLocation(), messageAnalyticMPTagsLocation.getNumTags()));
                         send(messageAnalyticMPTagsLocation);
                         break;
 
                     case Message_Analytics_User_Rank:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) msg;
                         messageAnalyticUserRanking.setUsers(dbManager.getUsersRank());
                         send(messageAnalyticUserRanking);
                         break;
 
                     case Message_Analytic_Hot_Topics:
+                        if (loggedUser == null) {
+                            break;
+                        }
                         MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) msg;
                         messageAnalyticHotTopics.setMap(dbManager.findHotTopicsforTopUsers());
                         send(messageAnalyticHotTopics);

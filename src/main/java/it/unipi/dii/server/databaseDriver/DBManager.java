@@ -190,7 +190,7 @@ public class DBManager {
         return true;
     }
     public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
-        //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo
+        //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo e aggiornarlo
         documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
         graphDBManager.removeRelationVote(userId, answerId);
         return true;
