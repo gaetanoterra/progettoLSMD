@@ -103,7 +103,7 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin()) {
+                                if (loggedUser.isAdmin() || loggedUser.getUserId().equals(post.getOwnerUserId())) {
                                     dbManager.removePost(post);
                                 }
                                 else {
@@ -131,7 +131,7 @@ public class ClientManager extends Thread{
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin()) {
+                                if (loggedUser.isAdmin() || loggedUser.getUserId().equals(answer.getOwnerUserId())) {
                                     dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 }
                                 else {
