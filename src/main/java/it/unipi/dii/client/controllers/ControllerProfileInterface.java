@@ -161,4 +161,8 @@ public class ControllerProfileInterface {
         ClientInterface.switchScene(PageType.ANALYSIS_INTERFACE);
         ClientInterface.initAnalyticsInterface(PageType.PROFILE_INTERFACE);
     }
+
+    public void eventButtonDeleteAccount(ActionEvent actionEvent) throws IOException {
+        serverConnectionManager.send(new MessageUser(Opcode.Message_User, OperationCD.Delete, serverConnectionManager.getLoggedUser()));
+    }
 }

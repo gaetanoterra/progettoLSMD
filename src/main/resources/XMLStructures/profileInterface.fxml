@@ -14,6 +14,7 @@
                <padding>
                   <Insets right="10.0" />
                </padding>
+         <Button mnemonicParsing="false" onAction="#eventButtonDeleteAccount" text="Delete Account" />
          <Button fx:id="button_stats" mnemonicParsing="false" onAction="#eventButtonStats" text="Stats" />
                <ImageView fx:id="lensImageView" fitHeight="44.0" fitWidth="44.0" onMouseClicked="#switchToPostSearchInterface" pickOnBounds="true" preserveRatio="true">
                   <Image url="@../images/lens-icon.jpg" />

@@ -2,6 +2,7 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
+import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -60,6 +61,21 @@ public class ServerConnectionManager extends Thread {
                         */
                         MessageSignUp messageSignUp = (MessageSignUp)message;
                         ClientInterface.registrationResponseHandler(messageSignUp);
+                        break;
+
+                    case Message_User:
+                        MessageUser messageUser = (MessageUser) message;
+                        switch (messageUser.getOperation()){
+                            case Create -> {}
+                            case Delete -> {if (messageUser.getUser() == null){
+                                                ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+                                            }
+                                            else {
+                                                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+                                            }
+                            }
+                            case Check -> {}
+                        }
                         break;
 
                     case Message_Post:

@@ -37,7 +37,7 @@ public class ControllerExternalUserInterface {
     @FXML
     private ImageView profileImageImageView;
     @FXML
-    private Button button_follow;
+    private Button button_follow, button_delete_account;
 
 
     public ControllerExternalUserInterface() {
@@ -49,6 +49,10 @@ public class ControllerExternalUserInterface {
         this.user = user;
         this.lastPageVisited = lastPageVisited;
         this.text_area_aboutme.setEditable(false);
+
+        /*if (!serverConnectionManager.getLoggedUser().isAdmin()){
+            button_delete_account.setDisable(true);
+        }*/
 
         myPostsListView.setItems(postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.EXTERNAL_PROFILE));
@@ -87,6 +91,10 @@ public class ControllerExternalUserInterface {
             serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Delete, user));
         else
             serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Create, user));
+    }
+
+    public void eventButtonDeleteExternalAccount(ActionEvent actionEvent) throws IOException {
+        serverConnectionManager.send(new MessageUser(Opcode.Message_User, OperationCD.Delete, user));
     }
 
     public void setUnfollowUser() {

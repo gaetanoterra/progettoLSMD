@@ -131,7 +131,20 @@ public class ClientManager extends Thread{
 
                         switch (msgUser.getOperation()) {
                             case Create -> dbManager.insertUser(user);
-                            case Delete -> dbManager.removeUser(user);
+                            case Delete -> {dbManager.removeUser(user);
+                                            System.out.println("loggedUser: " + loggedUser.getDisplayName());
+                                            System.out.println("userPassed: " + user.getDisplayName());
+                                            if (user.getDisplayName().equals(loggedUser.getDisplayName())){
+                                                //se sto eliminando il mio account,effettuo un logout e torno alla postsearchinterface
+                                                loggedUser = null;
+                                                msgUser.setUser(null);
+                                                send(msgUser);
+                                            }
+                                            else{
+                                                //se è l'admin che sta eliminando il profilo di un altro,dopo l'eliminazione voglio tornare al profilo admin
+                                                send(msgUser);
+                                            }
+                            }
                             default -> throw new OpcodeNotValidException("Opcode of Message_User " +
                                                                                 msgUser.getOperation() + " not valid");
                         }
