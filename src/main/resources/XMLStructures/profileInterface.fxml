@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,13 +19,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<ScrollPane prefHeight="772.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerProfileInterface">
+<ScrollPane prefHeight="772.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerProfileInterface">
 
       <VBox prefHeight="754.0" prefWidth="800.0" spacing="15.0">
          <HBox alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="800.0" spacing="15.0">
                <padding>
                   <Insets right="10.0" />
                </padding>
+         <Button fx:id="button_modify" mnemonicParsing="false" onMouseClicked="#eventButtonModify" text="Modify" />
                <ImageView fx:id="lensImageView" fitHeight="44.0" fitWidth="44.0" onMouseClicked="#switchToPostSearchInterface" pickOnBounds="true" preserveRatio="true">
                   <Image url="@../images/lens-icon.jpg" />
                </ImageView>
@@ -49,8 +51,8 @@
             <WebView fx:id="aboutMeWebView" prefHeight="187.0" prefWidth="324.0" />
             <GridPane prefHeight="189.0" prefWidth="220.0">
                <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.0" minWidth="10.0" prefWidth="95.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="141.0" minWidth="10.0" prefWidth="125.0" />
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -62,10 +64,10 @@
                <Label text="Creation date:" GridPane.rowIndex="1" />
                <Label text="Reputation:" GridPane.rowIndex="2" />
                <Label text="Web site:" GridPane.rowIndex="3" />
-               <Label fx:id="locationLabel" prefHeight="16.0" prefWidth="121.0" GridPane.columnIndex="1" />
-               <Label fx:id="creationDateLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-               <Label fx:id="reputationLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-               <Label fx:id="webSiteLabel" prefHeight="16.0" prefWidth="136.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="locationLabel" editable="false" GridPane.columnIndex="1" />
+            <TextField fx:id="creationDateLabel" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="reputationLabel" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="webSiteLabel" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </GridPane>
          </HBox>
          <TabPane prefHeight="446.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">

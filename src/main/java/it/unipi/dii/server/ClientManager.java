@@ -255,7 +255,6 @@ public class ClientManager extends Thread{
                         MessageUser messageUser = (MessageUser)msg;
                         User updatedUser = messageUser.getUser();
                         dbManager.updateUserData(updatedUser);
-                        // Main.setLog(updatedUser);
                         break;
 
                     case Message_Analytics_Most_Popular_Tags:

@@ -7,10 +7,12 @@ public class MessageUser extends MessageCreateDelete{
 
     private User user;
 
+    public MessageUser(Opcode opcode, User user){
+        this(opcode, null, user);
+    }
+
     public MessageUser(OperationCD operation, User user){
-        this.opcode = Opcode.Message_Post;
-        this.operation = operation;
-        this.user = user;
+        this(Opcode.Message_User, operation, user);
     }
 
     public MessageUser(Opcode opcode, OperationCD operation, User user){

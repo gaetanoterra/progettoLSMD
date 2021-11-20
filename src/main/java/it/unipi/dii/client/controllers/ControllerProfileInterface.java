@@ -2,6 +2,8 @@ package it.unipi.dii.client.controllers;
 
 
 import it.unipi.dii.Libraries.Messages.MessageLogOut;
+import it.unipi.dii.Libraries.Messages.MessageUser;
+import it.unipi.dii.Libraries.Messages.Opcode;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
@@ -9,17 +11,16 @@ import it.unipi.dii.client.ServerConnectionManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
-
-import static it.unipi.dii.client.ClientInterface.DEFAULT_USERNAME;
 
 
 public class ControllerProfileInterface {
@@ -47,13 +48,22 @@ public class ControllerProfileInterface {
     @FXML
     private ImageView logOutImageView;
     @FXML
-    private Label locationLabel;
+    private TextField locationLabel;
     @FXML
-    private Label creationDateLabel;
+    private TextField creationDateLabel;
     @FXML
-    private Label reputationLabel;
+    private TextField reputationLabel;
     @FXML
-    private Label webSiteLabel;
+    private TextField webSiteLabel;
+    @FXML
+    private Button button_modify;
+    /*
+    @FXML
+    private TextArea textarea_aboutme;
+    @FXML
+    private TextField textfield_location, textfield_creationdate, textfield_reputation, textfield_url;
+     */
+    private boolean modificable = false;
 
 
     public ControllerProfileInterface() {
@@ -78,6 +88,7 @@ public class ControllerProfileInterface {
         }
         displayNameLabel.setText(u.getDisplayName());
         aboutMeWebView.getEngine().loadContent(u.getAboutMe());
+        aboutMeWebView.setContextMenuEnabled(false);
         locationLabel.setText(u.getLocation());
         creationDateLabel.setText(User.convertMillisToDate(u.getCreationDate()).toString());
         reputationLabel.setText(Integer.toString(u.getReputation()));
@@ -111,4 +122,43 @@ public class ControllerProfileInterface {
             ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
         });
     }
+
+    public synchronized void lockModifyText(boolean block){
+        this.modificable = !block;
+        locationLabel.setEditable(this.modificable);
+        webSiteLabel.setEditable(this.modificable);
+        if (this.modificable) {
+            aboutMeWebView.getEngine().loadContent("<body contenteditable=\"true\" style=\"display: inline-block;\">" + ClientInterface.getLog().getAboutMe() + "</body>");
+        }
+        else {
+            String aboutMe = (String) aboutMeWebView.getEngine().executeScript("decodeURI(document.body.innerHTML)");
+            System.out.println(aboutMe);
+            aboutMeWebView.getEngine().loadContent(aboutMe);
+        }
+
+    }
+
+    @FXML
+    public void eventButtonModify(MouseEvent mouseEvent) throws IOException {
+        if (!modificable) {
+            lockModifyText(false);
+            button_modify.setText("Save");
+        } else {
+            lockModifyText(true);
+            User user = ClientInterface.getLog();
+            String aboutMe = (String) aboutMeWebView.getEngine().executeScript("decodeURI(document.body.innerHTML)");
+            aboutMeWebView.getEngine().loadContent(aboutMe);
+            user.setAboutMe(aboutMe);
+            user.setLocation(locationLabel.getText());
+            user.setWebsiteURL(webSiteLabel.getText());
+
+            button_modify.setText("Modify");
+            serverConnectionManager.send(
+                    new MessageUser(
+                            Opcode.Message_Update_User_data, user
+                    )
+            );
+        }
+    }
+
 }
