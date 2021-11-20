@@ -70,4 +70,7 @@ public class ControllerSignInInterface {
     }
 
 
+    public void eventBack(ActionEvent actionEvent) {
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+    }
 }

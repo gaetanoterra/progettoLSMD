@@ -344,7 +344,6 @@ public class DocumentDBManager {
     //restituisco gli id degli utenti più esperti
     public String[] findTopExpertsByTag(String tag, int num){
         ArrayList<String> userIdList = new ArrayList<>();
-        ArrayList<User> userList = new ArrayList<>();
 
         Bson matchTag = match(eq("Tags", tag));
         Bson unwindAnswers = unwind("$Answers");
@@ -364,7 +363,7 @@ public class DocumentDBManager {
                         limitStage
                 )
         ).forEach(doc ->
-                userIdList.add(doc.getString("Answer.OwnerDisplayName"))
+                userIdList.add(doc.getString("_id"))
         );
 
         /*usersCollection.find(in("Id", userIdList.toArray(new String[userIdList.size()]))).forEach(document -> {
@@ -548,6 +547,7 @@ public class DocumentDBManager {
                     doc.getString("OwnerUserId"),
                     doc.getList("Tags", String.class)
             );
+            System.out.println(p);
             posts.add(p);
         });
 
@@ -615,7 +615,7 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class));
-                            p.setViews(Long.parseLong(doc.getString("ViewCount")));
+                            p.setViews(doc.getLong("ViewCount"));
                             postArrayList.add(p);
                         }
         );
@@ -839,13 +839,16 @@ public class DocumentDBManager {
         usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followedNumber", -1));
     }
 
-    /*
     //seleziono l'id del post e non della risposta per poi poter aprire il post
-    public ArrayList<Post> getAnswers(String displayName) {
+    /*public ArrayList<Post> getUserAnswer(String displayName) {
         ArrayList<Post> answers = new ArrayList<>();
-        this.postsCollection.find(all("Answers.OwnerDisplayName", displayName)).forEach(doc -> {
+
+        Bson matchOwner = match(eq("Answers.OwnerDisplayName", displayName));
+        Bson unwindAnser = unwind("$Answers");
+        Bson matchOwner2 = match(eq("Answers.OwnerDisplayName", displayName));
+
+        this.postsCollection.aggregate(Arrays.asList(unwindAnser, matchOwner)).forEach(doc -> {
             System.out.println(doc);
-            System.out.println(doc.getString("Answers[0]"));
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     null,
@@ -862,9 +865,8 @@ public class DocumentDBManager {
 
         System.out.println("found " + answers.size() + " posts matching the username given as input");
         return answers;
-    }
+    }*/
 
-     */
     //TODO: possibili analytics
     //TODO
     //TODO

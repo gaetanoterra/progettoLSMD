@@ -3,6 +3,7 @@ package it.unipi.dii.client.controllers;
 import it.unipi.dii.Libraries.Post;
 
 import it.unipi.dii.client.ClientInterface;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 

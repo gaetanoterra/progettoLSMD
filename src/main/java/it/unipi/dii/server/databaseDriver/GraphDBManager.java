@@ -267,7 +267,7 @@ public class GraphDBManager {
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (a:Answer {answerId: $answerId}), " +
-                                "(q:Question {questionId: $questionId}) " +
+                                "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (a)-[:ANSWERS_TO]->(q); ",
                         parameters("answerId", answer.getAnswerId(), "questionId", postId));
                 return null;
@@ -300,20 +300,20 @@ public class GraphDBManager {
     public void insertPost(Post post){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
-               tx.run("CREATE (q:Question {questionId: $questionId}); ",
-                       parameters("questionId", post.getPostId()));
+               tx.run("CREATE (q:Question {QuestionId: $questionId, Title: $title}); ",
+                       parameters("questionId", post.getPostId(), "title", post.getTitle()));
                return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
-                                "(q:Question {questionId: $questionId}) " +
+                                "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (u)-[:POSTS_QUESTION]->(q); ",
                         parameters("userId", post.getOwnerUserId(), "questionId", post.getPostId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (q:Question {questionId: $questionId}) " +
-                                "FOREACH (tagName IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {name: tagName})); ",
+                tx.run("MATCH (q:Question) WHERE q.QuestionId = $questionId " +
+                                "FOREACH (name IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {tagNames : name})); ",
                         parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
                 return null;
             });
@@ -359,7 +359,7 @@ public class GraphDBManager {
                return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
+                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {QuestionId: $questionId}) " +
                                 "DELETE r; ",
                         parameters( "questionId", postId, "answerId", answer.getAnswerId()));
                 return null;
@@ -394,20 +394,20 @@ public class GraphDBManager {
          */
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
+                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {QuestionId: $questionId}) " +
                                 "DETACH DELETE a; ",
                         parameters("questionId", post.getPostId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-               tx.run("MATCH (q:Question {questionId: $questionId}) " +
+               tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                        "DETACH DELETE q; ",
                        parameters("questionId", post.getPostId()));
                return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (t:Tag) " +
-                                "WHERE t.name in $tagList AND WHERE NOT (t)<-[:CONTAINS_TAG]-() " +
+                                "WHERE t.tagNames in $tagList AND NOT (t)<-[:CONTAINS_TAG]-() " +
                                 "DELETE t; ",
                         parameters("tagList", post.getTags()));
                 return null;

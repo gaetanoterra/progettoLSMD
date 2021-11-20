@@ -62,6 +62,10 @@ public class ServerConnectionManager extends Thread {
                         ClientInterface.registrationResponseHandler(messageSignUp);
                         break;
 
+                    case Message_Post:
+                        ClientInterface.fillProfileInterface(getLoggedUser());
+                        break;
+
                     case Message_Get_Experts:
                         MessageGetExpertsByTag messageGetExpertsByTag = (MessageGetExpertsByTag) message;
                         ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getUsersList());

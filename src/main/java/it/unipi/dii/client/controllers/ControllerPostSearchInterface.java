@@ -6,6 +6,7 @@ import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -79,7 +80,7 @@ public class ControllerPostSearchInterface {
 
     //metodo per inserire i post nel panello
     public void fillPostPane(ArrayList<Post> postArrayList) {
-        this.postObservableList.setAll(postArrayList);
+        Platform.runLater(()->{this.postObservableList.setAll(postArrayList);});
     }
 
     @FXML

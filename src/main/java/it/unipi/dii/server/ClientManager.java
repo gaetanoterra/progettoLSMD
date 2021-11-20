@@ -99,6 +99,8 @@ public class ClientManager extends Thread{
                             case Delete -> dbManager.removePost(post);
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
                         }
+
+                        send(msgPost);
                         break;
 
                     case Message_Answer:

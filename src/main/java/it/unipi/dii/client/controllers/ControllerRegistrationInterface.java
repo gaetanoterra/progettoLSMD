@@ -68,4 +68,8 @@ public class ControllerRegistrationInterface {
     public void setErroneousUserName(){
       //  userNameTextField.set
     }
+
+    public void eventAnnnul(ActionEvent actionEvent) {
+        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+    }
 }
