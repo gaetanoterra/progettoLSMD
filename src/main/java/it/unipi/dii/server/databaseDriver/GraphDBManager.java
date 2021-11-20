@@ -36,7 +36,7 @@ public class GraphDBManager {
                 @Override
                 public List<Record> execute (Transaction tx){
                     return tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
-                                    "RETURN t.tagNames as Name, count(*) AS NQuestions " +
+                                    "RETURN t.name as Name, count(*) AS NQuestions " +
                                     "ORDER BY NQuestions DESC " +
                                     "LIMIT 10").list();
                 }
@@ -258,7 +258,9 @@ public class GraphDBManager {
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
-                                "FOREACH (tagName IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {name: tagName})); ",
+                                "UNWIND $tagList as tagName " +
+                                "MERGE (t:Tag {name: tagName}) " +
+                                "MERGE (q)-[:CONTAINS_TAG]->(t);",
                         parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
                 return null;
             });
