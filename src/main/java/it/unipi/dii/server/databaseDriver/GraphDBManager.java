@@ -260,7 +260,7 @@ public class GraphDBManager {
                 tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                                 "UNWIND $tagList as tagName " +
                                 "MERGE (t:Tag {name: tagName}) " +
-                                "CREATE (q)-[:CONTAINS_TAG]->(t);",
+                                "MERGE (q)-[:CONTAINS_TAG]->(t);",
                         parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
                 return null;
             });
