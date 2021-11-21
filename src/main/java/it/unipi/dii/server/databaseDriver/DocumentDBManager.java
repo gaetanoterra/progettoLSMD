@@ -800,6 +800,7 @@ public class DocumentDBManager {
     public boolean removeUser(String userId){
         //addio utente
         usersCollection.deleteOne(eq("_id", new ObjectId(userId)));
+        postsCollection.deleteMany(eq("OwnerUserId", userId));
         //addio post scritti da lui
         //TODO: Rimuovere tutti i post dell'utente
         return true;

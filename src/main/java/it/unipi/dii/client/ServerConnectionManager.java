@@ -2,6 +2,7 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
+import it.unipi.dii.client.controllers.ControllerPostSearchInterface;
 import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
@@ -68,6 +69,7 @@ public class ServerConnectionManager extends Thread {
                         switch (messageUser.getOperation()){
                             case Create -> {}
                             case Delete -> {if (messageUser.getUser() == null){
+                                                ClientInterface.resetPostSearchInterface();
                                                 ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
                                             }
                                             else {

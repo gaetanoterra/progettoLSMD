@@ -48,8 +48,11 @@ public class ClientInterface extends Application{
 
     //rischio loop con la pagina answer e post
     public static void switchScene(PageType idx){
-        mainStage.setScene(scenes[idx.ordinal()]);
-        mainStage.show();
+        Platform.runLater(()->{
+            mainStage.setScene(scenes[idx.ordinal()]);
+            mainStage.show();
+        });
+
     }
 
 

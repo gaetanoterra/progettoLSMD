@@ -312,11 +312,19 @@ public class GraphDBManager {
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (q:Question) WHERE q.QuestionId = $questionId " +
-                                "FOREACH (name IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {tagNames : name})); ",
+                tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
+                                "UNWIND $tagList as tagName " +
+                                "MERGE (t:Tag {tagNames: tagName}) " +
+                                "MERGE (q)-[:CONTAINS_TAG]->(t);",
                         parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
                 return null;
             });
+            /*session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("FOREACH (name IN $tagList | collect(name) as nodelist " +
+                                "CALL apoc.refactor.mergeNodes(nodelist) YIELD node RETURN node)",
+                        parameters("tagList", post.getTags()));
+                return null;
+            });*/
         }
     }
 
@@ -429,10 +437,17 @@ public class GraphDBManager {
     public void removeUser(String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOWS]-(:User), " +
-                "(u)-[:POSTS_QUESTION]->(q:Question), " +
-                "(u)-[:POSTS_ANSWER]->(a:Answer), " +
-                "DETACH DELETE u, q, a;",
+                tx.run("MATCH (u:User)-[:POSTS_QUESTION]->(q:Question) WHERE u.userId = $userId detach delete q;",
+                        parameters("userId", userId));
+                return null;
+            });
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MATCH (u:User)-[:POSTS_ANSWER]->(a:Answer) WHERE u.userId = $userId detach delete a;",
+                        parameters("userId", userId));
+                return null;
+            });
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MATCH (u:User) WHERE u.userId = $userId detach delete u",
               parameters("userId", userId));
               return null;
             });
