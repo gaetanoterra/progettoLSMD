@@ -2,7 +2,6 @@ package it.unipi.dii.Libraries;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Post implements Serializable {

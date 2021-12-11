@@ -743,9 +743,17 @@ public class DocumentDBManager {
                 .append("Tags", post.getTags())
                 .append("ViewCount", post.getViews());
 
-        InsertOneResult result = postsCollection.insertOne(doc);
-        post.setPostId(result.getInsertedId().asObjectId().getValue().toString());
-        return result.wasAcknowledged();
+        try {
+            InsertOneResult result = postsCollection.insertOne(doc);
+            post.setPostId(result.getInsertedId().asObjectId().getValue().toString());
+            // set post id as the objectId
+            postsCollection.updateOne(eq("_id", result.getInsertedId().asObjectId().getValue()), set("Id", post.getPostId()));
+            return result.wasAcknowledged();
+        }
+        catch (MongoWriteException mwe) {
+            System.out.println("Post " + post.getPostId() + " already exists");
+            return false;
+        }
     }
 
     public boolean insertUser(User user){
@@ -837,11 +845,21 @@ public class DocumentDBManager {
         return true;
     }
 
-    public void updateVotesAnswer(String postId, String answerId, int vote) {
+    public void updateVotesAnswerAndReputation(String postId, String answerId, int changeVote) {
         postsCollection.updateOne(
                 and(eq("Id", postId), eq("Answers.Id", answerId)),
-                Updates.inc("Answers.$.Score", vote)
+                Updates.inc("Answers.$.Score", changeVote)
         );
+        List<Document> answerList = postsCollection.find(and(eq("Id", postId), eq("Answers.Id", answerId)))
+                .first()
+                .getList("Answers", Document.class);
+        for (Document answer: answerList) {
+            if (answer.getString("Id").equals(answerId)) {
+                usersCollection.updateOne(eq("Id", answer.getString("OwnerUserId")), inc("Reputation", changeVote));
+                break;
+            }
+        }
+
     }
 
 
@@ -856,6 +874,7 @@ public class DocumentDBManager {
         usersCollection.updateOne(eq("Id", userIdFollower), inc("followerNumber", -1));
         usersCollection.updateOne(eq("Id", userIdFollowed), inc("followedNumber", -1));
     }
+
 
     //TODO: possibili analytics
     //TODO

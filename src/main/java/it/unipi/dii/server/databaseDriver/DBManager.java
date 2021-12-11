@@ -165,12 +165,12 @@ public class DBManager {
      */
     // se voto su/giu, e non ho votato -> punteggio + voto, e tipo voto registrato
     // se voto su/giu e ho votato -> altra situazione, e tipo voto aggiornato
-    public boolean insertRelationVote(String userId, String answerId, String postId, int voteAnswer){
-        int previousVote = graphDBManager.getVote(userId, answerId);
+    public boolean insertRelationVote(String userIdVoter, String answerId, String postId, int voteAnswer){
+        int previousVote = graphDBManager.getVote(userIdVoter, answerId);
         if (previousVote == 0) {
             //niente voto -> registro normalmente
-            documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
-            graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
+            documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
+            graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
         }
         else {
             // esiste già un voto -> eliminare quello precedente e inserire quello nuovo
@@ -178,12 +178,12 @@ public class DBManager {
             // se previousVote == -1 e voto == +1 -> voto answer += 2 e aggiorno relazione con nuovo voto
             // se previousVote == 1 e voto == -1 -> voto answer += -2 e aggiorno relazione con nuovo voto
             if (previousVote == voteAnswer) {
-                documentDBManager.updateVotesAnswer(postId, answerId, -voteAnswer);
-                graphDBManager.removeRelationVote(userId, answerId);
+                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, -voteAnswer);
+                graphDBManager.removeRelationVote(userIdVoter, answerId);
             }
             else {
-                documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer - previousVote);
-                graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
+                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer - previousVote);
+                graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
             }
         }
 
@@ -191,7 +191,7 @@ public class DBManager {
     }
     public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
         //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo e aggiornarlo
-        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
+        documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
         graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }
