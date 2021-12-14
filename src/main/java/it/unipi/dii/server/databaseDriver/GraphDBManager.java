@@ -85,14 +85,14 @@ public class GraphDBManager {
             });
         }
     }
-
+    //TODO: Non e' utilizzata, controllare se necessaria e rimuovere
     public ArrayList<Post> findUserPosts(){
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
                 Result result = tx.run("""
-                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question) <-[:BELONGS_TO]-
-                                        (a:Answer) RETURN q.Title as title, count(a) as number_of_answers
+                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question)<-[:BELONGS_TO]-(a:Answer) 
+                                        RETURN q.Title as title, count(a) as number_of_answers
                                         """);
                 ArrayList<Post> posts = new ArrayList<>();
                 while(result.hasNext())
@@ -107,6 +107,7 @@ public class GraphDBManager {
         }
     }
 
+    //TODO: Non e' utilizzata, controllare se necessaria e rimuovere
     public ArrayList<Answer> findUserAnswers(){
         try (Session session = dbConnection.session())
         {
@@ -376,7 +377,7 @@ public class GraphDBManager {
 
     public int getVote(String userId, String answerId){
         try(Session session = dbConnection.session()){
-            int voto = (int) session.readTransaction(tx -> {
+            return session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId}) " +
                                 "return r.VoteTypeId as Voto LIMIT 1",
                         parameters("userId", userId, "answerId", answerId));
@@ -386,7 +387,6 @@ public class GraphDBManager {
                 }
                 return 0;
             });
-            return voto;
         }
     }
 

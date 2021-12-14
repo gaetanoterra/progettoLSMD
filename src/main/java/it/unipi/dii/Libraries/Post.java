@@ -16,7 +16,6 @@ public class Post implements Serializable {
     private List<String> tags;
     private Long views;
 
-
     private int answersNumber;
 
     public Post(){
