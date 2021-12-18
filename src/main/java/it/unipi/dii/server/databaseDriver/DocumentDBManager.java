@@ -7,7 +7,9 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
+import org.bson.BsonDocument;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
 import java.time.Instant;
@@ -583,15 +585,50 @@ public class DocumentDBManager {
         usersCollection.updateOne(eq("_id", new ObjectId(userIdFollowed)), inc("followedNumber", -1));
     }
 
-    //TODO: possibili analytics
-    //TODO
-    //TODO
-    //TODO
-    //TODO
-    //trovare la location più social, cioè trovare le location dove gli utenti hanno più followers e followed
+    /*
+        db.Posts.aggregate(
+            [
+                { $unwind: { path:"$Tags" } },
+                { $group:  { _id:"$Tags", tagsNo: { $count: {} } } },
+                { $sort:   { "tagsNo": -1 } }
+            ]
+        );
+        [
+          { _id: 'c#', tagsNo: 9540 },
+          { _id: '.net', tagsNo: 7174 },
+          { _id: 'java', tagsNo: 5284 },
+          { _id: 'asp.net', tagsNo: 4649 },
+          { _id: 'c++', tagsNo: 3830 },
+          { _id: 'javascript', tagsNo: 3409 },
+          { _id: 'php', tagsNo: 2794 },
+          { _id: 'python', tagsNo: 2606 },
+          { _id: 'sql-server', tagsNo: 2537 },
+          { _id: 'sql', tagsNo: 2523 },
+          { _id: 'windows', tagsNo: 1842 },
+          { _id: 'html', tagsNo: 1770 },
+          { _id: 'visual-studio', tagsNo: 1529 },
+          { _id: 'database', tagsNo: 1508 },
+          { _id: 'mysql', tagsNo: 1464 },
+          { _id: 'c', tagsNo: 1437 },
+          { _id: 'jquery', tagsNo: 1279 },
+          { _id: 'asp.net-mvc', tagsNo: 1216 },
+          { _id: 'css', tagsNo: 1185 },
+          { _id: 'xml', tagsNo: 1176 }
+        ]
 
-    //trovare possibili troll, cioè utenti che hanno tante risposte (rispondono tanto) ma che hanno poche risposte accettate
-    /* quindi devo trovare per ogni utente tutte le sue risposte e per ogni utente tutte le risposte accettate date da lui
-    * perciò in una prima query faccio un unwind sulle Answers e raggruppo sull'Answers.OwnerUserId sommando le risposte => ho il numero totale di risposte per ogni utenre
-    * in un'altra query per ogni utente trovato sopra*/
+    */
+    public Map<String,Integer> findMostPopularTags(){
+        HashMap<String,Integer> mostPopularTagsHashMap = new HashMap<>();
+        postsCollection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$Tags"),
+                        Aggregates.group("$Tags", new BsonField("tagsNo", Aggregates.count())),
+                        Aggregates.sort(Sorts.descending("tagsNo"))
+                )
+        ).forEach(doc -> mostPopularTagsHashMap.put(doc.getString("_id"), doc.getInteger("tagsNo")));
+        return  mostPopularTagsHashMap;
+    }
+
+
 }
+

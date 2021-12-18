@@ -49,21 +49,6 @@ public class GraphDBManager {
             return tags;
         }
 
-        /*try (Session session = dbConnection.session())
-        {
-            return session.readTransaction(tx -> {
-                Map<String, Integer> tags = new HashMap<>();
-                tx.run(
-                        "MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
-                        "RETURN t.tagNames as Name, count(*) AS NQuestions " +
-                        "ORDER BY NQuestions DESC " +
-                        "LIMIT 10; "
-                ).stream().forEach(record ->
-                        tags.put(record.get("Name").asString(), record.get("NQuestions").asInt())
-                );
-                return tags;
-            });
-        }*/
     }
 
     //TODO: Su graphdb la query per cercare le risposte più votate non è utilizzata
@@ -409,7 +394,7 @@ public class GraphDBManager {
 
     /*
     The following query outputs data in this format
-                                                             NUMBER
+                                                              NUMBER
                     NUMBER                                OF QUESTIONS USER
                       OF                                ANSWERED CONTAINING THE
       USERNAME     FOLLOWERS                              CORRESPONDING TAG
@@ -421,7 +406,7 @@ public class GraphDBManager {
     │"Rob"      │648           │"c++"                   │69              │
     ├───────────┼──────────────┼────────────────────────┼────────────────┤
     │"Brian"    │948           │"c#"                    │54              │
-    ├───────────┼──────────────┼────────────────────────┼────────────────┤
+    ╘════════════════════════════════════════════════════════════════════╛
 
     I decided to use a Post object as the key because it encapsulate both username and follower number.
     Each user has a lists of Pair containing a post object whose only significant attribute is the tag list, namely
@@ -485,8 +470,7 @@ public class GraphDBManager {
     │"Brian"    │"Continue Considered Harmful?"                                                         │16          │
     ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
     │"Brian"    │"What features do you wish were in common languages?"                                  │14          │
-    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
-
+    ╘════════════════════════════════════════════════════════════════════════════════════════════════════════════════╛
 
    */
 
@@ -507,17 +491,17 @@ public class GraphDBManager {
     public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
         String query =
                 """
-                        MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
-                        WITH topUsers.displayName as top_users, count(*) as folllower_no
-                        ORDER BY folllower_no DESC LIMIT 10
-                        CALL  {
-                            WITH top_users
-                            MATCH (a:Answer)-[b_to:BELONGS_TO] ->(quest:Question)<-[pq:POSTS_QUESTION]-(u:User{displayName:top_users})
-                            WITH u.displayName as t_users, quest.Title as title,  count(*) as answers_no
-                            ORDER BY u.displayName, answers_no DESC LIMIT 3
-                            RETURN title, answers_no
-                        }
-                        RETURN top_users, title, answers_no        
+                MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
+                WITH topUsers.displayName as top_users, count(*) as folllower_no
+                ORDER BY folllower_no DESC LIMIT 10
+                CALL {
+                    WITH top_users
+                    MATCH (a:Answer)-[b_to:BELONGS_TO]->(quest:Question)<-[pq:POSTS_QUESTION]-(u:User{displayName:top_users})
+                    WITH u.displayName as t_users, quest.Title as title, count(*) as answers_no
+                    ORDER BY u.displayName, answers_no DESC LIMIT 3
+                    RETURN title, answers_no
+                }
+                RETURN top_users, title, answers_no        
                 """;
 
         try(Session session = dbConnection.session()){
