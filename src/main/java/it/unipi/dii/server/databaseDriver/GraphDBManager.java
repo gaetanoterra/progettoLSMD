@@ -3,6 +3,7 @@ package it.unipi.dii.server.databaseDriver;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
+import javafx.util.Pair;
 import org.neo4j.driver.*;
 import java.util.*;
 import static org.neo4j.driver.Values.parameters;
@@ -403,6 +404,138 @@ public class GraphDBManager {
                 return 0;
             });
             return voto;
+        }
+    }
+
+    /*
+    The following query outputs data in this format
+                                                             NUMBER
+                    NUMBER                                OF QUESTIONS USER
+                      OF                                ANSWERED CONTAINING THE
+      USERNAME     FOLLOWERS                              CORRESPONDING TAG
+    ╒═══════════╤══════════════╤════════════════════════╤════════════════╕
+    │"top_users"│"folllower_no"│"tag_names"             │"tags_top_users"│
+    ╞═══════════╪══════════════╪════════════════════════╪════════════════╡
+    │"Brian"    │948           │"python"                │112             │
+    ├───────────┼──────────────┼────────────────────────┼────────────────┤
+    │"Rob"      │648           │"c++"                   │69              │
+    ├───────────┼──────────────┼────────────────────────┼────────────────┤
+    │"Brian"    │948           │"c#"                    │54              │
+    ├───────────┼──────────────┼────────────────────────┼────────────────┤
+
+    I decided to use a Post object as the key because it encapsulate both username and follower number.
+    Each user has a lists of Pair containing a post object whose only significant attribute is the tag list, namely
+    a list with only one element(the one in the "tag_names" column above) and an integer corresponding  to the "tags_top_users"
+    field.
+   */
+
+    public HashMap<User, ArrayList<Pair<Post, Integer>>> findHotTopicsForTopUsers(){
+        String query =
+                """
+                    MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
+                    WITH topUsers.displayName as t_us, count(*) as folllower_no
+                    ORDER BY folllower_no DESC LIMIT 10
+                    MATCH (t:Tag)<-[c_tag:CONTAINS_TAG]-(q:Question)<-[b_to:BELONGS_TO] -(a:Answer)
+                                <-[an_with:ANSWERS_WITH]-(u:User{displayName:t_us})
+                    WITH u.displayName as top_users, folllower_no, t.tagNames as tag_names, count(*) as tags_top_users
+                    ORDER BY tags_top_users  DESC
+                    RETURN top_users, folllower_no, tag_names, tags_top_users
+                    LIMIT 50
+                """;
+
+        try(Session session = dbConnection.session()){
+           return  session.readTransaction(tx -> {
+                HashMap<User, ArrayList<Pair<Post, Integer>>>  hotTopicsForTopUsersHashMap = new HashMap<>();
+                Result result = tx.run(query);
+                while (result.hasNext()) {
+                    User u = new User()
+                            .setFollowersNumber(result.next().get("folllower_no").asInt())
+                            .setDisplayName(result.next().get("top_users").asString());
+                    ArrayList<String> l = new ArrayList<>();
+                    l.add(result.next().get("tag_names").asString());
+                    Post p = new Post().setTags(l);
+                    if(!hotTopicsForTopUsersHashMap.containsKey(u)){
+                        hotTopicsForTopUsersHashMap.put(u, new ArrayList<Pair<Post, Integer>>());
+                    }
+
+                    ((ArrayList<Pair<Post, Integer>>)hotTopicsForTopUsersHashMap.get(u)).add(
+                                                            new Pair(p, result.next().get("tags_top_users").asInt()));
+
+
+                }
+                return hotTopicsForTopUsersHashMap;
+            });
+        }
+    }
+
+     /*
+    The following query outputs data in this format
+
+    ╒═══════════╤═══════════════════════════════════════════════════════════════════════════════════════╤════════════╕
+    │"top_users"│"title"                                                                                │"answers_no"│
+    ╞═══════════╪═══════════════════════════════════════════════════════════════════════════════════════╪════════════╡
+    │"Matt"     │"What is your favourite MATLAB/Octave programming trick?"                              │21          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+    │"Matt"     │"Is there a difference between Select * and Select [list each col]"                    │18          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+    │"Matt"     │"Can you search SQL Server 2005 Stored Procedure content?"                             │13          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+    │"Brian"    │"What exactly do you do when your team leader is incompetent?"                         │19          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+    │"Brian"    │"Continue Considered Harmful?"                                                         │16          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+    │"Brian"    │"What features do you wish were in common languages?"                                  │14          │
+    ├───────────┼───────────────────────────────────────────────────────────────────────────────────────┼────────────┤
+
+
+   */
+
+
+    /*
+        MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
+        WITH topUsers.displayName as top_users, count(*) as folllower_no
+        ORDER BY folllower_no DESC LIMIT 10
+        CALL  {
+            WITH top_users
+            MATCH (a:Answer)-[b_to:BELONGS_TO] ->(quest:Question)<-[pq:POSTS_QUESTION]-(u:User{displayName:top_users})
+            WITH u.displayName as t_users, quest.Title as title,  count(*) as answers_no
+            ORDER BY u.displayName, answers_no DESC LIMIT 3
+            RETURN title, answers_no
+        }
+        RETURN top_users, title, answers_no
+     */
+    public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
+        String query =
+                """
+                        MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
+                        WITH topUsers.displayName as top_users, count(*) as folllower_no
+                        ORDER BY folllower_no DESC LIMIT 10
+                        CALL  {
+                            WITH top_users
+                            MATCH (a:Answer)-[b_to:BELONGS_TO] ->(quest:Question)<-[pq:POSTS_QUESTION]-(u:User{displayName:top_users})
+                            WITH u.displayName as t_users, quest.Title as title,  count(*) as answers_no
+                            ORDER BY u.displayName, answers_no DESC LIMIT 3
+                            RETURN title, answers_no
+                        }
+                        RETURN top_users, title, answers_no        
+                """;
+
+        try(Session session = dbConnection.session()){
+            return  session.readTransaction(tx -> {
+                HashMap<User, ArrayList<Post>> mostAnsweredTopUserPostsHashMap = new HashMap<>();
+                Result result = tx.run(query);
+                while (result.hasNext()) {
+                    User u = new User().setDisplayName(result.next().get("top_users").asString());
+                    Post p = new Post()
+                            .setTitle(result.next().get("title").asString())
+                            .setOwnerUserName(result.next().get("top_users").asString());
+                    if(!mostAnsweredTopUserPostsHashMap.containsKey(u)){
+                        mostAnsweredTopUserPostsHashMap.put(u, new ArrayList<Post>());
+                    }
+                    ((ArrayList<Post>)mostAnsweredTopUserPostsHashMap.get(u)).add(p);
+                }
+                return mostAnsweredTopUserPostsHashMap;
+            });
         }
     }
 

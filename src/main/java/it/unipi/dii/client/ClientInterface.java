@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -289,7 +290,7 @@ public class ClientInterface extends Application{
             controllerAnalysisInterface.fillExpertUsersList(users);
     }
 
-    public static void fillHotTopicsUsers(Map<User, Pair<String, Integer>[]> map){
+    public static void fillHotTopicsUsers(HashMap<User, ArrayList<Pair<Post, Integer>>> map){
         controllerAnalysisInterface.resetHotTopicsMap();
         controllerAnalysisInterface.fillHotTopicsMap(map);
     }

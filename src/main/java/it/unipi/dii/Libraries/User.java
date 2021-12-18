@@ -154,9 +154,7 @@ public class User implements Serializable {
 
     public static Date convertMillisToDate (long millis){
         Date data = new Date(millis);
-
         System.out.println(data);
-
         return data;
     }
 }

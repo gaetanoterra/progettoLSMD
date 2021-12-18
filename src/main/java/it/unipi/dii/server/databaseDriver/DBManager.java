@@ -32,13 +32,10 @@ public class DBManager {
     --------------------------- ANALYTICS ---------------------------
      */
     //TODO: questa va fatta con il graphDB
-    public Map<User, Post[]> findMostAnsweredTopUserPosts(){ return documentDBManager.findMostAnsweredTopUserPosts(); }
+    public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts(){ return graphDBManager.findMostAnsweredTopUserPosts(); }
 
     public String[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
-    //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
-    //per i most popular tags per lcation inserire nella pagina delle analytics una piechart che mostra i top 10, con una casella di testo per modificare la location
-    public String[] findMostPopularTagsByLocation(String location, int numTags){ return documentDBManager.findMostPopularTagsByLocation(location, numTags); }
 
     //TODO: Non esiste un messaggio per ottenere i tag più popolari in generale. Creare un opcode e un messagio per questo
     //per i most popular tags inserire nella pagina delle analytics una piechart che mostra i top 10
@@ -47,7 +44,7 @@ public class DBManager {
     //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
     public User[] getUsersRank(){ return documentDBManager.getUsersRank(); }
 
-    public Map<User, Pair<String, Integer>[]> findHotTopicsforTopUsers(){ return documentDBManager.findHotTopicsForTopUsers(); }
+    public HashMap<User, ArrayList<Pair<Post, Integer>>> findHotTopicsforTopUsers(){ return graphDBManager.findHotTopicsForTopUsers(); }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
@@ -107,20 +104,12 @@ public class DBManager {
     --------------------------- POSTS ---------------------------
      */
 
-    public ArrayList<Post> getPostByDate(String postCreationDateString) {
-        return documentDBManager.getPostByDate(postCreationDateString);
-    }
-
     public Post getPostById(String postId){
         return documentDBManager.getPostById(postId);
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
         return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
-    }
-
-    public ArrayList<Post> getPostsByTag(String[] tags){
-        return documentDBManager.getPostsByTag(tags);
     }
 
     public ArrayList<Post> getPostsByText(String text){

@@ -2,6 +2,7 @@ package it.unipi.dii.client.controllers;
 
 
 import it.unipi.dii.Libraries.Messages.*;
+import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
@@ -205,26 +206,12 @@ public class ControllerAnalysisInterface {
 
     public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
 
-    public void fillHotTopicsMap(Map<User, Pair<String, Integer>[]> map){
-        List<Pair<String, Integer>[]> lista = new ArrayList<>(map.values());
-        for (User u:map.keySet()) {
-            Map<String, String> rawData = new HashMap<>();
-            Pair<String, Integer>[] elem = lista.remove(0);
-            String s = "";
+    public void fillHotTopicsMap(HashMap<User, ArrayList<Pair<Post, Integer>>> map){
 
-            for (Pair<String, Integer> e:elem) {
-                s = s + e.getKey() + "(" + e.getValue() + ") ";
-            }
-
-            rawData.put("User", u.getDisplayName());
-            rawData.put("Tags", s);
-
-            hotTopicsObservableMap.add(rawData);
-        }
-
-        table_view_hot_topics.setItems(hotTopicsObservableMap);
     }
+    /*
 
+    */
     public void eventShowHotUser(MouseEvent mouseEvent) {
 
         //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);

@@ -178,11 +178,6 @@ public class ClientManager extends Thread{
                         ArrayList<Post>  postArrayList = new ArrayList<>();
 
                         switch (msgParameter.getParameter()) {
-                            case Date -> postArrayList = dbManager.getPostByDate(msgParameter.getValue());
-                            case Tags -> {
-                                String[] tags = msgParameter.getValue().split(";");
-                                postArrayList.addAll(dbManager.getPostsByTag(tags));
-                            }
                             case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
@@ -208,7 +203,7 @@ public class ClientManager extends Thread{
 
                     case Message_Get_Top_Users_Posts:
                         send(new MessageGetTopUsersPosts(
-                                (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts()));
+                                (HashMap<User, ArrayList<Post>>)dbManager.findMostAnsweredTopUserPosts()));
                         break;
 
                     case Message_Update_User_data:
@@ -222,12 +217,6 @@ public class ClientManager extends Thread{
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) msg;
                         messageAnalyticMPTags.setTags(dbManager.findMostPopularTags());
                         send(messageAnalyticMPTags);
-                        break;
-
-                    case Message_Analytics_Most_Popular_Tags_Location:
-                        MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) msg;
-                        messageAnalyticMPTagsLocation.setTags(dbManager.findMostPopularTagsByLocation(messageAnalyticMPTagsLocation.getLocation(), messageAnalyticMPTagsLocation.getNumTags()));
-                        send(messageAnalyticMPTagsLocation);
                         break;
 
                     case Message_Analytics_User_Rank:
