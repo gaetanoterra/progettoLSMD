@@ -846,13 +846,12 @@ public class DocumentDBManager {
 
         Bson matchOwner = match(eq("Answers.OwnerDisplayName", displayName));
         Bson unwindAnswer = unwind("$Answers");
-        Bson matchOwner2 = match(eq("Answers.OwnerDisplayName", displayName));
 
         this.postsCollection.aggregate(Arrays.asList(unwindAnswer, matchOwner)).forEach(doc -> {
             System.out.println(doc.get("Answers"));
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
-                    null,
+                    ((Document) doc.get("Answers")).getString("Id"),
                     null,
                     ((Document) doc.get("Answers")).getLong("CreationDate"),
                     ((Document) doc.get("Answers")).getString("Body"),

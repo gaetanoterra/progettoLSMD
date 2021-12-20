@@ -74,7 +74,7 @@ public class ControllerProfileInterface {
         this.myPostsListView.setCellFactory(plv->new ControllerMyQuestionViewCell(PageType.PROFILE_INTERFACE));
 
         this.list_view_answers.setItems(this.answersObservableList);
-        this.list_view_answers.setCellFactory((plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE)));
+        this.list_view_answers.setCellFactory((plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE, serverConnectionManager)));
 
         this.list_view_correlated_users.setItems(this.userCorrelatedObservableList);
 
