@@ -61,13 +61,26 @@
          </HBox>
          <TabPane prefHeight="446.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-               <Tab text="Your Posts">
+               <Tab text="My Posts">
                   <content>
                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
                            <VBox>
                               <children>
                                  <ListView fx:id="myPostsListView" maxHeight="1.7976931348623157E308" prefHeight="385.0" prefWidth="800.0" />
+                              </children>
+                           </VBox>
+                        </children>
+                     </AnchorPane>
+                  </content>
+               </Tab>
+               <Tab text="My Answers">
+                  <content>
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <children>
+                           <VBox>
+                              <children>
+                                 <ListView fx:id="list_view_answers" orientation="VERTICAL" prefHeight="385.0" prefWidth="800.0" />
                               </children>
                            </VBox>
                         </children>

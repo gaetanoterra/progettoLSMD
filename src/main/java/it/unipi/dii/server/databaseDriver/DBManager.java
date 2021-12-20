@@ -164,9 +164,9 @@ public class DBManager {
         return true;
     }
 
-    /*public ArrayList<Post> getUserAnswer(String username){
+    public ArrayList<Post> getUserAnswer(String username){
         return documentDBManager.getUserAnswer(username);
-    }*/
+    }
 
     /*
     --------------------------- VOTES ---------------------------

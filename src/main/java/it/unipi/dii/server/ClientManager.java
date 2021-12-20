@@ -272,6 +272,12 @@ public class ClientManager extends Thread{
                         messageGetRecommendedUsers.setUsers(dbManager.getRecommendedUsers(messageGetRecommendedUsers.getDisplayName(), messageGetRecommendedUsers.getTag()));
                         send(messageGetRecommendedUsers);
                         break;
+
+                    case Message_Get_User_Answers:
+                        MessageGetAnswers messageGetAnswers = (MessageGetAnswers) msg;
+                        messageGetAnswers.setAnswerArrayList(dbManager.getUserAnswer(messageGetAnswers.getDisplayName()));
+                        send(messageGetAnswers);
+                        break;
                 }
             }
 

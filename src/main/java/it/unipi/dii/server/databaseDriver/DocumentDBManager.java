@@ -841,22 +841,22 @@ public class DocumentDBManager {
     }
 
     //seleziono l'id del post e non della risposta per poi poter aprire il post
-    /*public ArrayList<Post> getUserAnswer(String displayName) {
+    public ArrayList<Post> getUserAnswer(String displayName) {
         ArrayList<Post> answers = new ArrayList<>();
 
         Bson matchOwner = match(eq("Answers.OwnerDisplayName", displayName));
-        Bson unwindAnser = unwind("$Answers");
+        Bson unwindAnswer = unwind("$Answers");
         Bson matchOwner2 = match(eq("Answers.OwnerDisplayName", displayName));
 
-        this.postsCollection.aggregate(Arrays.asList(unwindAnser, matchOwner)).forEach(doc -> {
-            System.out.println(doc);
+        this.postsCollection.aggregate(Arrays.asList(unwindAnswer, matchOwner)).forEach(doc -> {
+            System.out.println(doc.get("Answers"));
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     null,
                     null,
-                    doc.getLong("Answers.CreationDate"),
-                    doc.getString("Answers.Body"),
-                    doc.getString("Answers.OwnerUserId"),
+                    ((Document) doc.get("Answers")).getLong("CreationDate"),
+                    ((Document) doc.get("Answers")).getString("Body"),
+                    ((Document) doc.get("Answers")).getString("OwnerUserId"),
                     null
             );
             System.out.println(p);
@@ -866,7 +866,7 @@ public class DocumentDBManager {
 
         System.out.println("found " + answers.size() + " posts matching the username given as input");
         return answers;
-    }*/
+    }
 
     //TODO: possibili analytics
     //TODO

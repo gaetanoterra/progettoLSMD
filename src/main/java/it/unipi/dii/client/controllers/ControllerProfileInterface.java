@@ -32,6 +32,9 @@ public class ControllerProfileInterface {
     private ListView<Post> myPostsListView;
     private ObservableList<Post> postObservableList;
     @FXML
+    private ListView<Post> list_view_answers;
+    private ObservableList<Post> answersObservableList;
+    @FXML
     private ListView<String> list_view_correlated_users;
     private ObservableList<String> userCorrelatedObservableList;
     @FXML
@@ -60,6 +63,7 @@ public class ControllerProfileInterface {
     public ControllerProfileInterface() {
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
         this.postObservableList = FXCollections.observableArrayList();
+        this.answersObservableList = FXCollections.observableArrayList();
         this.userCorrelatedObservableList = FXCollections.observableArrayList();
         this.userRecommendedObservableList = FXCollections.observableArrayList();
     }
@@ -68,6 +72,9 @@ public class ControllerProfileInterface {
     private void initialize() {
         this.myPostsListView.setItems(this.postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerMyQuestionViewCell(PageType.PROFILE_INTERFACE));
+
+        this.list_view_answers.setItems(this.answersObservableList);
+        this.list_view_answers.setCellFactory((plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE)));
 
         this.list_view_correlated_users.setItems(this.userCorrelatedObservableList);
 
@@ -79,6 +86,7 @@ public class ControllerProfileInterface {
 
     public void fillProfileInterface(User u) throws IOException {
         serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
         serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
 
         Platform.runLater(() -> {
@@ -98,6 +106,15 @@ public class ControllerProfileInterface {
         Platform.runLater(() -> {
             postObservableList.clear();
             postObservableList.addAll(posts);
+        });
+    }
+
+    public void fillAnswersUsers(ArrayList<Post> answers) {
+        Platform.runLater(() -> {
+            if (answers != null) {
+                answersObservableList.clear();
+                answersObservableList.addAll(answers);
+            }
         });
     }
 

@@ -111,6 +111,11 @@ public class ServerConnectionManager extends Thread {
                             ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
                         break;
 
+                    case Message_Get_User_Answers:
+                        MessageGetAnswers messageGetAnswers = (MessageGetAnswers) message;
+                        ClientInterface.fillAnswersUsers(messageGetAnswers.getAnswerArrayList());
+                        break;
+
                     case Message_Follow:
                         MessageFollow messageFollow = (MessageFollow) message;
                         switch (messageFollow.getOperation()){

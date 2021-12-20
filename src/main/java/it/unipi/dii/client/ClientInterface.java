@@ -222,6 +222,11 @@ public class ClientInterface extends Application{
     public static void fillPersonalRecommendedUsers(ArrayList<String> users){
         controllerProfileInterface.fillPersonalRecommendedUsers(users);
     }
+
+    public static void fillAnswersUsers(ArrayList<Post> answers){
+        controllerProfileInterface.fillAnswersUsers(answers);
+    }
+
     public static void loginResponseHandler(MessageLogin msg){
         controllerSignInInterface.handleLogInResponse(msg);
     }
