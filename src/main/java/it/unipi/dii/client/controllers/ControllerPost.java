@@ -20,13 +20,15 @@ public class ControllerPost {
     @FXML
     private ScrollPane scrollpane_body_post, scrollpane_answers_post;
 
-    public void eventAnswerPostInterface(ActionEvent actionEvent) throws IOException {
+    @FXML
+    public void eventAnswerPostInterface(ActionEvent actionEvent) {
         ClientInterface.switchScene(PageType.CREATE_ANSWER);
     }
 
     //quando faccio back posso tornare sia in anonymousInterface sia in profileInterface, a seconda che il post aperto sia scritto da me o meno, aggiustare la funzione
-    public void eventBackPostInterface(ActionEvent actionEvent) throws IOException {
-        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+    @FXML
+    public void eventBackPostInterface(ActionEvent actionEvent){
+        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 
     public void setPost(Post post){

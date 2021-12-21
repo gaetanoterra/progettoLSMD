@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
@@ -111,7 +110,7 @@ public class ControllerProfileInterface {
 
     @FXML
     public void switchToPostSearchInterface(Event event) {
-        ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 
 
@@ -119,7 +118,7 @@ public class ControllerProfileInterface {
         Platform.runLater(() -> {
             ClientInterface.resetLog();
             ClientInterface.resetPostSearchInterface();
-            ClientInterface.switchScene(PageType.POSTSEARCHINTERFACE);
+            ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
         });
     }
 

@@ -43,7 +43,7 @@ public class ClientInterface extends Application{
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
         mainStage = primaryStage;
-        switchScene(PageType.POSTSEARCHINTERFACE);
+        switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 
     //rischio loop con la pagina answer e post
@@ -57,7 +57,7 @@ public class ClientInterface extends Application{
         scenes = new Scene[PageType.values().length];
 
         FXMLLoader PostSearchInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
-        scenes[PageType.POSTSEARCHINTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
+        scenes[PageType.POST_SEARCH_INTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
         controllerPostSearchInterface = PostSearchInterfaceloader.getController();
 
         FXMLLoader signInInterfaceloader  = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
@@ -69,7 +69,7 @@ public class ClientInterface extends Application{
         controllerSignUpInterface = signupInterfaceloader.getController();
 
         FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
-        scenes[PageType.FULLPOST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
+        scenes[PageType.FULL_POST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
         controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
         FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
@@ -142,7 +142,7 @@ public class ClientInterface extends Application{
             e.printStackTrace();
         }
         controllerFullPostInterface.setLastPage(pageType);
-        ClientInterface.switchScene(PageType.FULLPOST);
+        ClientInterface.switchScene(PageType.FULL_POST);
     }
 
     public static void fillFullPostInterface(Post post){
@@ -303,7 +303,7 @@ public class ClientInterface extends Application{
 
     public static void loadExternalProfile(User user, PageType lastPageVisited) throws IOException {
         controllerExternalUserInterface.initialize(user, lastPageVisited);
-        Platform.runLater(() -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
+        Platform.runLater(() -> ClientInterface.switchScene(PageType.EXTERNAL_PROFILE));
     }
 
     public static void fillUserPostInterface(List<Post> posts, String username){
