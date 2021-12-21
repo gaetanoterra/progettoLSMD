@@ -1,7 +1,6 @@
 package it.unipi.dii.client.controllers;
 
 import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
-import it.unipi.dii.Libraries.Messages.Opcode;
 import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
@@ -13,10 +12,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.web.WebView;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 //classe preposta a gestire l'interfaccia del profilo utente
 public class ControllerExternalUserInterface {
@@ -68,7 +66,7 @@ public class ControllerExternalUserInterface {
             text_area_aboutme.setText(user.getAboutMe());
     }
 
-    public void fillExternalUserPosts(ArrayList<Post> posts){
+    public void fillExternalUserPosts(List<Post> posts){
         postObservableList.setAll(posts);
     }
 

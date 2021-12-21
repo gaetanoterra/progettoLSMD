@@ -51,8 +51,11 @@ public class ClientManager extends Thread{
                         if(user.getPassword() != null && user.getPassword().equals(password)){
                             loggedUser = user;
                             user.setLastAccessDate(Instant.now().toEpochMilli());
-                            dbManager.updateUserData(user);
                             send(new MessageLogin(user, StatusCode.Message_Ok));
+                            dbManager.updateUserData(user);
+                            if (user.isAdmin()) {
+                                System.out.println("Admin " + user.getDisplayName() + " logged in");
+                            }
                         }
                         else
                             send(new MessageLogin(null, StatusCode.Message_Fail));
@@ -103,11 +106,11 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin() || loggedUser.getUserId().equals(post.getOwnerUserId())) {
+                                if (loggedUser.isAdmin()) {
                                     dbManager.removePost(post);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
@@ -131,11 +134,11 @@ public class ClientManager extends Thread{
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin() || loggedUser.getUserId().equals(answer.getOwnerUserId())) {
+                                if (loggedUser.isAdmin()) {
                                     dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Answer " +
@@ -157,7 +160,7 @@ public class ClientManager extends Thread{
                                     dbManager.removeUser(user);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check type.");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_User " +

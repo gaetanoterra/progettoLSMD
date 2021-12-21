@@ -7,5 +7,5 @@ public class OpcodeNotValidException extends Exception{
     public OpcodeNotValidException(String message){
         super(message);
     }
-    public  OpcodeNotValidException(){super();}
+    public OpcodeNotValidException() {super();}
 }

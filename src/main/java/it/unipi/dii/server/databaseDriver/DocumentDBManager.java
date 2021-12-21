@@ -421,7 +421,7 @@ public class DocumentDBManager {
                     .setReputation(document.getInteger("Reputation"))
                     .setCreationDate(document.getLong("CreationDate"))
                     .setLastAccessDate(document.getLong("LastAccessDate"))
-                    .setType(document.getString("type"))
+                    .setIsAdmin(document.getBoolean("IsAdmin", false))
                     .setLocation(document.getString("Location"))
                     .setAboutMe(document.getString("AboutMe"))
                     .setWebsiteURL(document.getString("WebsiteUrl"));
@@ -638,7 +638,7 @@ public class DocumentDBManager {
                 .setReputation(userDoc.getInteger("Reputation"))
                 .setCreationDate(userDoc.getLong("CreationDate"))
                 .setLastAccessDate(userDoc.getLong("LastAccessDate"))
-                .setType(userDoc.getString("type"))
+                .setIsAdmin(userDoc.getBoolean("IsAdmin", false))
                 .setLocation(userDoc.getString("Location"))
                 .setAboutMe(userDoc.getString("AboutMe"))
                 .setWebsiteURL(userDoc.getString("WebsiteUrl"));
@@ -661,7 +661,7 @@ public class DocumentDBManager {
                     .setReputation(userDoc.getInteger("Reputation"))
                     .setCreationDate(userDoc.getLong("CreationDate"))
                     .setLastAccessDate(userDoc.getLong("LastAccessDate"))
-                    .setType(userDoc.getString("type"))
+                    .setIsAdmin(userDoc.getBoolean("IsAdmin", false))
                     .setLocation(userDoc.getString("Location"))
                     .setAboutMe(userDoc.getString("AboutMe"))
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"));
@@ -685,7 +685,7 @@ public class DocumentDBManager {
                     .setReputation(document.getInteger("Reputation"))
                     .setCreationDate(document.getLong("CreationDate"))
                     .setLastAccessDate(document.getLong("LastAccessDate"))
-                    .setType(document.getString("type"))
+                    .setIsAdmin(document.getBoolean("IsAdmin", false))
                     .setLocation(document.getString("Location"))
                     .setAboutMe(document.getString("AboutMe"))
                     .setWebsiteURL(document.getString("WebsiteUrl"));
@@ -757,7 +757,6 @@ public class DocumentDBManager {
     }
 
     public boolean insertUser(User user){
-
         Document userDoc = new Document("DisplayName", user.getDisplayName())
                 .append("Password", user.getPassword())
                 .append("CreationDate", user.getCreationDate())
@@ -767,8 +766,7 @@ public class DocumentDBManager {
                 .append("WebsiteUrl", user.getWebsiteURL())
                 .append("followedNumber", user.getFollowedNumber())
                 .append("followerNumber", user.getFollowersNumber())
-                .append("Reputation", user.getReputation())
-                .append("type", user.getType());
+                .append("Reputation", user.getReputation());
 
         try {
             InsertOneResult result = usersCollection.insertOne(userDoc);
@@ -835,7 +833,7 @@ public class DocumentDBManager {
         usersCollection.updateOne(
                 eq("Id", user.getUserId()),
                 Updates.combine(
-                        set("Password", user.getPassword()),
+                        set("LastAccessDate", user.getLastAccessDate()),
                         set("Location", user.getLocation()),
                         set("AboutMe", user.getAboutMe()),
                         set("WebsiteUrl", user.getWebsiteURL())

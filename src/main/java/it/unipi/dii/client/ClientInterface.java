@@ -15,7 +15,7 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -100,10 +100,10 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void fillPostSearchInterface(ArrayList<Post> postArrayList){
-        System.out.println("Updating Full Post interface with " + postArrayList.size() + " posts.");
+    public static void fillPostSearchInterface(List<Post> postList){
+        System.out.println("Updating Full Post interface with " + postList.size() + " posts.");
         controllerPostSearchInterface.resetInterface();
-        controllerPostSearchInterface.fillPostPane(postArrayList);
+        controllerPostSearchInterface.fillPostPane(postList);
     }
 
     public static ServerConnectionManager getServerConnectionManager() {
@@ -306,7 +306,7 @@ public class ClientInterface extends Application{
         Platform.runLater(() -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
     }
 
-    public static void fillUserPostInterface(ArrayList<Post> posts, String username){
+    public static void fillUserPostInterface(List<Post> posts, String username){
         if (loggedUser != null) {
             if (loggedUser.getDisplayName().equals(username))
                 fillPersonalUserPostInterface(posts);
@@ -317,11 +317,11 @@ public class ClientInterface extends Application{
             fillExternalUserPostInterface(posts);
     }
 
-    private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
+    private static void fillPersonalUserPostInterface(List<Post> posts) {
 
     }
 
-    public static void fillExternalUserPostInterface(ArrayList<Post> posts){
+    public static void fillExternalUserPostInterface(List<Post> posts){
         controllerExternalUserInterface.fillExternalUserPosts(posts);
     }
 }

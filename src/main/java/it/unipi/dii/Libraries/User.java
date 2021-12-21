@@ -14,8 +14,9 @@ public class User implements Serializable {
     private Integer reputation;
     private Long creationDate;
     private Long lastAccessDate;
-    // TODO utente admin dove?
-    private String type = "generic_user";
+    // utente admin DEVE essere aggiunto tramite modifica manuale sul DB, aggiungendo
+    // {IsAdmin: true} nel documento dell'utente
+    private boolean isAdmin;
     private String location;
     private String aboutMe;
     private String websiteURL;
@@ -40,10 +41,7 @@ public class User implements Serializable {
     }
 
     public boolean isAdmin() {
-        if (this.type != null) {
-            return this.type.equals("admin");
-        }
-        return false;
+        return this.isAdmin;
     }
 
     public String getUserId(){
@@ -72,10 +70,6 @@ public class User implements Serializable {
 
     public Long getLastAccessDate() {
         return this.lastAccessDate;
-    }
-
-    public String getType() {
-        return this.type;
     }
 
     public String getDisplayName(){
@@ -137,8 +131,8 @@ public class User implements Serializable {
         return this;
     }
 
-    public User setType(String type) {
-        this.type = type;
+    public User setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
         return this;
     }
 
