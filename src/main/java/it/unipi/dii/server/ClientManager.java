@@ -10,9 +10,7 @@ import java.io.*;
 import java.net.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 //prova branch-gaetano
@@ -46,7 +44,7 @@ public class ClientManager extends Thread{
                         String password = msgl.getUser().getPassword();
 
                         //chiedo al db i dati dell'utente corrispondente allo username
-                        User user = dbManager.getUserData(userDisplayName);
+                        User user = dbManager.getUserDataByUsername(userDisplayName);
                         //controllo se la password dello username trovato corrisponde a quella passata dal client
                         if(user.getPassword() != null && user.getPassword().equals(password)){
                             loggedUser = user;
@@ -70,8 +68,8 @@ public class ClientManager extends Thread{
                         MessageSignUp messageSignUp = (MessageSignUp)msg;
                         User signupUser = messageSignUp.getUser();
                         if(dbManager.insertUser(signupUser)){
-                            loggedUser = dbManager.getUserData(signupUser.getDisplayName());
-                            send(new MessageSignUp(dbManager.getUserData(signupUser.getDisplayName()), StatusCode.Message_Ok));
+                            loggedUser = dbManager.getUserDataByUsername(signupUser.getDisplayName());
+                            send(new MessageSignUp(dbManager.getUserDataByUsername(signupUser.getDisplayName()), StatusCode.Message_Ok));
                         }
                         else{
                             send(new MessageSignUp(StatusCode.Message_Fail));
@@ -107,6 +105,7 @@ public class ClientManager extends Thread{
                             }
                             case Delete -> {
                                 if (loggedUser.isAdmin()) {
+                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing post " + post.getPostId() + ".");
                                     dbManager.removePost(post);
                                 }
                                 else {
@@ -135,6 +134,7 @@ public class ClientManager extends Thread{
                             }
                             case Delete -> {
                                 if (loggedUser.isAdmin()) {
+                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing answer " + answer.getAnswerId() + ".");
                                     dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 }
                                 else {
@@ -157,6 +157,7 @@ public class ClientManager extends Thread{
                             case Create -> dbManager.insertUser(user);
                             case Delete -> {
                                 if (loggedUser.isAdmin()) {
+                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing user " + user.getUserId() + ".");
                                     dbManager.removeUser(user);
                                 }
                                 else {
@@ -232,10 +233,19 @@ public class ClientManager extends Thread{
 
                     case Message_Get_User_Data:
                         MessageGetUserData msgGetUserData = (MessageGetUserData)msg;
-                        User userToSearch = msgGetUserData.getObject().get(0);
-                        String displayName = userToSearch.getDisplayName();
-                        User userWithCompleteData = dbManager.getUserData(displayName);
-                        send(new MessageGetUserData(new ArrayList<>(List.of(userWithCompleteData)), msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
+                        User userToSearch = msgGetUserData.getObject();
+                        if (userToSearch.getDisplayName() != null) {
+                            String displayName = userToSearch.getDisplayName();
+                            User userWithCompleteData = dbManager.getUserDataByUsername(displayName);
+                            send(new MessageGetUserData(userWithCompleteData, msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
+                        }
+                        else if (userToSearch.getUserId() != null) {
+                            String userId = userToSearch.getUserId();
+                            User userWithCompleteData = dbManager.getUserDataById(userId);
+                            send(new MessageGetUserData(userWithCompleteData, msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
+                        }
+
+
                         break;
 
                     case Message_Get_Post_Data:
@@ -248,7 +258,7 @@ public class ClientManager extends Thread{
                             break;
                         }
                         send(new MessageGetTopUsersPosts(
-                                (HashMap<User, Post[]>)dbManager.findMostAnsweredTopUserPosts()));
+                                dbManager.findMostAnsweredTopUserPosts()));
                         break;
 
                     case Message_Update_User_data:

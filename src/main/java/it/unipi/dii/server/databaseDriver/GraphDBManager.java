@@ -32,15 +32,10 @@ public class GraphDBManager {
         try (Session session = dbConnection.session()){
             Map<String, Integer> tags = new HashMap<>();
 
-            List<Record> records = session.readTransaction(new TransactionWork<List<Record>>() {
-                @Override
-                public List<Record> execute (Transaction tx){
-                    return tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
-                                    "RETURN t.name as Name, count(*) AS NQuestions " +
-                                    "ORDER BY NQuestions DESC " +
-                                    "LIMIT 10").list();
-                }
-            });
+            List<Record> records = session.readTransaction(tx -> tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
+                            "RETURN t.name as Name, count(*) AS NQuestions " +
+                            "ORDER BY NQuestions DESC " +
+                            "LIMIT 10").list());
 
             for(final Record record : records){
                 tags.put(record.get("Name").asString(), record.get("NQuestions").asInt());
@@ -91,7 +86,7 @@ public class GraphDBManager {
         {
             return session.readTransaction(tx -> {
                 Result result = tx.run("""
-                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question)<-[:BELONGS_TO]-(a:Answer) 
+                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question)<-[:BELONGS_TO]-(a:Answer)
                                         RETURN q.Title as title, count(a) as number_of_answers
                                         """);
                 ArrayList<Post> posts = new ArrayList<>();
@@ -330,14 +325,14 @@ public class GraphDBManager {
          */
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(q:Question {QuestionId: $questionId}) " +
-                                "DETACH DELETE a, q; ",
+                tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
+                                "OPTIONAL MATCH (a:Answer)-[:ANSWERS_TO]->(q) DETACH DELETE a, q;",
                         parameters("questionId", post.getPostId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (t:Tag) " +
-                                "WHERE t.name in $tagList AND WHERE NOT (t)<-[:CONTAINS_TAG]-() " +
+                                "WHERE t.name in $tagList AND NOT (t)<-[:CONTAINS_TAG]-() " +
                                 "DELETE t; ",
                         parameters("tagList", post.getTags()));
                 return null;
@@ -359,10 +354,11 @@ public class GraphDBManager {
     public void removeUser(String userId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOW]-(:User), " +
-                "(u)-[:POSTS_QUESTION]->(q:Question)<-[:ANSWERS_WITH]-(a2:Answer), " +
-                "(u)-[:ANSWERS_WITH]->(a:Answer), " +
-                "DETACH DELETE u, q, a, a2; ",
+                tx.run("MATCH (u:User {userId: $userId}) " +
+                                "OPTIONAL MATCH (u)-[:POSTS_QUESTION]->(q:Question) " +
+                                "OPTIONAL MATCH (q)<-[:ANSWERS_WITH]-(a2:Answer) " +
+                                "OPTIONAL MATCH (u)-[:ANSWERS_WITH]->(a:Answer) " +
+                                "DETACH DELETE u, q, a, a2;",
               parameters("userId", userId));
               return null;
             });

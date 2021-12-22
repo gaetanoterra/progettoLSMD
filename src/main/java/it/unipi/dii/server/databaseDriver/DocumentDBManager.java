@@ -471,10 +471,24 @@ public class DocumentDBManager {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(eq("CreationDate", data)).forEach(doc -> {
+            List<Answer> answersList = new ArrayList<>();
+            doc.getList("Answers", Document.class).forEach((answerDocument) -> {
+                answersList.add(
+                        new Answer(
+                                answerDocument.getString("Id"),
+                                answerDocument.getLong("CreationDate"),
+                                answerDocument.getInteger("Score"),
+                                answerDocument.getString("OwnerUserId"),
+                                answerDocument.getString("OwnerDisplayName"),
+                                answerDocument.getString("Body"),
+                                doc.getString("Id")
+                        )
+                );
+            });
             Post p = new Post(
                     doc.getString("Id"),
                     doc.getString("Title"),
-                    doc.getList("Answers", Answer.class),
+                    answersList,
                     doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
@@ -488,7 +502,7 @@ public class DocumentDBManager {
 
     public Post getPostById(String postId){
 
-        ArrayList<Answer> answersList = new ArrayList<>();
+        List<Answer> answersList = new ArrayList<>();
 
         Document document = this.postsCollection.find(
                                         eq("Id", postId)).first();
@@ -538,11 +552,25 @@ public class DocumentDBManager {
     public ArrayList<Post> getPostByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
-        postsCollection.find(all("OwnerUserId", username)).forEach(doc -> {
+        postsCollection.find(all("OwnerDisplayName", username)).forEach(doc -> {
+            List<Answer> answersList = new ArrayList<>();
+            doc.getList("Answers", Document.class).forEach((answerDocument) -> {
+                answersList.add(
+                        new Answer(
+                                answerDocument.getString("Id"),
+                                answerDocument.getLong("CreationDate"),
+                                answerDocument.getInteger("Score"),
+                                answerDocument.getString("OwnerUserId"),
+                                answerDocument.getString("OwnerDisplayName"),
+                                answerDocument.getString("Body"),
+                                doc.getString("Id")
+                        )
+                );
+            });
             Post p = new Post(
                     doc.getString("Id"),
                     doc.getString("Title"),
-                    doc.getList("Answers", Answer.class),
+                    answersList,
                     doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
@@ -559,10 +587,24 @@ public class DocumentDBManager {
 
         ArrayList<Post> postArrayList = new ArrayList<>();
         postsCollection.find(all("Tags", tags)).forEach(doc -> {
+            List<Answer> answersList = new ArrayList<>();
+            doc.getList("Answers", Document.class).forEach((answerDocument) -> {
+                answersList.add(
+                        new Answer(
+                                answerDocument.getString("Id"),
+                                answerDocument.getLong("CreationDate"),
+                                answerDocument.getInteger("Score"),
+                                answerDocument.getString("OwnerUserId"),
+                                answerDocument.getString("OwnerDisplayName"),
+                                answerDocument.getString("Body"),
+                                doc.getString("Id")
+                        )
+                );
+            });
             Post p = new Post(
                     doc.getString("Id"),
                     doc.getString("Title"),
-                    doc.getList("Answers", Answer.class),
+                    answersList,
                     doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
@@ -606,16 +648,18 @@ public class DocumentDBManager {
                                     .append("Id", 1)
                                     .append("ViewCount", 1)
                                     .append("OwnerUserId", 1)
-                                    .append("Tags" , 1)
-                                    .append("AnswersNumber",new BasicDBObject("$size","$Answers"))
+                                    .append("OwnerDisplayName", 1)
+                                    .append("Tags", 1)
+                                    .append("AnswersNumber", new BasicDBObject("$size","$Answers"))
                         )
                         .forEach(doc -> {
                             Post p = new Post(doc.getString("Id"),
                                               doc.getString("Title"),
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
-                                              doc.getList("Tags", String.class));
-                            p.setViews(doc.getLong("ViewCount"));
+                                              doc.getList("Tags", String.class))
+                                    .setOwnerUserName(doc.getString("OwnerDisplayName"))
+                                    .setViews(doc.getLong("ViewCount"));
                             postArrayList.add(p);
                         }
         );
@@ -624,7 +668,7 @@ public class DocumentDBManager {
         return postArrayList;
     }
 
-    public User getUserById(String userId) {
+    public User getUserDataById(String userId) {
 
         Document userDoc = usersCollection.find(eq("Id", userId)).first();
         User user = new User();
@@ -647,7 +691,7 @@ public class DocumentDBManager {
         return user;
     }
 
-    public User getUserData(String displayName){
+    public User getUserDataByUsername(String displayName){
 
         Document userDoc = usersCollection.find(eq("DisplayName", displayName)).first();
         User user = new User();

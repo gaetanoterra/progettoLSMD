@@ -64,8 +64,12 @@ public class DBManager {
      */
 
 
-    public User getUserData(String username){
-        return documentDBManager.getUserData(username);
+    public User getUserDataById(String userId){
+        return documentDBManager.getUserDataById(userId);
+    }
+
+    public User getUserDataByUsername(String username){
+        return documentDBManager.getUserDataByUsername(username);
     }
 
     public boolean insertUser(User newUser){

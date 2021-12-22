@@ -128,6 +128,16 @@ public class ClientInterface extends Application{
         controllerPostSearchInterface.setLoggedOutInterface();
     }
 
+    public static void deletePost(Post post) {
+        try {
+            serverConnectionManager.send(new MessagePost(
+                    OperationCD.Delete,
+                    post
+            ));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -184,6 +194,18 @@ public class ClientInterface extends Application{
                             -1
                     )
             );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAnswer(Answer answer) {
+        try {
+            serverConnectionManager.send(new MessageAnswer(
+                    OperationCD.Delete,
+                    answer,
+                    answer.getPostId()
+            ));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -322,7 +344,20 @@ public class ClientInterface extends Application{
     }
 
     public static void fillExternalUserPostInterface(List<Post> posts){
-        controllerExternalUserInterface.fillExternalUserPosts(posts);
+        Platform.runLater(() ->
+                controllerExternalUserInterface.fillExternalUserPosts(posts)
+        );
+    }
+
+    public static void deleteUser(User user) {
+        try {
+            serverConnectionManager.send(new MessageUser(
+                    OperationCD.Delete,
+                    user
+            ));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

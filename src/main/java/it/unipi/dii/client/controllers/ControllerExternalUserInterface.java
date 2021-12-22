@@ -32,6 +32,8 @@ public class ControllerExternalUserInterface {
     private TextArea text_area_aboutme;
     @FXML
     private ImageView profileImageImageView;
+    @FXML
+    private Button button_deleteUser, button_lback;
 
 
     public ControllerExternalUserInterface() {
@@ -43,6 +45,8 @@ public class ControllerExternalUserInterface {
         this.user = user;
         this.lastPageVisited = lastPageVisited;
         this.text_area_aboutme.setEditable(false);
+        //user is logged, is admin, and it's not its own profile (only admin can remove others)
+        this.button_deleteUser.setVisible(ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin() && !ClientInterface.getLog().getUserId().equals(user.getUserId()));
 
         myPostsListView.setItems(postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.EXTERNAL_PROFILE));
@@ -73,5 +77,12 @@ public class ControllerExternalUserInterface {
     @FXML
     private void eventButtonBack(ActionEvent actionEvent) {
         ClientInterface.switchScene(lastPageVisited);
+    }
+
+    @FXML
+    private void eventButtonDeleteUser(ActionEvent actionEvent) {
+        ClientInterface.deleteUser(user);
+        // back to zero
+        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 }

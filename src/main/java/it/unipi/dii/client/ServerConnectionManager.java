@@ -83,10 +83,10 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_User_Data:
                         MessageGetUserData messageGetUserData = (MessageGetUserData) message;
-                        if(messageGetUserData.getProfileType() == true)
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType()); //da modificare per il personal profile
+                        if (messageGetUserData.getProfileType())
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType()); //da modificare per il personal profile
                         else
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType());
                         break;
 
                     case Message_Get_Top_Users_Posts:
