@@ -4,6 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
+import org.javatuples.Triplet;
 
 import java.time.Instant;
 import java.util.*;
@@ -86,21 +87,16 @@ public class DBManager {
     }
 
     public boolean removeUser(User user){
-        //prima aggiorno gli attributi ridondanti follower e followed su mongodb
-        ArrayList<String> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
-        ArrayList<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
-        for (String userIdFollower: userIdsFollower) {
-            documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, user.getUserId());
-        }
-        for (String userIdFollowed: userIdsFollowed) {
-            documentDBManager.removeUserFollowerAndFollowedRelation(user.getUserId(), userIdFollowed);
-        }
-        //ora posso rimuovere l'utente
-        boolean deletedUser = documentDBManager.removeUser(user.getUserId());
-        if (deletedUser) {
-            graphDBManager.removeUser(user.getUserId());
-        }
-        return deletedUser;
+        String userId = user.getUserId();
+        //prima recupero gli id dei follower e dei followed dell'utente dal graph db
+        List<String> userIdsFollower = graphDBManager.getUserIdsFollower(userId);
+        List<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(userId);
+        //poi recupero gli id delle risposte dove l'utente ha votato
+        List<Triplet<String, String, Integer>> postIdsAnswer = graphDBManager.getAnswersVotedByUser(userId);
+        //poi posso eliminare l'utente dal graph db
+        graphDBManager.removeUser(userId);
+        //e infine posso eliminare l'utente dal document db (con gestione attributi utente ridondanti e dei voti)
+        return documentDBManager.removeUser(userId, userIdsFollower, userIdsFollowed, postIdsAnswer);
     }
 
     public boolean updateUserData(User user){
@@ -205,13 +201,13 @@ public class DBManager {
      */
 
     public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
+        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         return true;
     }
     public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
+        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         return true;
     }
 

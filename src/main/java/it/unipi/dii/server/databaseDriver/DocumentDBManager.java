@@ -24,6 +24,7 @@ import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
 
 import com.mongodb.BasicDBObject;
+import org.javatuples.Triplet;
 
 //TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
@@ -838,30 +839,55 @@ public class DocumentDBManager {
     }
 
     public boolean removeAnswer(Answer answer, String postId){
-
-        postsCollection.updateOne(
-                new Document("Id", postId),
+        // ho bisogno di eliminare la risposta, ma anche di aggiornare l'attributo della reputation dell'utente
+        // atomicamente recupero la risposta e la elimino dal post
+        String answerId = answer.getAnswerId();
+        Document beforeRemoveDocument = postsCollection.findOneAndUpdate(
+                and(eq("Id", postId), eq("Answers.Id", answerId)),
                 new Document("$pull",
                         new Document("Answers",
-                                new Document("Id", answer.getAnswerId())
+                                new Document("Id", answerId)
                         )
                 )
         );
+        // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
+        for (Document answerDoc: beforeRemoveDocument.getList("Answers", Document.class)) {
+            if (answerDoc.getString("Id").equals(answerId)) {
+                usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+                break;
+            }
+        }
 
         return true;
     }
 
     public boolean removePost(Post post){
-        postsCollection.deleteOne(eq("Id", post.getPostId()));
+        // ho bisogno di eliminare la risposta, ma anche di aggiornare l'attributo della reputation dell'utente
+        // rimuovo atomicamente il post
+        Document beforeRemoveDocument = postsCollection.findOneAndDelete(eq("Id", post.getPostId()));
+        // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
+        // questa operazione va fatta su tutti gli utenti che hanno risposto
+        for (Document answerDoc: beforeRemoveDocument.getList("Answers", Document.class)) {
+            usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+        }
+
         return true;
     }
 
-    public boolean removeUser(String userId){
+    public boolean removeUser(String userId, List<String> userIdsFollower, List<String> userIdsFollowed, List<Triplet<String, String, Integer>> postIdsAnswer){
         //addio utente
         usersCollection.deleteOne(eq("Id", userId));
-        //addio post scritti da lui
+        //addio post scritti da lui (occhio che possono esserci risposte di altri utenti)
+        List<Document> listaPost = new ArrayList<>();
+        postsCollection.find(eq("OwnerUserId", userId))
+                .forEach(listaPost::add);
         postsCollection.deleteMany(eq("OwnerUserId", userId));
-        //addio risposte scritte da lui
+        for (Document postDocument: listaPost) {
+            for (Document answerDoc: postDocument.getList("Answers", Document.class)) {
+                usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+            }
+        }
+        //addio risposte scritte da lui (niente aggiornamento di score visto che l'utente stesso è sparito)
         postsCollection.updateMany(
                 new Document(),
                 new Document("$pull",
@@ -870,6 +896,19 @@ public class DocumentDBManager {
                         )
                 )
         );
+
+        //infine aggiorno gli attributi ridondanti follower e followed su mongodb degli altri utenti
+        //(per efficienza, lancio una query per n utenti anziché n query una per utente)
+        usersCollection.updateMany(in("Id", userIdsFollower), inc("followerNumber", -1));
+        usersCollection.updateMany(in("Id", userIdsFollowed), inc("followedNumber", -1));
+        // e infine le reputation degli altri utenti e score delle risposte annullando i voti
+        // (se utente ha votato +1, bisogna aggiungere -1 a reputation e score dell'utente che ha scritto la risposta)
+        for (Triplet triplet: postIdsAnswer) {
+            String postId = (String) triplet.getValue0();
+            String answerId = (String) triplet.getValue1();
+            Integer vote = (Integer) triplet.getValue2();
+            updateVotesAnswerAndReputation(postId, answerId, -vote);
+        }
         return true;
     }
 
@@ -892,9 +931,12 @@ public class DocumentDBManager {
                 and(eq("Id", postId), eq("Answers.Id", answerId)),
                 Updates.inc("Answers.$.Score", changeVote)
         );
-        List<Document> answerList = postsCollection.find(and(eq("Id", postId), eq("Answers.Id", answerId)))
-                .first()
-                .getList("Answers", Document.class);
+        Document postDocument = postsCollection.find(and(eq("Id", postId), eq("Answers.Id", answerId)))
+                .first();
+        if (postDocument == null) {
+            return;
+        }
+        List<Document> answerList = postDocument.getList("Answers", Document.class);
         for (Document answer: answerList) {
             if (answer.getString("Id").equals(answerId)) {
                 usersCollection.updateOne(eq("Id", answer.getString("OwnerUserId")), inc("Reputation", changeVote));

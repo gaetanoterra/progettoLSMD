@@ -68,8 +68,8 @@ public class ControllerAnswerCell extends ListCell<Answer> {
             this.answerCellSplitPane.setOnContextMenuRequested(contextMenuEvent ->
                     contextMenu.show(this.answerCellSplitPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY())
             );
-            arrowDownPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.downvoteAnswer(answer.getPostId(), answer.getAnswerId()));
-            arrowUpPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.upvoteAnswer(answer.getPostId(), answer.getAnswerId()));
+            arrowDownPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.downvoteAnswer(answer));
+            arrowUpPolygon.setOnMouseClicked(mouseEvent -> ClientInterface.upvoteAnswer(answer));
             authorText.setText("Author: " + answer.getOwnerUserName());
             if(answer.getBody() != null)
                 bodyWebView.getEngine().loadContent(answer.getBody(), "text/html");

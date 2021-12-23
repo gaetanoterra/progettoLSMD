@@ -190,7 +190,10 @@ public class ClientManager extends Thread{
                         }
                         MessageVote msgVote = (MessageVote)msg;
                         answer = msgVote.getAnswer();
-
+                        if (loggedUser.getDisplayName().equals(answer.getOwnerUserName())) {
+                            // can't vote yourself
+                            break;
+                        }
                         switch (msgVote.getOperation()) {
                             case Create -> dbManager.insertRelationVote(
                                     loggedUser.getUserId(),

@@ -3,6 +3,7 @@ package it.unipi.dii.server.databaseDriver;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
+import org.javatuples.Triplet;
 import org.neo4j.driver.*;
 import java.util.*;
 import static org.neo4j.driver.Values.parameters;
@@ -15,21 +16,21 @@ public class GraphDBManager {
 
     private final Driver dbConnection;
 
-    public GraphDBManager(){
+    public GraphDBManager() {
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
         String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
-    public void close(){
+    public void close() {
         dbConnection.close();
     }
 
 
     //funzione che effettua la query per trovare i tag più "popolari"
-    public Map<String,Integer> findMostPopularTags(){
-        try (Session session = dbConnection.session()){
+    public Map<String,Integer> findMostPopularTags() {
+        try (Session session = dbConnection.session()) {
             Map<String, Integer> tags = new HashMap<>();
 
             List<Record> records = session.readTransaction(tx -> tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
@@ -37,7 +38,7 @@ public class GraphDBManager {
                             "ORDER BY NQuestions DESC " +
                             "LIMIT 10").list());
 
-            for(final Record record : records){
+            for(final Record record : records) {
                 tags.put(record.get("Name").asString(), record.get("NQuestions").asInt());
             }
             return tags;
@@ -62,7 +63,7 @@ public class GraphDBManager {
 
     //TODO: Su graphdb la query per cercare le risposte più votate non è utilizzata
     //funzione che effettua la query per trovare le risposte più votate
-    public void findMostVotedAnswers(){
+    public void findMostVotedAnswers() {
         try (Session session = dbConnection.session())
         {
             session.readTransaction(tx -> {
@@ -81,7 +82,7 @@ public class GraphDBManager {
         }
     }
     //TODO: Non e' utilizzata, controllare se necessaria e rimuovere
-    public ArrayList<Post> findUserPosts(){
+    public ArrayList<Post> findUserPosts() {
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
@@ -103,7 +104,7 @@ public class GraphDBManager {
     }
 
     //TODO: Non e' utilizzata, controllare se necessaria e rimuovere
-    public ArrayList<Answer> findUserAnswers(){
+    public ArrayList<Answer> findUserAnswers() {
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
@@ -123,7 +124,7 @@ public class GraphDBManager {
     }
     //si potrebbe aggiungere l'immagine del profilo (se inserita nel graph) alle cose da prendere
     //funzione che effettua la query per trovare gli utenti correlati all'utente username
-    public String[] getCorrelatedUsers(String username){
+    public String[] getCorrelatedUsers(String username) {
         ArrayList<String> users = new ArrayList<>();
 
         try (Session session = dbConnection.session())
@@ -146,7 +147,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per trovare gli utenti correlati ad un certo tag
-    public String[] getRecommendedUsers(String userId, String tagName){
+    public String[] getRecommendedUsers(String userId, String tagName) {
         try (Session session = dbConnection.session())
         {
             return (String[]) session.readTransaction((TransactionWork<List<String>>) tx -> {
@@ -168,10 +169,10 @@ public class GraphDBManager {
     }
 
 
-    public ArrayList<String> getUserIdsFollower(String userId) {
-        try(Session session = dbConnection.session()){
-            return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollower = new ArrayList<>();
+    public List<String> getUserIdsFollower(String userId) {
+        try (Session session = dbConnection.session()) {
+            return session.readTransaction(tx -> {
+                List<String> userIdsFollower = new ArrayList<>();
                 tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {userId: $userIdFollowed}) " +
                                 "RETURN fr.userId as userIdFollower ",
                         parameters("userIdFollowed", userId))
@@ -183,10 +184,10 @@ public class GraphDBManager {
         }
     }
 
-    public ArrayList<String> getUserIdsFollowed(String userId) {
-        try(Session session = dbConnection.session()){
-            return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollowed = new ArrayList<>();
+    public List<String> getUserIdsFollowed(String userId) {
+        try (Session session = dbConnection.session()) {
+            return session.readTransaction(tx -> {
+                List<String> userIdsFollowed = new ArrayList<>();
                 tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOW]->(fd:User) " +
                                 "RETURN fd.userId as userIdFollowed ",
                         parameters("userIdFollower", userId))
@@ -198,9 +199,33 @@ public class GraphDBManager {
         }
     }
 
+    public List<Triplet<String, String, Integer>> getAnswersVotedByUser(String userId) {
+        try (Session session = dbConnection.session()) {
+            return session.readTransaction(tx -> {
+                List<Triplet<String, String, Integer>> postIdsAnswer = new ArrayList<>();
+                tx.run("MATCH (q:Question)<-[:ANSWERS_TO]-(n:Answer)<-[r:VOTE]-(u:User {userId: $userId}) " +
+                                        "return q.QuestionId as PostId, n.answerId as AnswerId, r.VoteTypeId as Vote;",
+                                parameters("userId", userId)
+                        )
+                        .stream().forEach(
+                                record -> postIdsAnswer.add(
+                                        Triplet.with(
+                                            record.get("PostId").asString(),
+                                            record.get("AnswerId").asString(),
+                                            record.get("Vote").asInt()
+                                        )
+                                )
+                        );
+                return postIdsAnswer;
+            });
+        }
+    }
+
+
+
     //funzione che effettua la query per per inserire il nodo Answer
-    public void insertAnswer(Answer answer, String postId){
-        try(Session session = dbConnection.session()){
+    public void insertAnswer(Answer answer, String postId) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                tx.run("CREATE (a:Answer {answerId: $answerId}); ",
                        parameters("answerId", answer.getAnswerId()));
@@ -225,8 +250,8 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire la relazione Follow tra due username
-    public void insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        try(Session session = dbConnection.session()){
+    public void insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fd:User {userId: $userIdFollowed), " +
                                 "(fr:User {userId: $userIdFollower) " +
@@ -238,8 +263,8 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire il nodo Post
-    public void insertPost(Post post){
-        try(Session session = dbConnection.session()){
+    public void insertPost(Post post) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx ->{
                tx.run("CREATE (q:Question {QuestionId: $questionId}); ",
                        parameters("questionId", post.getPostId()));
@@ -264,8 +289,8 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
-    public void insertRelationVote(String userId, String answerId, int voteAnswer){
-        try(Session session = dbConnection.session()){
+    public void insertRelationVote(String userId, String answerId, int voteAnswer) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(a:Answer {answerId: $answerId}) " +
@@ -281,7 +306,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per inserire il nodo User
-    public void insertUser(User user){
+    public void insertUser(User user) {
         try (Session session = dbConnection.session())
         {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -293,8 +318,8 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per rimuovere il nodo Answer
-    public void removeAnswer(Answer answer, String postId){
-        try(Session session = dbConnection.session()){
+    public void removeAnswer(Answer answer, String postId) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                tx.run("MATCH (q: Question {QuestionId: $questionId})<-[ANSWERS_TO]-(a:Answer {answerId: $answerId}) " +
                        "DETACH DELETE a; ",
@@ -305,8 +330,8 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per rimuovere la relazione Follows tra due utenti
-    public void removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        try(Session session = dbConnection.session()){
+    public void removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fr:User {userId: $userIdFollower})-[r:FOLLOW]->(fd:User {userId: $userIdFollowed}) " +
                                 "DELETE r; ",
@@ -317,13 +342,13 @@ public class GraphDBManager {
     }
 
 
-    public void removePost(Post post){
+    public void removePost(Post post) {
         /*
         Rimuovere le risposte su graph db a quel post (con annesse relazioni, usando detach delete questa ultima parte è automatica)
         Rimuovere il post su graph db (con annesse relazioni, come prima)
         Se uno o più tag rimangono senza post collegati, rimuovere anche quelli
          */
-        try(Session session = dbConnection.session()){
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                                 "OPTIONAL MATCH (a:Answer)-[:ANSWERS_TO]->(q) DETACH DELETE a, q;",
@@ -340,8 +365,8 @@ public class GraphDBManager {
         }
     }
 
-    public void removeRelationVote(String userId, String answerId){
-        try(Session session = dbConnection.session()){
+    public void removeRelationVote(String userId, String answerId) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId}) " +
                                 "DELETE r",
@@ -351,8 +376,8 @@ public class GraphDBManager {
         }
     }
 
-    public void removeUser(String userId){
-        try(Session session = dbConnection.session()){
+    public void removeUser(String userId) {
+        try (Session session = dbConnection.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}) " +
                                 "OPTIONAL MATCH (u)-[:POSTS_QUESTION]->(q:Question) " +
@@ -371,8 +396,8 @@ public class GraphDBManager {
         }
     }
 
-    public int getVote(String userId, String answerId){
-        try(Session session = dbConnection.session()){
+    public int getVote(String userId, String answerId) {
+        try (Session session = dbConnection.session()) {
             return session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User {userId: $userId})-[r:VOTE]->(:Answer {answerId: $answerId}) " +
                                 "return r.VoteTypeId as Voto LIMIT 1",

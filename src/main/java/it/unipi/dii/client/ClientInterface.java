@@ -171,12 +171,12 @@ public class ClientInterface extends Application{
         }
     }
 
-    public static void upvoteAnswer(String postId, String answerId) {
+    public static void upvoteAnswer(Answer answer) {
         try {
             serverConnectionManager.send(
                     new MessageVote(
                             OperationCD.Create,
-                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            answer,
                             +1
                     )
             );
@@ -185,12 +185,12 @@ public class ClientInterface extends Application{
         }
     }
 
-    public static void downvoteAnswer(String postId, String answerId) {
+    public static void downvoteAnswer(Answer answer) {
         try {
             serverConnectionManager.send(
                     new MessageVote(
                             OperationCD.Create,
-                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            answer,
                             -1
                     )
             );
