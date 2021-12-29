@@ -107,23 +107,21 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
             }
         });
         contextMenu.getItems().addAll(item1);
-        // solo se admin
-        if (ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin()) {
+        // solo se admin o owner
+        boolean ownerOrAdmin = (
+                ClientInterface.getLog() != null &&
+                        (
+                                ClientInterface.getLog().isAdmin() ||
+                                ClientInterface.getLog().getUserId().equals(post.getOwnerUserId()) ||
+                                ClientInterface.getLog().getDisplayName().equals(post.getOwnerUserName())
+                        )
+        );
+        if (ownerOrAdmin) {
             final MenuItem item2 = new MenuItem("Delete post");
             item2.setOnAction(actionEvent -> {
-                if (ClientInterface.getLog() != null) {
-                    if (ClientInterface.getLog().isAdmin()) {
-                        //remove post
-                        System.out.println("Removing post " + postId);
-                        ClientInterface.deletePost(post);
-                    }
-                    else {
-                        System.out.println("Action not permitted for user " + ClientInterface.getLog().getDisplayName());
-                    }
-                }
-                else {
-                    System.out.println("Action not permitted for anonymous user");
-                }
+                //remove post
+                System.out.println("Removing post " + postId);
+                ClientInterface.deletePost(post);
             });
             contextMenu.getItems().addAll(item2);
         }

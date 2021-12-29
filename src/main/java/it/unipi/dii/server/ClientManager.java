@@ -104,12 +104,15 @@ public class ClientManager extends Thread{
                                 dbManager.insertPost(post);
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin()) {
-                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing post " + post.getPostId() + ".");
+                                if (loggedUser.isAdmin() ||
+                                        loggedUser.getUserId().equals(post.getOwnerUserId()) ||
+                                        loggedUser.getDisplayName().equals(post.getOwnerUserName())
+                                ) {
+                                    System.out.println((loggedUser.isAdmin() ? "Admin " : "Owner ") + loggedUser.getDisplayName() + " removing post " + post.getPostId() + ".");
                                     dbManager.removePost(post);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of post " + post.getPostId() + ".");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
@@ -133,12 +136,15 @@ public class ClientManager extends Thread{
                                 dbManager.insertAnswer(answer, msgAnswer.getPostId());
                             }
                             case Delete -> {
-                                if (loggedUser.isAdmin()) {
-                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing answer " + answer.getAnswerId() + ".");
+                                if (loggedUser.isAdmin() ||
+                                        loggedUser.getUserId().equals(answer.getOwnerUserId()) ||
+                                        loggedUser.getDisplayName().equals(answer.getOwnerUserName())
+                                ) {
+                                    System.out.println((loggedUser.isAdmin() ? "Admin " : "Owner ") + loggedUser.getDisplayName() + " removing answer " + answer.getAnswerId() + ".");
                                     dbManager.removeAnswer(answer, msgAnswer.getPostId());
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of answer " + answer.getAnswerId() + ".");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Answer " +

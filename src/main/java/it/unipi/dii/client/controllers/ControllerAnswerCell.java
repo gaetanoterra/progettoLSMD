@@ -102,23 +102,20 @@ public class ControllerAnswerCell extends ListCell<Answer> {
             }
         });
         contextMenu.getItems().addAll(item1);
-        // solo se admin
-        if (ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin()) {
+        // solo se admin o owner
+        boolean ownerOrAdmin = (
+                ClientInterface.getLog() != null &&
+                (
+                        ClientInterface.getLog().isAdmin() ||
+                        ClientInterface.getLog().getUserId().equals(answer.getOwnerUserId()) ||
+                        ClientInterface.getLog().getDisplayName().equals(answer.getOwnerUserName())
+                )
+        );
+        if (ownerOrAdmin) {
             final MenuItem item2 = new MenuItem("Delete answer");
             item2.setOnAction(actionEvent -> {
-                if (ClientInterface.getLog() != null) {
-                    if (ClientInterface.getLog().isAdmin()) {
-                        //remove post
-                        System.out.println("Removing answer " + answerId);
-                        ClientInterface.deleteAnswer(answer);
-                    }
-                    else {
-                        System.out.println("Action not permitted for user " + ClientInterface.getLog().getDisplayName());
-                    }
-                }
-                else {
-                    System.out.println("Action not permitted for anonymous user");
-                }
+                System.out.println("Removing answer " + answerId);
+                ClientInterface.deleteAnswer(answer);
             });
             contextMenu.getItems().addAll(item2);
         }
