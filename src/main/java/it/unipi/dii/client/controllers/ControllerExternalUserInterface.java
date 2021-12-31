@@ -1,7 +1,6 @@
 package it.unipi.dii.client.controllers;
 
 import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
-import it.unipi.dii.Libraries.Messages.Opcode;
 import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
@@ -13,10 +12,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.web.WebView;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 //classe preposta a gestire l'interfaccia del profilo utente
 public class ControllerExternalUserInterface {
@@ -34,6 +32,8 @@ public class ControllerExternalUserInterface {
     private TextArea text_area_aboutme;
     @FXML
     private ImageView profileImageImageView;
+    @FXML
+    private Button button_deleteUser, button_lback;
 
 
     public ControllerExternalUserInterface() {
@@ -45,6 +45,8 @@ public class ControllerExternalUserInterface {
         this.user = user;
         this.lastPageVisited = lastPageVisited;
         this.text_area_aboutme.setEditable(false);
+        //user is logged, is admin, and it's not its own profile (only admin can remove others)
+        this.button_deleteUser.setVisible(ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin() && !ClientInterface.getLog().getUserId().equals(user.getUserId()));
 
         myPostsListView.setItems(postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.EXTERNAL_PROFILE));
@@ -68,12 +70,19 @@ public class ControllerExternalUserInterface {
             text_area_aboutme.setText(user.getAboutMe());
     }
 
-    public void fillExternalUserPosts(ArrayList<Post> posts){
+    public void fillExternalUserPosts(List<Post> posts){
         postObservableList.setAll(posts);
     }
 
     @FXML
     private void eventButtonBack(ActionEvent actionEvent) {
         ClientInterface.switchScene(lastPageVisited);
+    }
+
+    @FXML
+    private void eventButtonDeleteUser(ActionEvent actionEvent) {
+        ClientInterface.deleteUser(user);
+        // back to zero
+        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 }

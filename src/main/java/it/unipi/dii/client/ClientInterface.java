@@ -15,7 +15,7 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -43,7 +43,7 @@ public class ClientInterface extends Application{
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
         mainStage = primaryStage;
-        switchScene(PageType.POSTSEARCHINTERFACE);
+        switchScene(PageType.POST_SEARCH_INTERFACE);
     }
 
     //rischio loop con la pagina answer e post
@@ -57,7 +57,7 @@ public class ClientInterface extends Application{
         scenes = new Scene[PageType.values().length];
 
         FXMLLoader PostSearchInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
-        scenes[PageType.POSTSEARCHINTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
+        scenes[PageType.POST_SEARCH_INTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
         controllerPostSearchInterface = PostSearchInterfaceloader.getController();
 
         FXMLLoader signInInterfaceloader  = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
@@ -69,7 +69,7 @@ public class ClientInterface extends Application{
         controllerSignUpInterface = signupInterfaceloader.getController();
 
         FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
-        scenes[PageType.FULLPOST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
+        scenes[PageType.FULL_POST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
         controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
         FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
@@ -100,10 +100,10 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void fillPostSearchInterface(ArrayList<Post> postArrayList){
-        System.out.println("Updating Full Post interface with " + postArrayList.size() + " posts.");
+    public static void fillPostSearchInterface(List<Post> postList){
+        System.out.println("Updating Full Post interface with " + postList.size() + " posts.");
         controllerPostSearchInterface.resetInterface();
-        controllerPostSearchInterface.fillPostPane(postArrayList);
+        controllerPostSearchInterface.fillPostPane(postList);
     }
 
     public static ServerConnectionManager getServerConnectionManager() {
@@ -128,6 +128,16 @@ public class ClientInterface extends Application{
         controllerPostSearchInterface.setLoggedOutInterface();
     }
 
+    public static void deletePost(Post post) {
+        try {
+            serverConnectionManager.send(new MessagePost(
+                    OperationCD.Delete,
+                    post
+            ));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
@@ -142,7 +152,7 @@ public class ClientInterface extends Application{
             e.printStackTrace();
         }
         controllerFullPostInterface.setLastPage(pageType);
-        ClientInterface.switchScene(PageType.FULLPOST);
+        ClientInterface.switchScene(PageType.FULL_POST);
     }
 
     public static void fillFullPostInterface(Post post){
@@ -161,12 +171,12 @@ public class ClientInterface extends Application{
         }
     }
 
-    public static void upvoteAnswer(String postId, String answerId) {
+    public static void upvoteAnswer(Answer answer) {
         try {
             serverConnectionManager.send(
                     new MessageVote(
                             OperationCD.Create,
-                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            answer,
                             +1
                     )
             );
@@ -175,15 +185,27 @@ public class ClientInterface extends Application{
         }
     }
 
-    public static void downvoteAnswer(String postId, String answerId) {
+    public static void downvoteAnswer(Answer answer) {
         try {
             serverConnectionManager.send(
                     new MessageVote(
                             OperationCD.Create,
-                            new Answer("").setAnswerId(answerId).setPostId(postId),
+                            answer,
                             -1
                     )
             );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAnswer(Answer answer) {
+        try {
+            serverConnectionManager.send(new MessageAnswer(
+                    OperationCD.Delete,
+                    answer,
+                    answer.getPostId()
+            ));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -303,10 +325,10 @@ public class ClientInterface extends Application{
 
     public static void loadExternalProfile(User user, PageType lastPageVisited) throws IOException {
         controllerExternalUserInterface.initialize(user, lastPageVisited);
-        Platform.runLater(() -> { ClientInterface.switchScene(PageType.EXTERNAL_PROFILE); });
+        Platform.runLater(() -> ClientInterface.switchScene(PageType.EXTERNAL_PROFILE));
     }
 
-    public static void fillUserPostInterface(ArrayList<Post> posts, String username){
+    public static void fillUserPostInterface(List<Post> posts, String username){
         if (loggedUser != null) {
             if (loggedUser.getDisplayName().equals(username))
                 fillPersonalUserPostInterface(posts);
@@ -317,12 +339,25 @@ public class ClientInterface extends Application{
             fillExternalUserPostInterface(posts);
     }
 
-    private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
+    private static void fillPersonalUserPostInterface(List<Post> posts) {
 
     }
 
-    public static void fillExternalUserPostInterface(ArrayList<Post> posts){
-        controllerExternalUserInterface.fillExternalUserPosts(posts);
+    public static void fillExternalUserPostInterface(List<Post> posts){
+        Platform.runLater(() ->
+                controllerExternalUserInterface.fillExternalUserPosts(posts)
+        );
+    }
+
+    public static void deleteUser(User user) {
+        try {
+            serverConnectionManager.send(new MessageUser(
+                    OperationCD.Delete,
+                    user
+            ));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

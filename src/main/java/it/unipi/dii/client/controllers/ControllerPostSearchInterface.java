@@ -6,6 +6,7 @@ import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,7 +17,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import static it.unipi.dii.client.ClientInterface.DEFAULT_USERNAME;
 
@@ -47,7 +48,7 @@ public class ControllerPostSearchInterface {
         textfield_search.requestFocus();
         setLoggedOutInterface();
         postsListView.setItems(this.postObservableList);
-        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.POSTSEARCHINTERFACE));
+        postsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.POST_SEARCH_INTERFACE));
     }
 
     public void setLoggedInterface(String username, String imageUrl){
@@ -78,8 +79,8 @@ public class ControllerPostSearchInterface {
     }
 
     //metodo per inserire i post nel panello
-    public void fillPostPane(ArrayList<Post> postArrayList) {
-        this.postObservableList.setAll(postArrayList);
+    public void fillPostPane(List<Post> postArrayList) {
+        Platform.runLater(()-> this.postObservableList.setAll(postArrayList));
     }
 
     @FXML

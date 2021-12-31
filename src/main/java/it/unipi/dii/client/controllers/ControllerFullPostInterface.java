@@ -49,7 +49,7 @@ public class ControllerFullPostInterface {
     @FXML
     private void initialize(){
         answersListView.setItems(this.answerObservableList);
-        answersListView.setCellFactory(alv->new ControllerAnswerCell());
+        answersListView.setCellFactory(alv->new ControllerAnswerCell(PageType.FULL_POST));
 
     }
 

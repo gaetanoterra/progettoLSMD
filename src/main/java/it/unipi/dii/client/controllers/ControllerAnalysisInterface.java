@@ -8,7 +8,6 @@ import it.unipi.dii.client.ServerConnectionManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
@@ -151,7 +150,13 @@ public class ControllerAnalysisInterface {
 
     //TODO: necessario metodo che selezionando un utente della lista apre il suo profilo (va modificata la switchScene aggiungendo l'utente su cui switchare, servirà anche per aprire un Post specifico)
     public void eventSelectItem(MouseEvent mouseEvent) throws IOException {
-        serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_mpusers.getSelectionModel().getSelectedItem().toString(), null, null, null, null))), false, PageType.ANALYSIS_INTERFACE));
+        serverConnectionManager.send(
+                new MessageGetUserData(
+                        new User(null, list_view_mpusers.getSelectionModel().getSelectedItem(), null, null, null, null),
+                        false,
+                        PageType.ANALYSIS_INTERFACE
+                )
+        );
     }
 
 

@@ -2,8 +2,6 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
-import it.unipi.dii.client.controllers.ControllerAnalysisInterface;
-import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -77,18 +75,18 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
                         switch (messageGetPostByParameter.getParameter()){
-                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostByParameter.getPostArrayList(), messageGetPostByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
-                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostArrayList().get(0));
-                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostArrayList());
+                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostByParameter.getPostList(), messageGetPostByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
+                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostList().get(0));
+                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostList());
                         }
                         break;
 
                     case Message_Get_User_Data:
                         MessageGetUserData messageGetUserData = (MessageGetUserData) message;
-                        if(messageGetUserData.getProfileType() == true)
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType()); //da modificare per il personal profile
+                        if (messageGetUserData.getProfileType())
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType()); //da modificare per il personal profile
                         else
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject().remove(0), messageGetUserData.getPageType());
+                            ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType());
                         break;
 
                     case Message_Get_Top_Users_Posts:

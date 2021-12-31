@@ -4,6 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
+import org.javatuples.Triplet;
 
 import java.time.Instant;
 import java.util.*;
@@ -64,8 +65,12 @@ public class DBManager {
      */
 
 
-    public User getUserData(String username){
-        return documentDBManager.getUserData(username);
+    public User getUserDataById(String userId){
+        return documentDBManager.getUserDataById(userId);
+    }
+
+    public User getUserDataByUsername(String username){
+        return documentDBManager.getUserDataByUsername(username);
     }
 
     public boolean insertUser(User newUser){
@@ -82,21 +87,16 @@ public class DBManager {
     }
 
     public boolean removeUser(User user){
-        //prima aggiorno gli attributi ridondanti follower e followed su mongodb
-        ArrayList<String> userIdsFollower = graphDBManager.getUserIdsFollower(user.getUserId());
-        ArrayList<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(user.getUserId());
-        for (String userIdFollower: userIdsFollower) {
-            documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, user.getUserId());
-        }
-        for (String userIdFollowed: userIdsFollowed) {
-            documentDBManager.removeUserFollowerAndFollowedRelation(user.getUserId(), userIdFollowed);
-        }
-        //ora posso rimuovere l'utente
-        boolean deletedUser = documentDBManager.removeUser(user.getUserId());
-        if (deletedUser) {
-            graphDBManager.removeUser(user.getUserId());
-        }
-        return deletedUser;
+        String userId = user.getUserId();
+        //prima recupero gli id dei follower e dei followed dell'utente dal graph db
+        List<String> userIdsFollower = graphDBManager.getUserIdsFollower(userId);
+        List<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(userId);
+        //poi recupero gli id delle risposte dove l'utente ha votato
+        List<Triplet<String, String, Integer>> postIdsAnswer = graphDBManager.getAnswersVotedByUser(userId);
+        //poi posso eliminare l'utente dal graph db
+        graphDBManager.removeUser(userId);
+        //e infine posso eliminare l'utente dal document db (con gestione attributi utente ridondanti e dei voti)
+        return documentDBManager.removeUser(userId, userIdsFollower, userIdsFollowed, postIdsAnswer);
     }
 
     public boolean updateUserData(User user){
@@ -165,12 +165,12 @@ public class DBManager {
      */
     // se voto su/giu, e non ho votato -> punteggio + voto, e tipo voto registrato
     // se voto su/giu e ho votato -> altra situazione, e tipo voto aggiornato
-    public boolean insertRelationVote(String userId, String answerId, String postId, int voteAnswer){
-        int previousVote = graphDBManager.getVote(userId, answerId);
+    public boolean insertRelationVote(String userIdVoter, String answerId, String postId, int voteAnswer){
+        int previousVote = graphDBManager.getVote(userIdVoter, answerId);
         if (previousVote == 0) {
             //niente voto -> registro normalmente
-            documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
-            graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
+            documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
+            graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
         }
         else {
             // esiste già un voto -> eliminare quello precedente e inserire quello nuovo
@@ -178,20 +178,20 @@ public class DBManager {
             // se previousVote == -1 e voto == +1 -> voto answer += 2 e aggiorno relazione con nuovo voto
             // se previousVote == 1 e voto == -1 -> voto answer += -2 e aggiorno relazione con nuovo voto
             if (previousVote == voteAnswer) {
-                documentDBManager.updateVotesAnswer(postId, answerId, -voteAnswer);
-                graphDBManager.removeRelationVote(userId, answerId);
+                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, -voteAnswer);
+                graphDBManager.removeRelationVote(userIdVoter, answerId);
             }
             else {
-                documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer - previousVote);
-                graphDBManager.insertRelationVote(userId, answerId, voteAnswer);
+                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer - previousVote);
+                graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
             }
         }
 
         return true;
     }
     public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
-        //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo
-        documentDBManager.updateVotesAnswer(postId, answerId, voteAnswer);
+        //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo e aggiornarlo
+        documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
         graphDBManager.removeRelationVote(userId, answerId);
         return true;
     }
@@ -201,13 +201,13 @@ public class DBManager {
      */
 
     public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
+        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         return true;
     }
     public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
+        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
         return true;
     }
 

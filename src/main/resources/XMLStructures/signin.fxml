@@ -8,26 +8,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerSignInInterface">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerSignInInterface">
    <children>
       <Label alignment="CENTER" layoutX="299.0" layoutY="14.0" prefHeight="109.0" prefWidth="203.0" text="SIGN IN" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="298.0">
          <font>
             <Font name="Courier New" size="36.0" />
          </font></Label>
-      <Label alignment="CENTER" layoutX="146.0" layoutY="219.0" prefHeight="25.0" prefWidth="509.0" text="Username:" AnchorPane.bottomAnchor="456.0" AnchorPane.leftAnchor="146.0" AnchorPane.rightAnchor="145.0" AnchorPane.topAnchor="219.0">
+      <Label alignment="CENTER" layoutX="156.0" layoutY="219.0" prefHeight="25.0" prefWidth="480.0" text="Username:" AnchorPane.bottomAnchor="456.0" AnchorPane.leftAnchor="156.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="219.0">
          <font>
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <PasswordField fx:id="signInPasswordField" layoutX="227.0" layoutY="365.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="227.0" AnchorPane.rightAnchor="244.0" />
+      <TextField fx:id="textfield_signin_username" alignment="CENTER" layoutX="158.0" layoutY="244.0" prefHeight="26.0" prefWidth="480.0" AnchorPane.leftAnchor="155.0" AnchorPane.rightAnchor="165.0" />
+      <Label fx:id="errorMessageSignInLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="126.0" layoutY="275.0" prefHeight="17.0" prefWidth="543.0" textAlignment="CENTER" />
       <Separator layoutX="37.0" layoutY="141.0" prefHeight="3.0" prefWidth="726.0" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="37.0" />
-      <Label alignment="CENTER" layoutX="107.0" layoutY="341.0" text="Password:" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="106.0">
+      <Label alignment="CENTER" layoutX="157.0" layoutY="341.0" prefHeight="19.0" prefWidth="480.0" text="Password:" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="163.0">
          <font>
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="textfield_signin_username" alignment="CENTER" layoutX="224.0" layoutY="244.0" prefHeight="26.0" prefWidth="329.0" AnchorPane.leftAnchor="224.0" AnchorPane.rightAnchor="247.0" />
-      <Button fx:id="button_confirm_signin" alignment="CENTER" layoutX="162.0" layoutY="446.0" mnemonicParsing="false" onAction="#eventButtonConfirmSignIn" prefHeight="38.0" prefWidth="477.0" text="Sign In" AnchorPane.leftAnchor="162.0" AnchorPane.rightAnchor="161.0">
+      <PasswordField fx:id="signInPasswordField" alignment="CENTER" layoutX="158.0" layoutY="365.0" prefHeight="26.0" prefWidth="480.0" AnchorPane.leftAnchor="158.0" AnchorPane.rightAnchor="162.0" />
+      <Button fx:id="button_confirm_signin" alignment="CENTER" layoutX="158.0" layoutY="446.0" mnemonicParsing="false" onAction="#eventButtonConfirmSignIn" prefHeight="38.0" prefWidth="480.0" text="Sign In" AnchorPane.leftAnchor="159.0" AnchorPane.rightAnchor="161.0">
          <font>
             <Font name="Courier New" size="16.0" />
          </font>
@@ -43,6 +44,5 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Button>
-      <Label fx:id="errorMessageSignInLabel" layoutX="126.0" layoutY="275.0" prefHeight="17.0" prefWidth="587.0" />
    </children>
 </AnchorPane>
