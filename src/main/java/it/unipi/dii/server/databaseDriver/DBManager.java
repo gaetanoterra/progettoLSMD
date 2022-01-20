@@ -33,7 +33,7 @@ public class DBManager {
     --------------------------- ANALYTICS ---------------------------
      */
     //TODO: questa va fatta con il graphDB
-    public Map<User, Post[]> findMostAnsweredTopUserPosts(){ return documentDBManager.findMostAnsweredTopUserPosts(); }
+    public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts(){ return graphDBManager.findMostAnsweredTopUserPosts(); }
 
     public String[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
@@ -48,17 +48,17 @@ public class DBManager {
     //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
     public User[] getUsersRank(){ return documentDBManager.getUsersRank(); }
 
-    public Map<User, Pair<String, Integer>[]> findHotTopicsforTopUsers(){ return documentDBManager.findHotTopicsForTopUsers(); }
+    public HashMap<User, ArrayList<Pair<Post, Integer>>>  findHotTopicsforTopUsers(){ return graphDBManager.findHotTopicsForTopUsers(); }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getCorrelatedUsers(String username){
+    public ArrayList<String> getCorrelatedUsers(String username){
         return graphDBManager.getCorrelatedUsers(username);
     }
 
     //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
     //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
-    public String[] getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
+    public ArrayList<String> getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
 
     /*
     --------------------------- USERS ---------------------------
@@ -74,20 +74,24 @@ public class DBManager {
     }
 
     public boolean insertUser(User newUser){
-        newUser.setCreationDate(Instant.now().toEpochMilli())
-                .setLastAccessDate(Instant.now().toEpochMilli())
-                .setFollowedNumber(0)
-                .setFollowersNumber(0)
-                .setReputation(0);
-        boolean insertedUser = documentDBManager.insertUser(newUser);
-        if(insertedUser) {
-            graphDBManager.insertUser(newUser);
+        if(!documentDBManager.checkUser(newUser.getDisplayName())) {
+            newUser.setCreationDate(Instant.now().toEpochMilli())
+                    .setLastAccessDate(Instant.now().toEpochMilli())
+                    .setFollowedNumber(0)
+                    .setFollowersNumber(0)
+                    .setReputation(0);
+            boolean insertedUser = documentDBManager.insertUser(newUser);
+            if (insertedUser) {
+                graphDBManager.insertUser(newUser);
+            }
+            return insertedUser;
         }
-        return insertedUser;
+        else
+            return false;
     }
 
     public boolean removeUser(User user){
-        String userId = user.getUserId();
+    /*    String userId = user.getUserId();
         //prima recupero gli id dei follower e dei followed dell'utente dal graph db
         List<String> userIdsFollower = graphDBManager.getUserIdsFollower(userId);
         List<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(userId);
@@ -97,7 +101,10 @@ public class DBManager {
         graphDBManager.removeUser(userId);
         //e infine posso eliminare l'utente dal document db (con gestione attributi utente ridondanti e dei voti)
         return documentDBManager.removeUser(userId, userIdsFollower, userIdsFollowed, postIdsAnswer);
+    */
+        return true;
     }
+
 
     public boolean updateUserData(User user){
         return documentDBManager.updateUserData(user);
@@ -107,9 +114,7 @@ public class DBManager {
     --------------------------- POSTS ---------------------------
      */
 
-    public ArrayList<Post> getPostByDate(String postCreationDateString) {
-        return documentDBManager.getPostByDate(postCreationDateString);
-    }
+
 
     public Post getPostById(String postId){
         return documentDBManager.getPostById(postId);
@@ -119,9 +124,6 @@ public class DBManager {
         return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
     }
 
-    public ArrayList<Post> getPostsByTag(String[] tags){
-        return documentDBManager.getPostsByTag(tags);
-    }
 
     public ArrayList<Post> getPostsByText(String text){
         return documentDBManager.getPostsByText(text);
@@ -158,6 +160,10 @@ public class DBManager {
         documentDBManager.removeAnswer(answer, postId);
         graphDBManager.removeAnswer(answer, postId);
         return true;
+    }
+
+    public ArrayList<Post> getUserAnswer(String username){
+        return documentDBManager.getUserAnswer(username);
     }
 
     /*
@@ -211,4 +217,9 @@ public class DBManager {
         return true;
     }
 
+    public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
+        //TODO: UNCOMMENT!!!
+        //return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
+        return true;
+    }
 }

@@ -2,6 +2,8 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
+import it.unipi.dii.client.controllers.ControllerPostSearchInterface;
+import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
 import java.net.*;
@@ -62,6 +64,26 @@ public class ServerConnectionManager extends Thread {
                         ClientInterface.registrationResponseHandler(messageSignUp);
                         break;
 
+                    case Message_User:
+                        MessageUser messageUser = (MessageUser) message;
+                        switch (messageUser.getOperation()){
+                            case Create -> {}
+                            case Delete -> {if (messageUser.getUser() == null){
+                                                ClientInterface.resetPostSearchInterface();
+                                                ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
+                                            }
+                                            else {
+                                                ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
+                                            }
+                            }
+                            case Check -> {}
+                        }
+                        break;
+
+                    case Message_Post:
+                        ClientInterface.fillProfileInterface(getLoggedUser());
+                        break;
+
                     case Message_Get_Experts:
                         MessageGetExpertsByTag messageGetExpertsByTag = (MessageGetExpertsByTag) message;
                         ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getUsersList());
@@ -89,6 +111,21 @@ public class ServerConnectionManager extends Thread {
                             ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType());
                         break;
 
+                    case Message_Get_User_Answers:
+                        MessageGetAnswers messageGetAnswers = (MessageGetAnswers) message;
+                        ClientInterface.fillAnswersUsers(messageGetAnswers.getAnswerArrayList());
+                        break;
+
+                    case Message_Follow:
+                        MessageFollow messageFollow = (MessageFollow) message;
+                        switch (messageFollow.getOperation()){
+                            case Create -> ClientInterface.setUnfollowUser();
+                            case Delete -> ClientInterface.setFollowUser();
+                            case Check -> ClientInterface.setFollowUnfollowUser(messageFollow.getUser());
+                        }
+
+                        break;
+
                     case Message_Get_Top_Users_Posts:
                         break;
 
@@ -111,7 +148,16 @@ public class ServerConnectionManager extends Thread {
                         MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) message;
                         ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
                         break;
-                        
+
+                    case Message_Get_Correlated_Users:
+                        MessageGetCorrelatedUsers messageGetCorrelatedUsers = (MessageGetCorrelatedUsers) message;
+                        ClientInterface.fillCorrelatedUsersList(messageGetCorrelatedUsers.getObject());
+                        break;
+
+                    case Message_Get_Recommended_Users:
+                        MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) message;
+                        ClientInterface.fillPersonalRecommendedUsers(messageGetRecommendedUsers.getUsers());
+                        break;
                 }
 
             }
@@ -143,4 +189,5 @@ public class ServerConnectionManager extends Thread {
         this.loggedUser = loggedUser;
     }
 
+    public User getLoggedUser() { return loggedUser; }
 }

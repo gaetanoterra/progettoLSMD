@@ -117,6 +117,8 @@ public class ClientManager extends Thread{
                             }
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
                         }
+
+                        send(msgPost);
                         break;
 
                     case Message_Answer:
@@ -161,13 +163,20 @@ public class ClientManager extends Thread{
 
                         switch (msgUser.getOperation()) {
                             case Create -> dbManager.insertUser(user);
+
                             case Delete -> {
-                                if (loggedUser.isAdmin()) {
-                                    System.out.println("Admin " + loggedUser.getDisplayName() + " removing user " + user.getUserId() + ".");
-                                    dbManager.removeUser(user);
+                                dbManager.removeUser(user);
+                                System.out.println("loggedUser: " + loggedUser.getDisplayName());
+                                System.out.println("userPassed: " + user.getDisplayName());
+                                if (user.getDisplayName().equals(loggedUser.getDisplayName())){
+                                    //se sto eliminando il mio account,effettuo un logout e torno alla postsearchinterface
+                                    loggedUser = null;
+                                    msgUser.setUser(null);
+                                    send(msgUser);
                                 }
-                                else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin. Check IsAdmin property.");
+                                else{
+                                    //se è l'admin che sta eliminando il profilo di un altro,dopo l'eliminazione voglio tornare al profilo admin
+                                    send(msgUser);
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_User " +
@@ -181,13 +190,17 @@ public class ClientManager extends Thread{
                         }
                         MessageFollow msgFollow = (MessageFollow)msg;
                         switch (msgFollow.getOperation()) {
-                            case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getUserId(),
-                                                                                        msgFollow.getUser().getUserId());
-                            case Delete -> dbManager.removeFollowRelationAndUpdate(loggedUser.getUserId(),
-                                                                                        msgFollow.getUser().getUserId());
+                            case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                            case Delete -> dbManager.removeFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                            case Check -> {boolean result = dbManager.checkFollowRelation(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                                            if (!result)
+                                                msgFollow.setUser(null);
+                            }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Follow" +
                                                                                 msgFollow.getOperation() + " not valid");
                         }
+
+                        send(msgFollow);
                         break;
 
                     case Message_Vote:
@@ -224,11 +237,6 @@ public class ClientManager extends Thread{
                         ArrayList<Post>  postArrayList = new ArrayList<>();
 
                         switch (msgParameter.getParameter()) {
-                            case Date -> postArrayList = dbManager.getPostByDate(msgParameter.getValue());
-                            case Tags -> {
-                                String[] tags = msgParameter.getValue().split(";");
-                                postArrayList.addAll(dbManager.getPostsByTag(tags));
-                            }
                             case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
                             case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
@@ -237,7 +245,7 @@ public class ClientManager extends Thread{
                                             postArrayList.size() +
                                             " posts"
                         );
-                        send(new MessageGetPostByParameter(msgParameter.getParameter(), null,  postArrayList));
+                        send(new MessageGetPostByParameter(msgParameter.getParameter(), ((MessageGetPostByParameter) msg).getValue(),  postArrayList));
                         break;
 
                     case Message_Get_User_Data:
@@ -315,7 +323,23 @@ public class ClientManager extends Thread{
                         send(messageAnalyticHotTopics);
                         break;
 
+                    case Message_Get_Correlated_Users:
+                        MessageGetCorrelatedUsers messageGetCorrelatedUsers = (MessageGetCorrelatedUsers) msg;
+                        messageGetCorrelatedUsers.setUserList(dbManager.getCorrelatedUsers(messageGetCorrelatedUsers.getUser()));
+                        send(messageGetCorrelatedUsers);
+                        break;
 
+                    case Message_Get_Recommended_Users:
+                        MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) msg;
+                        messageGetRecommendedUsers.setUsers(dbManager.getRecommendedUsers(messageGetRecommendedUsers.getDisplayName(), messageGetRecommendedUsers.getTag()));
+                        send(messageGetRecommendedUsers);
+                        break;
+
+                    case Message_Get_User_Answers:
+                        MessageGetAnswers messageGetAnswers = (MessageGetAnswers) msg;
+                        messageGetAnswers.setAnswerArrayList(dbManager.getUserAnswer(messageGetAnswers.getDisplayName()));
+                        send(messageGetAnswers);
+                        break;
                 }
             }
 

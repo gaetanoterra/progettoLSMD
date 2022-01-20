@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<SplitPane fx:controller="it.unipi.dii.client.controllers.ControllerMyQuestionViewCell" dividerPositions="0.19901719901719903" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="763.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane fx:id="splitPanePost" dividerPositions="0.19901719901719903" prefHeight="120.0" prefWidth="763.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <items>
       <Label fx:id="viewsLabel" alignment="TOP_CENTER" prefHeight="16.0" prefWidth="103.0" text="Votes">
          <font>
-            <Font name="System Bold Italic" size="25.0" />
+            <Font name="System Bold Italic" size="16.0" />
          </font>
       </Label>
       <HBox alignment="CENTER_RIGHT" prefHeight="131.0" prefWidth="606.0">
@@ -34,4 +32,3 @@
       </HBox>
   </items>
 </SplitPane>
-

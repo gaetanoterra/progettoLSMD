@@ -5,6 +5,7 @@ import it.unipi.dii.Libraries.Post;
 
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 

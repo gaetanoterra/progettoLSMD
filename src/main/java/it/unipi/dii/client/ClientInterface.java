@@ -15,6 +15,8 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +50,11 @@ public class ClientInterface extends Application{
 
     //rischio loop con la pagina answer e post
     public static void switchScene(PageType idx){
-        mainStage.setScene(scenes[idx.ordinal()]);
-        mainStage.show();
+        Platform.runLater(()->{
+            mainStage.setScene(scenes[idx.ordinal()]);
+            mainStage.show();
+        });
+
     }
 
 
@@ -230,8 +235,20 @@ public class ClientInterface extends Application{
         controllerSignUpInterface.handleRegistrationResponse(msg);
     }
 
-    public static void fillProfileInterface(User u) {
+    public static void fillProfileInterface(User u) throws IOException {
         controllerProfileInterface.fillProfileInterface(u);
+    }
+
+    public static void fillCorrelatedUsersList(ArrayList<String> users){
+        controllerProfileInterface.fillPersonalCorrelatedUsers(users);
+    }
+
+    public static void fillPersonalRecommendedUsers(ArrayList<String> users){
+        controllerProfileInterface.fillPersonalRecommendedUsers(users);
+    }
+
+    public static void fillAnswersUsers(ArrayList<Post> answers){
+        controllerProfileInterface.fillAnswersUsers(answers);
     }
 
     public static void loginResponseHandler(MessageLogin msg){
@@ -311,7 +328,7 @@ public class ClientInterface extends Application{
             controllerAnalysisInterface.fillExpertUsersList(users);
     }
 
-    public static void fillHotTopicsUsers(Map<User, Pair<String, Integer>[]> map){
+    public static void fillHotTopicsUsers(HashMap<User, ArrayList<Pair<Post, Integer>>> map){
         controllerAnalysisInterface.resetHotTopicsMap();
         controllerAnalysisInterface.fillHotTopicsMap(map);
     }
@@ -343,10 +360,13 @@ public class ClientInterface extends Application{
 
     }
 
-    public static void fillExternalUserPostInterface(List<Post> posts){
+    public static void fillExternalUserPostInterface(List<Post> posts) {
         Platform.runLater(() ->
                 controllerExternalUserInterface.fillExternalUserPosts(posts)
         );
+    }
+    private static void fillPersonalUserPostInterface(ArrayList<Post> posts) {
+        controllerProfileInterface.fillPersonalUserPostInterface(posts);
     }
 
     public static void deleteUser(User user) {
@@ -358,6 +378,18 @@ public class ClientInterface extends Application{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setUnfollowUser() {
+        controllerExternalUserInterface.setUnfollowUser();
+    }
+
+    public static void setFollowUser() {
+        controllerExternalUserInterface.setFollowUser();
+    }
+
+    public static void setFollowUnfollowUser(User user) {
+        controllerExternalUserInterface.setFollowUnfolloUser(user);
     }
 }
 

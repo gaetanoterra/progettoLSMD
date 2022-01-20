@@ -81,7 +81,7 @@ public class ControllerPostSearchInterface {
     //metodo per inserire i post nel panello
     public void fillPostPane(List<Post> postArrayList) {
         Platform.runLater(()-> this.postObservableList.setAll(postArrayList));
-    }
+     }
 
     @FXML
     public void eventButtonSignIn(ActionEvent event) {
