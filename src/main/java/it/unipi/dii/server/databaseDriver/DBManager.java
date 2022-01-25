@@ -90,6 +90,7 @@ public class DBManager {
             return false;
     }
 
+    //TODO: perché è stata tolta?
     public boolean removeUser(User user){
     /*    String userId = user.getUserId();
         //prima recupero gli id dei follower e dei followed dell'utente dal graph db
@@ -221,5 +222,13 @@ public class DBManager {
         //TODO: UNCOMMENT!!!
         //return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
         return true;
+    }
+
+    public ArrayList<String> getUserIdsFollower(String userId) {
+        return graphDBManager.getUserIdsFollower(userId);
+    }
+
+    public ArrayList<String> getUserIdsFollowed(String userId) {
+        return graphDBManager.getUserIdsFollowed(userId);
     }
 }

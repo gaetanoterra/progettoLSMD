@@ -14,6 +14,7 @@ public class MessageGetTopUsersPosts extends Message {
     public MessageGetTopUsersPosts() {
         this(null);
     }
+
     public MessageGetTopUsersPosts(Map<User, ArrayList<Post>> map) {
         this.opcode = Opcode.Message_Get_Top_Users_Posts;
         this.mostAnsweredTopUsersPostsMap = map;

@@ -106,6 +106,32 @@
                      </AnchorPane>
                   </content>
                </Tab>
+               <Tab text="My Followers">
+                  <content>
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <children>
+                           <VBox>
+                              <children>
+                                 <ListView fx:id="list_view_followers" orientation="VERTICAL" prefHeight="385.0" prefWidth="800.0" />
+                              </children>
+                           </VBox>
+                        </children>
+                     </AnchorPane>
+                  </content>
+               </Tab>
+               <Tab text="Who I follow">
+                  <content>
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <children>
+                           <VBox>
+                              <children>
+                                 <ListView fx:id="list_view_who_i_follow" orientation="VERTICAL" prefHeight="385.0" prefWidth="800.0" />
+                              </children>
+                           </VBox>
+                        </children>
+                     </AnchorPane>
+                  </content>
+               </Tab>
                <Tab text="Correlated Users">
                   <content>
                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">

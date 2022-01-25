@@ -173,7 +173,7 @@ public class DocumentDBManager {
             document.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
                     new Answer(
-                        answerDocument.getString("Id"),
+                        answerDocument.getString("_id"),
                         answerDocument.getLong("CreationDate"),
                         answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerUserId"),
@@ -218,7 +218,7 @@ public class DocumentDBManager {
                                 answerDocument.getString("OwnerUserId"),
                                 answerDocument.getString("OwnerDisplayName"),
                                 answerDocument.getString("Body"),
-                                doc.getString("Id")
+                                doc.getString("_id")
                         )
                 );
             });
@@ -338,12 +338,13 @@ public class DocumentDBManager {
         return user;
     }
 
+
     public User[] getUsersRank(){
 
         ArrayList<User> user = new ArrayList<>();
         usersCollection.find().sort(descending("Reputation")).limit(10).forEach(document -> {
             User u = new User()
-                    .setUserId(document.getString("Id"))
+                    .setUserId(document.getObjectId("_id").toString())
                     .setDisplayName(document.getString("DisplayName"))
                     .setPassword(document.getString("Password"))
                     .setFollowersNumber(document.getInteger("followerNumber"))

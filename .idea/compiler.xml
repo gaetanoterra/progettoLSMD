@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="progettoLSMD" target="15" />
+      <module name="progettoLSMD" target="1.15" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -251,6 +251,14 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillAnswersUsers(answers);
     }
 
+    public static void fillFollowerList(ArrayList<String> followers) {
+        controllerProfileInterface.fillFollowerList(followers);
+    }
+
+    public static void fillFollowedList(ArrayList<String> followers) {
+        controllerProfileInterface.fillFollowedList(followers);
+    }
+
     public static void loginResponseHandler(MessageLogin msg){
         controllerSignInInterface.handleLogInResponse(msg);
     }
@@ -345,7 +353,7 @@ public class ClientInterface extends Application{
         Platform.runLater(() -> ClientInterface.switchScene(PageType.EXTERNAL_PROFILE));
     }
 
-    public static void fillUserPostInterface(List<Post> posts, String username){
+    public static void fillUserPostInterface(ArrayList<Post> posts, String username){
         if (loggedUser != null) {
             if (loggedUser.getDisplayName().equals(username))
                 fillPersonalUserPostInterface(posts);
@@ -356,11 +364,7 @@ public class ClientInterface extends Application{
             fillExternalUserPostInterface(posts);
     }
 
-    private static void fillPersonalUserPostInterface(List<Post> posts) {
-
-    }
-
-    public static void fillExternalUserPostInterface(List<Post> posts) {
+    public static void fillExternalUserPostInterface(ArrayList<Post> posts) {
         Platform.runLater(() ->
                 controllerExternalUserInterface.fillExternalUserPosts(posts)
         );

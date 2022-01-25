@@ -39,6 +39,12 @@ public class ControllerProfileInterface {
     private ListView<Post> list_view_answers;
     private ObservableList<Post> answersObservableList;
     @FXML
+    private ListView<String> list_view_followers;
+    private ObservableList<String> followersObservableList;
+    @FXML
+    private ListView<String> list_view_who_i_follow;
+    private ObservableList<String> whoIFollowObservableList;
+    @FXML
     private ListView<String> list_view_correlated_users;
     private ObservableList<String> userCorrelatedObservableList;
     @FXML
@@ -77,6 +83,8 @@ public class ControllerProfileInterface {
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
         this.postObservableList = FXCollections.observableArrayList();
         this.answersObservableList = FXCollections.observableArrayList();
+        this.followersObservableList = FXCollections.observableArrayList();
+        this.whoIFollowObservableList = FXCollections.observableArrayList();
         this.userCorrelatedObservableList = FXCollections.observableArrayList();
         this.userRecommendedObservableList = FXCollections.observableArrayList();
     }
@@ -87,19 +95,34 @@ public class ControllerProfileInterface {
         this.myPostsListView.setCellFactory(plv->new ControllerMyQuestionViewCell(PageType.PROFILE_INTERFACE));
 
         this.list_view_answers.setItems(this.answersObservableList);
-        this.list_view_answers.setCellFactory((plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE, serverConnectionManager)));
+        this.list_view_answers.setCellFactory((plv->new ControllerAnswerBriefViewCell(PageType.PROFILE_INTERFACE,
+                                                                                        serverConnectionManager)));
+
+        this.list_view_followers.setItems(this.followersObservableList);
+        this.list_view_followers.setCellFactory((plv->new ControllerUserBriefViewCell(PageType.PROFILE_INTERFACE,
+                                                                                        serverConnectionManager)));
+
+        this.list_view_who_i_follow.setItems(this.whoIFollowObservableList);
+        this.list_view_who_i_follow.setCellFactory((plv->new ControllerUserBriefViewCell(PageType.PROFILE_INTERFACE,
+                                                                                        serverConnectionManager)));
 
         this.list_view_correlated_users.setItems(this.userCorrelatedObservableList);
+        this.list_view_correlated_users.setCellFactory((plv->new ControllerUserBriefViewCell(PageType.PROFILE_INTERFACE,
+                serverConnectionManager)));
 
         this.list_view_recommended_users.setItems(this.userRecommendedObservableList);
+        this.list_view_recommended_users.setCellFactory((plv->new ControllerUserBriefViewCell(PageType.PROFILE_INTERFACE,
+                serverConnectionManager)));
 
         /*if(!serverConnectionManager.getLoggedUser().isAdmin())
             button_stats.setDisable(true);*/
     }
 
     public void fillProfileInterface(User u) throws IOException {
-        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
+        //serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
+        //serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));
+        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), false));
         serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
 
         Platform.runLater(() -> {
@@ -115,6 +138,7 @@ public class ControllerProfileInterface {
         });
     }
 
+    //fill the list of user's posts
     public void fillPersonalUserPostInterface(ArrayList<Post> posts){
         Platform.runLater(() -> {
             postObservableList.clear();
@@ -122,6 +146,7 @@ public class ControllerProfileInterface {
         });
     }
 
+    //fill the list of user's answers
     public void fillAnswersUsers(ArrayList<Post> answers) {
         Platform.runLater(() -> {
             if (answers != null) {
@@ -131,6 +156,7 @@ public class ControllerProfileInterface {
         });
     }
 
+    //fill the list of user's correlated users
     public void fillPersonalCorrelatedUsers(ArrayList<String> users){
         Platform.runLater(() -> {
             userCorrelatedObservableList.clear();
@@ -138,6 +164,7 @@ public class ControllerProfileInterface {
         });
     }
 
+    //fill the list of user's recommended users
     public void fillPersonalRecommendedUsers(ArrayList<String> users){
         Platform.runLater(() -> {
             if (users != null) {
@@ -146,6 +173,27 @@ public class ControllerProfileInterface {
             }
         });
     }
+
+    //coloro che mi seguono
+    public void fillFollowerList(ArrayList<String> followers) {
+        Platform.runLater(() -> {
+            if (followers != null) {
+                followersObservableList.clear();
+                followersObservableList.addAll(followers);
+            }
+        });
+    }
+
+    //coloro che io seguo
+    public void fillFollowedList(ArrayList<String> followers) {
+        Platform.runLater(() -> {
+            if (followers != null) {
+                whoIFollowObservableList.clear();
+                whoIFollowObservableList.addAll(followers);
+            }
+        });
+    }
+
     @FXML
     public void logOut(Event event) {
         try {
@@ -214,31 +262,49 @@ public class ControllerProfileInterface {
 
 
     public void eventSearchRecommendedUsers(ActionEvent actionEvent) throws IOException {
-        serverConnectionManager.send(new MessageGetRecommendedUsers(serverConnectionManager.getLoggedUser().getDisplayName(), text_field_recommended_users.getText(), null));
+
+        User u = serverConnectionManager.getLoggedUser();
+        String displayName = u.getDisplayName();
+
+        String tag = text_field_recommended_users.getText();
+
+        MessageGetRecommendedUsers messageGetRecommendedUsers = new MessageGetRecommendedUsers(displayName, tag, null);
+
+        serverConnectionManager.send(messageGetRecommendedUsers);
     }
+
 
     public void eventSelectItemCorrelated(MouseEvent mouseEvent) throws IOException {
-       /* serverConnectionManager.send(
-                new MessageGetUserData(
-                        new ArrayList<>(
-                                List.of(
-                                        new User(
-                                                null,
-                                                    list_view_correlated_users.getSelectionModel().getSelectedItem(),
-                                                null,
-                                                null,
-                                                null,
-                                                null
-                                        )
-                                )
-                        ),
-                        true, PageType.PROFILE_INTERFACE)
-        );*/
+
+        String displayName = list_view_correlated_users.getSelectionModel().getSelectedItem();
+        User u = new User(null,
+                displayName,
+                null,
+                null,
+                null,
+                null);
+
+        MessageGetUserData messageGetUserData = new MessageGetUserData(u, true, PageType.PROFILE_INTERFACE);
+
+        serverConnectionManager.send(messageGetUserData);
     }
 
+
     public void eventSelectItemRecommended(MouseEvent mouseEvent) throws IOException {
-      //  serverConnectionManager.send(new MessageGetUserData(new ArrayList<>(List.of(new User(null, list_view_recommended_users.getSelectionModel().getSelectedItem(), null, null, null, null))), true, PageType.PROFILE_INTERFACE));
+
+        String displayName = list_view_recommended_users.getSelectionModel().getSelectedItem();
+        User u = new User(null,
+                displayName,
+                null,
+                null,
+                null,
+                null);
+
+        MessageGetUserData messageGetUserData = new MessageGetUserData(u, true, PageType.PROFILE_INTERFACE);
+
+        serverConnectionManager.send(messageGetUserData);
     }
+
 
     public void eventButtonStats(ActionEvent actionEvent) throws IOException {
         //ClientInterface.resetInterface();
@@ -246,7 +312,12 @@ public class ControllerProfileInterface {
         ClientInterface.initAnalyticsInterface(PageType.PROFILE_INTERFACE);
     }
 
+
     public void eventButtonDeleteAccount(ActionEvent actionEvent) throws IOException {
-        serverConnectionManager.send(new MessageUser(Opcode.Message_User, OperationCD.Delete, serverConnectionManager.getLoggedUser()));
+
+        User u = serverConnectionManager.getLoggedUser();
+        MessageUser messageUser = new MessageUser(Opcode.Message_User, OperationCD.Delete, u);
+
+        serverConnectionManager.send(messageUser);
     }
 }

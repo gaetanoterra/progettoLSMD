@@ -18,11 +18,9 @@ import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
+import java.util.Map.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ControllerAnalysisInterface {
 
@@ -211,16 +209,24 @@ public class ControllerAnalysisInterface {
 
     public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
 
+    //TODO: fare questa query con un hashmap
     public void fillHotTopicsMap(HashMap<User, ArrayList<Pair<Post, Integer>>>  map){
-        /*
-        List<Pair<String, Integer>[]> lista = new ArrayList<>(map.values());
-        for (User u:map.keySet()) {
+
+        HashMap<User, ArrayList<Pair<Post, Integer>>> lista = map;
+
+        Iterator it = lista.entrySet().iterator();
+
+        while(it.hasNext()){
+        //for (User u:map.keySet()) {
             Map<String, String> rawData = new HashMap<>();
-            Pair<String, Integer>[] elem = lista.remove(0);
+
+            Entry item = (Entry) it.next();
+            User u = (User) item.getKey();
+            ArrayList<Pair<Post, Integer>> elem = (ArrayList<Pair<Post, Integer>>) item.getValue();
             String s = "";
 
-            for (Pair<String, Integer> e:elem) {
-                s = s + e.getKey() + "(" + e.getValue() + ") ";
+            for (Pair<Post, Integer> e:elem) {
+                s = s + e.getKey().getTags().toString() + "(" + e.getValue() + ") ";
             }
 
             rawData.put("User", u.getDisplayName());
@@ -230,7 +236,6 @@ public class ControllerAnalysisInterface {
         }
 
         table_view_hot_topics.setItems(hotTopicsObservableMap);
-         */
     }
 
     public void eventShowHotUser(MouseEvent mouseEvent) {

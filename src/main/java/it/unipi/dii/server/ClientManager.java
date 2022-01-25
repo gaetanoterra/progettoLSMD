@@ -340,6 +340,18 @@ public class ClientManager extends Thread{
                         messageGetAnswers.setAnswerArrayList(dbManager.getUserAnswer(messageGetAnswers.getDisplayName()));
                         send(messageGetAnswers);
                         break;
+
+                    case Message_Get_Follow_Data:
+                        MessageGetFollowData messageGetFollowData = (MessageGetFollowData) msg;
+                        if (messageGetFollowData.getType()){
+                            messageGetFollowData.setFollowers(dbManager.getUserIdsFollower(messageGetFollowData.getUserDisplayName()));
+                        }
+                        else{
+                            messageGetFollowData.setFollowers(dbManager.getUserIdsFollowed(messageGetFollowData.getUserDisplayName()));
+                        }
+
+                        send(messageGetFollowData);
+                        break;
                 }
             }
 

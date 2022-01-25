@@ -78,4 +78,8 @@ public class ControllerRegistrationInterface {
     public void eventAnnnul(ActionEvent actionEvent) {
         ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
     }
+
+    public void eventRegistrationBack(ActionEvent actionEvent) {
+        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
+    }
 }

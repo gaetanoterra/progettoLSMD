@@ -158,6 +158,17 @@ public class ServerConnectionManager extends Thread {
                         MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) message;
                         ClientInterface.fillPersonalRecommendedUsers(messageGetRecommendedUsers.getUsers());
                         break;
+
+                    case Message_Get_Follow_Data:
+                        MessageGetFollowData messageGetFollowData = (MessageGetFollowData) message;
+                        if (messageGetFollowData.getType()){
+                            ClientInterface.fillFollowerList(messageGetFollowData.getFollowers());
+                        }
+                        else {
+                            ClientInterface.fillFollowedList(messageGetFollowData.getFollowers());
+                        }
+
+                        break;
                 }
 
             }

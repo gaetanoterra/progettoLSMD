@@ -19,7 +19,7 @@ public class GraphDBManager {
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "NEO4J";
+        String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -93,17 +93,17 @@ public class GraphDBManager {
     }
 
     //si potrebbe aggiungere l'immagine del profilo (se inserita nel graph) alle cose da prendere
-    //funzione che effettua la query per trovare gli utenti correlati all'utente username
+    //funzione che effettua la query per trovare gli utenti correlati all'utente username (amici di amici)
     public ArrayList<String> getCorrelatedUsers(String username){
         ArrayList<String> users = new ArrayList<>();
 
         try (Session session = dbConnection.session())
         {  //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2)
             return session.readTransaction(tx -> {
-                Result result = tx.run( "MATCH (u3:User)<-[:FOLLOWS]-(u2:User)<-[:FOLLOWS]-(u:User {userId: $userId}) " +
+                Result result = tx.run( "MATCH (u3:User)<-[:FOLLOW]-(u2:User)<-[:FOLLOW]-(u:User {displayName: $userId}) " +
                                 "WHERE u3 <> u and u3 <> u2  " +
                                 "RETURN distinct u3.displayName AS Username " +
-                                "LIMIT 10; ",
+                                "LIMIT 20; ",
                         parameters( "userId", username) );
 
                 while(result.hasNext())
@@ -116,16 +116,32 @@ public class GraphDBManager {
         }
     }
 
+    //TODO: controllare questa query
     //funzione che effettua la query per trovare gli utenti correlati ad un certo tag
     public ArrayList<String> getRecommendedUsers(String userId, String tagName){
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
-                Result result = tx.run( "MATCH (u: User {userId : $userId})-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {name: $name}), " +
+
+                /*
+                questa query non dovrebbe essere :
+
+                (inserita attualemte)
+
+                il problema di quella scritta sotto è che se l'utente non ha scritto nessun post non trova niente
+
+                Prima era così
+                "MATCH (u: User {userId : $userId})-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {name: $name}), " +
                                 "(u2: User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t) " +
                                 "WHERE u <> u2 " +
                                 "RETURN distinct u2.displayName as Username " +
-                                "LIMIT 10; ",
+                                "LIMIT 10; "
+                 */
+
+                Result result = tx.run("MATCH (u2: User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {tagNames: $name}) "+
+                                "WHERE u2.userId <> $userId " +
+                                "RETURN distinct u2.displayName as Username " +
+                                "LIMIT 10;",
                         parameters("userId", userId, "name", tagName));
                 ArrayList<String> users = new ArrayList<>();
                 while(result.hasNext())
@@ -139,31 +155,36 @@ public class GraphDBManager {
     }
 
 
+    //returns who follows the userId
     public ArrayList<String> getUserIdsFollower(String userId) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollower = new ArrayList<>();
-                tx.run("MATCH (fr:User)-[:FOLLOWS]->(fd:User {userId: $userIdFollowed}) " +
-                                        "RETURN fr.userId as userIdFollower ",
+                tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {displayName: $userIdFollowed}) " +
+                                        "RETURN fr.displayName as userIdFollower ",
                                 parameters("userIdFollowed", userId))
                         .stream().forEach(record ->
                                 userIdsFollower.add(record.get("userIdFollower").asString())
                         );
+                System.out.println("found " + userIdsFollower.size() + "followers");
                 return userIdsFollower;
             });
         }
     }
 
+    //returns who the userId follows
     public ArrayList<String> getUserIdsFollowed(String userId) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
                 ArrayList<String> userIdsFollowed = new ArrayList<>();
-                tx.run("MATCH (fr:User {userId: $userIdFollower})-[:FOLLOWS]->(fd:User) " +
-                                        "RETURN fd.userId as userIdFollowed ",
+                tx.run("MATCH (fr:User {displayName: $userIdFollower})-[:FOLLOW]->(fd:User) " +
+                                        "RETURN fd.displayName as userIdFollowed ",
                                 parameters("userIdFollower", userId))
                         .stream().forEach(record ->
                                 userIdsFollowed.add(record.get("userIdFollowed").asString())
                         );
+
+                System.out.println("found " + userIdsFollowed.size() + "followers");
                 return userIdsFollowed;
             });
         }
@@ -399,33 +420,34 @@ public class GraphDBManager {
         String query =
                 """
                     MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
-                    WITH topUsers.displayName as t_us, count(*) as folllower_no
-                    ORDER BY folllower_no DESC LIMIT 10
+                    WITH topUsers.displayName as t_us, count(*) as follower_no
+                    ORDER BY follower_no DESC LIMIT 10
                     MATCH (t:Tag)<-[c_tag:CONTAINS_TAG]-(q:Question)<-[b_to:BELONGS_TO] -(a:Answer)
                                 <-[an_with:ANSWERS_WITH]-(u:User{displayName:t_us})
-                    WITH u.displayName as top_users, folllower_no, t.tagNames as tag_names, count(*) as tags_top_users
+                    WITH u.displayName as top_users, follower_no, t.tagNames as tag_names, count(*) as tags_top_users
                     ORDER BY tags_top_users  DESC
-                    RETURN top_users, folllower_no, tag_names, tags_top_users
-                    LIMIT 50
+                    RETURN top_users, follower_no, tag_names, tags_top_users
+                    LIMIT 10
                 """;
 
         try(Session session = dbConnection.session()){
             return  session.readTransaction(tx -> {
-                HashMap<User, ArrayList<Pair<Post, Integer>>>  hotTopicsForTopUsersHashMap = new HashMap<>();
+                HashMap<User, ArrayList<Pair<Post, Integer>>> hotTopicsForTopUsersHashMap = new HashMap<>();
                 Result result = tx.run(query);
                 while (result.hasNext()) {
+                    Record record = result.next();
                     User u = new User()
-                            .setFollowersNumber(result.next().get("folllower_no").asInt())
-                            .setDisplayName(result.next().get("top_users").asString());
+                            .setFollowersNumber(record.get("follower_no").asInt())
+                            .setDisplayName(record.get("top_users").asString());
                     ArrayList<String> l = new ArrayList<>();
-                    l.add(result.next().get("tag_names").asString());
+                    l.add(record.get("tag_names").asString());
                     Post p = new Post().setTags(l);
                     if(!hotTopicsForTopUsersHashMap.containsKey(u)){
                         hotTopicsForTopUsersHashMap.put(u, new ArrayList<Pair<Post, Integer>>());
                     }
 
                     ((ArrayList<Pair<Post, Integer>>)hotTopicsForTopUsersHashMap.get(u)).add(
-                            new Pair(p, result.next().get("tags_top_users").asInt()));
+                            new Pair(p, record.get("tags_top_users").asInt()));
 
 
                 }
