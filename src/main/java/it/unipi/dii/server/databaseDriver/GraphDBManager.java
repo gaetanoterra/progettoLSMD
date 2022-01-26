@@ -19,7 +19,7 @@ public class GraphDBManager {
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "NEO4J";
+        String password = "pseudostackoverdb";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -183,8 +183,8 @@ public class GraphDBManager {
     public void insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (fd:User {userId: $userIdFollowed), " +
-                                "(fr:User {userId: $userIdFollower) " +
+                tx.run("MATCH (fd:User {userId: $userIdFollowed}), " +
+                                "(fr:User {userId: $userIdFollower}) " +
                                 "CREATE (fr)-[:FOLLOWS]->(fd); ",
                         parameters("userIdFollowed", userIdFollowed, "userIdFollower", userIdFollower));
                 return null;

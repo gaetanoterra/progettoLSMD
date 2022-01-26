@@ -57,7 +57,7 @@ public class ControllerProfileInterface {
     @FXML
     private ImageView profileImageImageView;
     @FXML
-    private Button button_search_recommended_users, button_stats;
+    private Button button_search_recommended_users, button_stats, button_delete_account;
     @FXML
     private TextField text_field_recommended_users;
     @FXML
@@ -114,8 +114,6 @@ public class ControllerProfileInterface {
         this.list_view_recommended_users.setCellFactory((plv->new ControllerUserBriefViewCell(PageType.PROFILE_INTERFACE,
                 serverConnectionManager)));
 
-        /*if(!serverConnectionManager.getLoggedUser().isAdmin())
-            button_stats.setDisable(true);*/
     }
 
     public void fillProfileInterface(User u) throws IOException {
@@ -135,6 +133,8 @@ public class ControllerProfileInterface {
             creationDateLabel.setText(User.convertMillisToDate(u.getCreationDate()).toString());
             reputationLabel.setText(Integer.toString(u.getReputation()));
             webSiteLabel.setText(u.getWebsiteURL());
+
+            button_stats.setVisible(ClientInterface.getLog().isAdmin());
         });
     }
 

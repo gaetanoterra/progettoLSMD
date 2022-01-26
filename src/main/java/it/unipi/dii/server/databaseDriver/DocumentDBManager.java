@@ -277,7 +277,7 @@ public class DocumentDBManager {
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class))
                                     .setOwnerUserName(doc.getString("OwnerDisplayName"))
-                                    .setViews(doc.getInteger("ViewCount").longValue());
+                                    .setViews(doc.getLong("ViewCount").longValue());
                             postArrayList.add(p);
                         }
         );

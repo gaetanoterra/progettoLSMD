@@ -22,9 +22,8 @@
         <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="800.0" spacing="15.0">
                 <children>
-                    <Button fx:id="button_deleteUser" mnemonicParsing="false" onAction="#eventButtonDeleteUser" prefHeight="26.0" prefWidth="82.0" text="Delete user" />
                   <Button fx:id="button_lback" mnemonicParsing="false" onAction="#eventButtonBack" prefHeight="26.0" prefWidth="82.0" text="Back" />
-                  <Button fx:id="button_delete_account" mnemonicParsing="false" onAction="#eventButtonDeleteExternalAccount" text="Delete Account" />
+                  <Button fx:id="button_delete_account" mnemonicParsing="false" onAction="#eventButtonDeleteAccount" text="Delete Account" />
                   <Button fx:id="button_follow" mnemonicParsing="false" onAction="#eventFollow" text="Follow" />
                 </children>
                 <padding>

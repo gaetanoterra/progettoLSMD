@@ -192,9 +192,11 @@ public class ClientManager extends Thread{
                         switch (msgFollow.getOperation()) {
                             case Create -> dbManager.insertFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
                             case Delete -> dbManager.removeFollowRelationAndUpdate(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
-                            case Check -> {boolean result = dbManager.checkFollowRelation(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
-                                            if (!result)
-                                                msgFollow.setUser(null);
+                            case Check -> {
+                                boolean result = dbManager.checkFollowRelation(loggedUser.getDisplayName(), msgFollow.getUser().getDisplayName());
+                                if (!result) {
+                                    msgFollow.setUser(null);
+                                }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Follow" +
                                                                                 msgFollow.getOperation() + " not valid");

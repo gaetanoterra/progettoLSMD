@@ -393,7 +393,7 @@ public class ClientInterface extends Application{
     }
 
     public static void setFollowUnfollowUser(User user) {
-        controllerExternalUserInterface.setFollowUnfolloUser(user);
+        controllerExternalUserInterface.setFollowUnfollowUser(user);
     }
 }
 

@@ -14,12 +14,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.web.WebView;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.List;
 
 //classe preposta a gestire l'interfaccia del profilo utente
@@ -40,9 +36,7 @@ public class ControllerExternalUserInterface {
     @FXML
     private ImageView profileImageImageView;
     @FXML
-    private Button button_follow, button_delete_account;
-    @FXML
-    private Button button_deleteUser, button_lback;
+    private Button button_follow, button_delete_account, button_lback;
 
 
     public ControllerExternalUserInterface() {
@@ -54,12 +48,6 @@ public class ControllerExternalUserInterface {
         this.user = user;
         this.lastPageVisited = lastPageVisited;
         this.text_area_aboutme.setEditable(false);
-        //user is logged, is admin, and it's not its own profile (only admin can remove others)
-        this.button_deleteUser.setVisible(ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin() && !ClientInterface.getLog().getUserId().equals(user.getUserId()));
-
-        /*if (!serverConnectionManager.getLoggedUser().isAdmin()){
-            button_delete_account.setDisable(true);
-        }*/
 
         myPostsListView.setItems(postObservableList);
         this.myPostsListView.setCellFactory(plv->new ControllerPostBriefViewCell(PageType.EXTERNAL_PROFILE));
@@ -82,6 +70,9 @@ public class ControllerExternalUserInterface {
             label_website.setText(user.getWebsiteURL());
         if (user.getAboutMe() != null)
             text_area_aboutme.setText(user.getAboutMe());
+        //user is logged, is admin, and it's not its own profile (only admin can remove others)
+        this.button_delete_account.setVisible(ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin() && !ClientInterface.getLog().getUserId().equals(user.getUserId()));
+
     }
 
     public void fillExternalUserPosts(List<Post> posts){
@@ -93,13 +84,6 @@ public class ControllerExternalUserInterface {
         ClientInterface.switchScene(lastPageVisited);
     }
 
-    @FXML
-    private void eventButtonDeleteUser(ActionEvent actionEvent) {
-        ClientInterface.deleteUser(user);
-        // back to zero
-        ClientInterface.switchScene(PageType.POST_SEARCH_INTERFACE);
-    }
-
     public void eventFollow(ActionEvent actionEvent) throws IOException {
         if (followed)
             serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Delete, user));
@@ -107,8 +91,9 @@ public class ControllerExternalUserInterface {
             serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Create, user));
     }
 
-    public void eventButtonDeleteExternalAccount(ActionEvent actionEvent) throws IOException {
-        serverConnectionManager.send(new MessageUser(Opcode.Message_User, OperationCD.Delete, user));
+    @FXML
+    public void eventButtonDeleteAccount(ActionEvent actionEvent) throws IOException {
+        ClientInterface.deleteUser(user);
     }
 
     public void setUnfollowUser() {
@@ -126,7 +111,7 @@ public class ControllerExternalUserInterface {
         });
     }
 
-    public void setFollowUnfolloUser(User user) {
+    public void setFollowUnfollowUser(User user) {
         if (user != null)
             setUnfollowUser();
         else
