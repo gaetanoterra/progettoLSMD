@@ -62,8 +62,7 @@ public class DocumentDBManager {
         mongoDatabase = mongoClient.getDatabase("PseudoStackOverDB");
         postsCollection = mongoDatabase.getCollection(POSTSCOLLECTION);
         usersCollection = mongoDatabase.getCollection(USERSCOLLECTION);
-        // initializeMetadata();
-        // System.out.println("Metadati MongoDB inizializzati");
+
     }
 
     public void close(){
@@ -166,8 +165,6 @@ public class DocumentDBManager {
             return new Post();
         }else{
             this.increaseViewsPost(postId);
-            System.out.println("Found one document marching the id " + postId + " Containing " +
-                                document.getList("Answers", Document.class).size() + " answers");
 
             document.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
@@ -206,7 +203,7 @@ public class DocumentDBManager {
     public ArrayList<Post> getPostByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
-        postsCollection.find(all("OwnerDisplayName", username)).forEach(doc -> {
+        postsCollection.find(all("DisplayName", username)).forEach(doc -> {
             List<Answer> answersList = new ArrayList<>();
             doc.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
@@ -217,7 +214,7 @@ public class DocumentDBManager {
                                 answerDocument.getString("OwnerUserId"),
                                 answerDocument.getString("OwnerDisplayName"),
                                 answerDocument.getString("Body"),
-                                doc.getString("_id")
+                                doc.getObjectId("_id").toHexString()
                         )
                 );
             });
@@ -233,7 +230,7 @@ public class DocumentDBManager {
             posts.add(p);
         });
 
-        System.out.println("found " + posts.size() + " posts matching the username " + username);
+        System.out.println("getPostByOwnerUsername: found " + posts.size() + " posts matching the username " + username);
         return posts;
     }
 
@@ -333,7 +330,6 @@ public class DocumentDBManager {
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"))
                     .setProfileImage(userDoc.getString("ProfileImageUrl"));
 
-            //System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
         }
 
         return user;
@@ -591,7 +587,6 @@ public class DocumentDBManager {
         Bson unwindAnswer = unwind("$Answers");
 
         this.postsCollection.aggregate(Arrays.asList(unwindAnswer, matchOwner)).forEach(doc -> {
-            System.out.println(doc.get("Answers"));
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
                     ((Document) doc.get("Answers")).getString("Id"),
@@ -601,8 +596,6 @@ public class DocumentDBManager {
                     ((Document) doc.get("Answers")).getString("OwnerUserId"),
                     null
             );
-            System.out.println(p);
-
             answers.add(p);
         });
 

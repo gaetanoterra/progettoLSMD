@@ -34,7 +34,7 @@ public class ClientManager extends Thread{
         try{
             while(true) {
                 Message msg = receive();
-                System.out.println("received " + msg);
+                System.out.println("received  message:" + msg.getOpcode());
 
                 switch (msg.getOpcode()){
 
