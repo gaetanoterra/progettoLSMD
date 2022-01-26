@@ -19,7 +19,7 @@ public class GraphDBManager {
     public GraphDBManager(){
         String uri = "bolt://localhost:7687";
         String user = "neo4j";
-        String password = "pseudostackoverdb";
+        String password = "NEO4J";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
@@ -51,28 +51,7 @@ public class GraphDBManager {
 
     }
 
-  /*
-    public ArrayList<Post> findUserPosts(){
-        try (Session session = dbConnection.session())
-        {
-            return session.readTransaction(tx -> {
-                Result result = tx.run("""
-                                        MATCH (u:User{userId:"29"})-[:POSTS_QUESTION]->(q: Question) <-[:BELONGS_TO]-
-                                        (a:Answer) RETURN q.Title as title, count(a) as number_of_answers
-                                        """);
-                ArrayList<Post> posts = new ArrayList<>();
-                while(result.hasNext())
-                {
-                    Record r = result.next();
-                    posts.add( new Post().setTitle(r.get("title").asString())
-                            .setAnswersNumber(r.get("number_of_answers").asInt())
-                    );
-                }
-                return posts;
-            });
-        }
-    }
-*/
+
     public ArrayList<Answer> findUserAnswers(){
         try (Session session = dbConnection.session())
         {
@@ -122,22 +101,6 @@ public class GraphDBManager {
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
-
-                /*
-                questa query non dovrebbe essere :
-
-                (inserita attualemte)
-
-                il problema di quella scritta sotto è che se l'utente non ha scritto nessun post non trova niente
-
-                Prima era così
-                "MATCH (u: User {userId : $userId})-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {name: $name}), " +
-                                "(u2: User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t) " +
-                                "WHERE u <> u2 " +
-                                "RETURN distinct u2.displayName as Username " +
-                                "LIMIT 10; "
-                 */
-
                 Result result = tx.run("MATCH (u2: User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {tagNames: $name}) "+
                                 "WHERE u2.userId <> $userId " +
                                 "RETURN distinct u2.displayName as Username " +

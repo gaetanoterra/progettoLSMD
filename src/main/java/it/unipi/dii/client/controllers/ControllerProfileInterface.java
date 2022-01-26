@@ -119,8 +119,8 @@ public class ControllerProfileInterface {
     }
 
     public void fillProfileInterface(User u) throws IOException {
-        //serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
-        //serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
         serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));
         serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), false));
         serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));

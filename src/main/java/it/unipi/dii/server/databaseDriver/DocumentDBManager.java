@@ -159,8 +159,7 @@ public class DocumentDBManager {
 
         List<Answer> answersList = new ArrayList<>();
 
-        Document document = this.postsCollection.find(
-                                        eq("Id", postId)).first();
+        Document document = this.postsCollection.find(eq(new ObjectId(postId))).first();
 
         if(document == null) {
             System.out.println("Found no document marching the id " + postId);
@@ -281,7 +280,7 @@ public class DocumentDBManager {
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class))
                                     .setOwnerUserName(doc.getString("OwnerDisplayName"))
-                                    .setViews(doc.getLong("ViewCount"));
+                                    .setViews(doc.getInteger("ViewCount").longValue());
                             postArrayList.add(p);
                         }
         );
@@ -307,7 +306,8 @@ public class DocumentDBManager {
                 .setIsAdmin(userDoc.getBoolean("IsAdmin", false))
                 .setLocation(userDoc.getString("Location"))
                 .setAboutMe(userDoc.getString("AboutMe"))
-                .setWebsiteURL(userDoc.getString("WebsiteUrl"));
+                .setWebsiteURL(userDoc.getString("WebsiteUrl"))
+                .setProfileImage(userDoc.getString("ProfileImageUrl"));
         }
 
         return user;
@@ -330,7 +330,8 @@ public class DocumentDBManager {
                     .setIsAdmin(userDoc.getBoolean("IsAdmin", false))
                     .setLocation(userDoc.getString("Location"))
                     .setAboutMe(userDoc.getString("AboutMe"))
-                    .setWebsiteURL(userDoc.getString("WebsiteUrl"));
+                    .setWebsiteURL(userDoc.getString("WebsiteUrl"))
+                    .setProfileImage(userDoc.getString("ProfileImageUrl"));
 
             //System.out.println(User.convertMillisToDate(user.getLastAccessDate()));
         }
