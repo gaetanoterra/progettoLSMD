@@ -17,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
 
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 
 public class ControllerUserBriefViewCell extends ListCell<String> {
@@ -31,7 +32,7 @@ public class ControllerUserBriefViewCell extends ListCell<String> {
     WebView web_view_displayname;
 
     @FXML
-    Button button_follow;
+    ImageView imageViewProfileInterfaceBrief;
 
     private FXMLLoader pbvFXMLLoader;
     private String displayName;

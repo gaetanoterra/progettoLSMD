@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
@@ -19,6 +20,7 @@
                             <Separator orientation="VERTICAL" prefHeight="200.0" />
                         </children></HBox>
                 </VBox>
+            <ImageView fx:id="imageViewProfileInterfaceBrief" fitHeight="150.0" fitWidth="138.0" pickOnBounds="true" preserveRatio="true" />
             </children>
         </HBox>
     </children>

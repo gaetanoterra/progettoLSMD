@@ -203,7 +203,8 @@ public class DocumentDBManager {
     public ArrayList<Post> getPostByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
-        postsCollection.find(all("DisplayName", username)).forEach(doc -> {
+        postsCollection.find(all("OwnerDisplayName", username)).forEach(doc -> {
+            /*
             List<Answer> answersList = new ArrayList<>();
             doc.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
@@ -226,7 +227,17 @@ public class DocumentDBManager {
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
                     doc.getList("Tags", String.class)
+            );*/
+            Post p = new Post(
+                    doc.getObjectId("_id").toString(),
+                    doc.getString("Title"),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
             );
+
             posts.add(p);
         });
 
@@ -589,7 +600,7 @@ public class DocumentDBManager {
         this.postsCollection.aggregate(Arrays.asList(unwindAnswer, matchOwner)).forEach(doc -> {
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
-                    ((Document) doc.get("Answers")).getString("Id"),
+                    ((Document) doc.get("Answers")).getInteger("Id").toString(),
                     null,
                     ((Document) doc.get("Answers")).getLong("CreationDate"),
                     ((Document) doc.get("Answers")).getString("Body"),

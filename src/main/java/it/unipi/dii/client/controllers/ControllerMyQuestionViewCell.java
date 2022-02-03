@@ -1,7 +1,9 @@
 package it.unipi.dii.client.controllers;
 
+import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
 import it.unipi.dii.Libraries.Messages.MessagePost;
 import it.unipi.dii.Libraries.Messages.OperationCD;
+import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
@@ -12,6 +14,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 public class ControllerMyQuestionViewCell extends ListCell<Post> {
@@ -28,6 +31,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
     private FXMLLoader mqvcFXMLLoader;
     private PageType lastPage;
     private ServerConnectionManager serverConnectionManager;
+    private String postId;
 
     public ControllerMyQuestionViewCell(PageType pageType){
         serverConnectionManager = ClientInterface.getServerConnectionManager();
@@ -54,7 +58,9 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
             }
 
             this.titleLabel.setText(post.getTitle());
-            this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
+            this.postId = post.getPostId();
+
+            //this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
             this.deleteBinImageview.setOnMouseClicked(mouseEvent -> {
                 try {
                     deleteQuestion(post);
@@ -63,11 +69,19 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
                 }
             });
 
+            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getPostId());
+
+            this.splitPanePost.setOnMouseClicked(arg0 -> {
+                try {
+                    serverConnectionManager.send(messageGetPostByParameter);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
             setText(null);
             setGraphic(splitPanePost);
         }
-
-
     }
 
     private void deleteQuestion(Post post) throws IOException {serverConnectionManager.send(new MessagePost(OperationCD.Delete, post));}

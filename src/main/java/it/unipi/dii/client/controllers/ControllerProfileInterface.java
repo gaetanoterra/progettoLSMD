@@ -117,11 +117,13 @@ public class ControllerProfileInterface {
     }
 
     public void fillProfileInterface(User u) throws IOException {
+        //carico subito i post
         serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
-        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));
-        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), false));
-        serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
+
+        //serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
+        //serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));
+        //serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), false));
+        //serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
 
         Platform.runLater(() -> {
             if (u.getProfileImage() != null) {
@@ -319,5 +321,21 @@ public class ControllerProfileInterface {
         MessageUser messageUser = new MessageUser(Opcode.Message_User, OperationCD.Delete, u);
 
         serverConnectionManager.send(messageUser);
+    }
+
+    public void loadMyAnswers(Event event) throws IOException {
+        serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
+    }
+
+    public void loadMyFollowers(Event event) throws IOException {
+        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));
+    }
+
+    public void loadWhoIFollow(Event event) throws IOException {
+        serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), false));
+    }
+
+    public void loadCorrelatedUsers(Event event) throws IOException {
+        serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
     }
 }
