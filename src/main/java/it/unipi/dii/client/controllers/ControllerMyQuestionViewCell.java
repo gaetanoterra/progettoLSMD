@@ -14,7 +14,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 public class ControllerMyQuestionViewCell extends ListCell<Post> {
@@ -58,7 +57,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
             }
 
             this.titleLabel.setText(post.getTitle());
-            this.postId = post.getPostId();
+            this.postId = post.getMongoPost_id();
 
             //this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
             this.deleteBinImageview.setOnMouseClicked(mouseEvent -> {
@@ -69,7 +68,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
                 }
             });
 
-            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getPostId());
+            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getMongoPost_id());
 
             this.splitPanePost.setOnMouseClicked(arg0 -> {
                 try {

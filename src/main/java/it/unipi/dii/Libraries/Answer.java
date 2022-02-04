@@ -3,25 +3,22 @@ package it.unipi.dii.Libraries;
 import java.io.Serializable;
 
 public class Answer implements Serializable {
-
-    //TODO: Considerare possibile cambio in postId (riutilizzare Id come postId di cui è risposta) oppure indice nell'array delle risposte
     private String answerId;
     private Long creationDate;
     private Integer score;
     private String ownerUserId;
     private String ownerUserName;
     private String body;
-    // Attualmente è utilizzato per rendere possibile l'upvote/downvote, non è inserito nel db
-    private String postId;
+    private String parentPostId;
 
-    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body, String postId) {
+    public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body, String parentPostId) {
         this.answerId = answerId;
         this.creationDate = creationDate;
         this.score = score;
         this.ownerUserId = ownerUserId;
         this.ownerUserName = ownerUserName;
         this.body = body;
-        this.postId = postId;
+        this.parentPostId = parentPostId;
     }
 
     public Answer(String answerId, Long creationDate, Integer score, String ownerUserId, String ownerUserName, String body) {
@@ -30,6 +27,9 @@ public class Answer implements Serializable {
 
     public Answer(String body) {
         this(null, null, null, null, null, body, null);
+    }
+    public Answer(){
+        this(null, null, null, null, null, null, null);
     }
 
     public String getAnswerId(){
@@ -54,8 +54,8 @@ public class Answer implements Serializable {
         return ownerUserId;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getParentPostId() {
+        return parentPostId;
     }
 
     public Answer setAnswerId(String answerId){
@@ -88,8 +88,8 @@ public class Answer implements Serializable {
         return this;
     }
 
-    public Answer setPostId(String postId) {
-        this.postId = postId;
+    public Answer setParentPostId(String parentPostId) {
+        this.parentPostId = parentPostId;
         return this;
     }
 
@@ -102,7 +102,7 @@ public class Answer implements Serializable {
                 ", score=" + score +
                 ", ownerUserName='" + ownerUserName + '\'' +
                 ", body='" + body + '\'' +
-                ", postId='" + postId + '\'' +
+                ", postId='" + parentPostId + '\'' +
                 '}';
     }
 }

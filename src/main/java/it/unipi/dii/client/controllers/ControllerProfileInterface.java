@@ -1,6 +1,7 @@
 package it.unipi.dii.client.controllers;
 
 
+import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.MessageLogOut;
 import it.unipi.dii.Libraries.Messages.MessageUser;
 import it.unipi.dii.Libraries.Messages.Opcode;
@@ -36,8 +37,8 @@ public class ControllerProfileInterface {
     private ListView<Post> myPostsListView;
     private ObservableList<Post> postObservableList;
     @FXML
-    private ListView<Post> list_view_answers;
-    private ObservableList<Post> answersObservableList;
+    private ListView<Answer> list_view_answers;
+    private ObservableList<Answer> answersObservableList;
     @FXML
     private ListView<String> list_view_followers;
     private ObservableList<String> followersObservableList;
@@ -149,7 +150,7 @@ public class ControllerProfileInterface {
     }
 
     //fill the list of user's answers
-    public void fillAnswersUsers(ArrayList<Post> answers) {
+    public void fillAnswersUsers(ArrayList<Answer> answers) {
         Platform.runLater(() -> {
             if (answers != null) {
                 answersObservableList.clear();

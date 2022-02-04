@@ -10,7 +10,6 @@ import java.io.*;
 import java.net.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
 //prova branch-gaetano
@@ -108,11 +107,11 @@ public class ClientManager extends Thread{
                                         loggedUser.getUserId().equals(post.getOwnerUserId()) ||
                                         loggedUser.getDisplayName().equals(post.getOwnerUserName())
                                 ) {
-                                    System.out.println((loggedUser.isAdmin() ? "Admin " : "Owner ") + loggedUser.getDisplayName() + " removing post " + post.getPostId() + ".");
+                                    System.out.println((loggedUser.isAdmin() ? "Admin " : "Owner ") + loggedUser.getDisplayName() + " removing post " + post.getMongoPost_id() + ".");
                                     dbManager.removePost(post);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of post " + post.getPostId() + ".");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of post " + post.getMongoPost_id() + ".");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Received Message_Post with unknown opcode");
@@ -134,8 +133,7 @@ public class ClientManager extends Thread{
                                 answer.setCreationDate(Instant.now().toEpochMilli());
                                 answer.setScore(0);
                                 answer.setOwnerUserName(loggedUser.getDisplayName());
-                                answer.setOwnerUserId(loggedUser.getUserId());
-                                dbManager.insertAnswer(answer, msgAnswer.getPostId());
+                                dbManager.insertAnswer(answer);
                             }
                             case Delete -> {
                                 if (loggedUser.isAdmin() ||
@@ -143,7 +141,7 @@ public class ClientManager extends Thread{
                                         loggedUser.getDisplayName().equals(answer.getOwnerUserName())
                                 ) {
                                     System.out.println((loggedUser.isAdmin() ? "Admin " : "Owner ") + loggedUser.getDisplayName() + " removing answer " + answer.getAnswerId() + ".");
-                                    dbManager.removeAnswer(answer, msgAnswer.getPostId());
+                                    dbManager.removeAnswer(answer);
                                 }
                                 else {
                                     System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of answer " + answer.getAnswerId() + ".");
@@ -219,13 +217,13 @@ public class ClientManager extends Thread{
                             case Create -> dbManager.insertRelationVote(
                                     loggedUser.getUserId(),
                                     answer.getAnswerId(),
-                                    answer.getPostId(),
+                                    answer.getParentPostId(),
                                     msgVote.getVoto()
                             );
                             case Delete -> dbManager.removeRelationVote(
                                     loggedUser.getUserId(),
                                     answer.getAnswerId(),
-                                    answer.getPostId(),
+                                    answer.getParentPostId(),
                                     msgVote.getVoto()
                             );
                             default     -> throw new OpcodeNotValidException("Opcode of Message_Vote" +
@@ -258,12 +256,6 @@ public class ClientManager extends Thread{
                             User userWithCompleteData = dbManager.getUserDataByUsername(displayName);
                             send(new MessageGetUserData(userWithCompleteData, msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
                         }
-                        else if (userToSearch.getUserId() != null) {
-                            String userId = userToSearch.getUserId();
-                            User userWithCompleteData = dbManager.getUserDataById(userId);
-                            send(new MessageGetUserData(userWithCompleteData, msgGetUserData.getProfileType(), msgGetUserData.getPageType()));
-                        }
-
 
                         break;
 
@@ -296,15 +288,6 @@ public class ClientManager extends Thread{
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) msg;
                         messageAnalyticMPTags.setTags(dbManager.findMostPopularTags());
                         send(messageAnalyticMPTags);
-                        break;
-
-                    case Message_Analytics_Most_Popular_Tags_Location:
-                        if (loggedUser == null) {
-                            break;
-                        }
-                        MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) msg;
-                        messageAnalyticMPTagsLocation.setTags(dbManager.findMostPopularTagsByLocation(messageAnalyticMPTagsLocation.getLocation(), messageAnalyticMPTagsLocation.getNumTags()));
-                        send(messageAnalyticMPTagsLocation);
                         break;
 
                     case Message_Analytics_User_Rank:

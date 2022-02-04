@@ -6,7 +6,8 @@ import java.util.List;
 
 public class Post implements Serializable {
 
-    private String postId;
+    private String mongoPost_id;
+    private String globalId;
     private String title;
     private String ownerUserName;
     private List<Answer> answers;
@@ -22,8 +23,8 @@ public class Post implements Serializable {
         this(null, null, new ArrayList<>(), null, null, null, new ArrayList<>());
     }
 
-    public Post(String postId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
-        this.postId = postId;
+    public Post(String mongoPost_id, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
+        this.mongoPost_id = mongoPost_id;
         this.title = title;
         this.answers = answers;
         this.creationDate = creationDate;
@@ -32,15 +33,25 @@ public class Post implements Serializable {
         this.tags = tags;
     }
 
-    public Post(String postId, String title, int answersNumber, String ownerUserId, List<String> tags){
-        this.postId = postId;
+    public Post(String mongoPost_id, String title, int answersNumber, String ownerUserId, List<String> tags){
+        this.mongoPost_id = mongoPost_id;
         this.title = title;
         this.answersNumber = answersNumber;
         this.ownerUserId = ownerUserId;
         this.tags = tags;
     }
-    public String getPostId(){
-        return this.postId;
+
+    public Post(String mongoPost_id, String globalId, String title, int answersNumber, String ownerUserId, List<String> tags){
+        this.mongoPost_id = mongoPost_id;
+        this.globalId = globalId;
+        this.title = title;
+        this.answersNumber = answersNumber;
+        this.ownerUserId = ownerUserId;
+        this.tags = tags;
+    }
+
+    public String getMongoPost_id(){
+        return this.mongoPost_id;
     }
 
     public String getTitle(){
@@ -77,8 +88,8 @@ public class Post implements Serializable {
         return answersNumber;
     }
 
-    public Post setPostId(String postId){
-        this.postId = postId;
+    public Post setMongoPost_id(String mongoPost_id){
+        this.mongoPost_id = mongoPost_id;
         return this;
     }
 
@@ -117,6 +128,14 @@ public class Post implements Serializable {
         }
         return this;
     }
+    public String getGlobalId() {
+        return globalId;
+    }
+
+    public Post setGlobalId(String globalId) {
+        this.globalId = globalId;
+        return this;
+    }
 
     public Post setViews(Long views) {
         this.views = views;
@@ -136,7 +155,7 @@ public class Post implements Serializable {
     @Override
     public String toString() {
         return "Post{" +
-                "postId='" + postId + '\'' +
+                "postId='" + mongoPost_id + '\'' +
                 ", title='" + title + '\'' +
                 ", answers=" + answers +
                 ", creationDate=" + creationDate +

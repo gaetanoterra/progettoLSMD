@@ -170,7 +170,7 @@ public class ClientInterface extends Application{
     public static void postNewAnswer(String postId, String body) {
         Answer answer = new Answer(body);
         try {
-            serverConnectionManager.send(new MessageAnswer(OperationCD.Create, answer, postId));
+            serverConnectionManager.send(new MessageAnswer(OperationCD.Create, answer));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -206,11 +206,7 @@ public class ClientInterface extends Application{
 
     public static void deleteAnswer(Answer answer) {
         try {
-            serverConnectionManager.send(new MessageAnswer(
-                    OperationCD.Delete,
-                    answer,
-                    answer.getPostId()
-            ));
+            serverConnectionManager.send(new MessageAnswer(OperationCD.Delete,answer));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -247,7 +243,7 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillPersonalRecommendedUsers(users);
     }
 
-    public static void fillAnswersUsers(ArrayList<Post> answers){
+    public static void fillAnswersUsers(ArrayList<Answer> answers){
         controllerProfileInterface.fillAnswersUsers(answers);
     }
 
@@ -317,12 +313,6 @@ public class ClientInterface extends Application{
         //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
     }
 
-    public static void fillMPTagLocationChart(String[] tags){
-        controllerAnalysisInterface.resetTagLocationList();
-        if(tags != null)
-            controllerAnalysisInterface.fillTagLocationList(tags);
-        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
-    }
 
     public static void fillUserRanking(User[] users){
         controllerAnalysisInterface.resetMPUsersList();

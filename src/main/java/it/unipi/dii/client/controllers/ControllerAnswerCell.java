@@ -85,7 +85,7 @@ public class ControllerAnswerCell extends ListCell<Answer> {
 
     private void initContextMenu(Answer answer) {
         String answerId = answer.getAnswerId();
-        String postId = answer.getPostId();
+        String postId = answer.getParentPostId();
         String userId = answer.getOwnerUserId();
         this.contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("See answer writer profile");

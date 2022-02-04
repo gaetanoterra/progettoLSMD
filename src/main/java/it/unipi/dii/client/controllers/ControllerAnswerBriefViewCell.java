@@ -1,8 +1,8 @@
 package it.unipi.dii.client.controllers;
 
+import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.MessageAnswer;
 import it.unipi.dii.Libraries.Messages.OperationCD;
-import it.unipi.dii.Libraries.Post;
 
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
@@ -12,14 +12,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
 
-public class ControllerAnswerBriefViewCell extends ListCell<Post> {
+public class ControllerAnswerBriefViewCell extends ListCell<Answer> {
 
     @FXML
     Label label_body;
@@ -45,10 +43,10 @@ public class ControllerAnswerBriefViewCell extends ListCell<Post> {
     }
 
     @Override
-    protected void updateItem(Post post, boolean empty) {
-        super.updateItem(post, empty);
+    protected void updateItem(Answer answer, boolean empty) {
+        super.updateItem(answer, empty);
 
-        if(empty || post == null){
+        if(empty || answer == null){
             setText(null);
             setGraphic(null);
         }else {
@@ -63,13 +61,13 @@ public class ControllerAnswerBriefViewCell extends ListCell<Post> {
             }
 
             //label_body.setText(post.getBody());
-            web_view_body.getEngine().loadContent(post.getBody());
-            this.mongoPostID = post.getPostId();
-            this.mongoAnswerId = post.getTitle();
+            web_view_body.getEngine().loadContent(answer.getBody());
+            this.mongoPostID = answer.getParentPostId();
+            this.mongoAnswerId = answer.getAnswerId();
             this.anchorPanePost.setOnMouseClicked(arg0 -> ClientInterface.getFullPostInterface(mongoPostID, pageType));
             this.button_delete_answer.setOnAction(arg0-> {
                 try {
-                    serverConnectionManager.send(new MessageAnswer(OperationCD.Delete, mongoAnswerId, mongoPostID));
+                    serverConnectionManager.send(new MessageAnswer(OperationCD.Delete, answer));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -5,7 +5,6 @@ import it.unipi.dii.Libraries.Post;
 
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
@@ -67,7 +66,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
             viewsNumberTextLabel.setText(post.getViews() + "\nViews");
             titleTextLabel.setText(post.getTitle());
 
-            this.mongoPostID = post.getPostId();
+            this.mongoPostID = post.getMongoPost_id();
             initContextMenu(post);
             this.anchorPanePost.setOnContextMenuRequested(contextMenuEvent ->
                 contextMenu.show(this.anchorPanePost, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY())
@@ -91,7 +90,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
     }
 
     private void initContextMenu(Post post) {
-        String postId = post.getPostId();
+        String postId = post.getMongoPost_id();
         String userId = post.getOwnerUserId();
         this.contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("See post writer profile");

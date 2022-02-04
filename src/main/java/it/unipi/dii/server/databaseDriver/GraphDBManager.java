@@ -50,21 +50,30 @@ public class GraphDBManager {
         }
 
     }
+/*
 
 
-    public ArrayList<Answer> findUserAnswers(){
+ */
+    public ArrayList<Answer> findUserAnswers(String username){
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
                 Result result = tx.run("""
-                                        MATCH (u:User{userId:"29"})-[:ANSWERS_WITH]->(a:Answer)<-[v:VOTE]-(uv:User)
-                                        RETURN a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC
-                                        """);
+                                        CALL db.index.fulltext.queryNodes("display_name_fulltext_index", $username)
+                                        YIELD node
+                                        MATCH (node)-[:ANSWERS_WITH]->(a:Answer)<-[v:VOTE]-(uv:User)
+                                        RETURN a.answerId as answerId, a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC
+                                        """,
+                                        parameters( "username", username) );
                 ArrayList<Answer> answers = new ArrayList<>();
                 while(result.hasNext())
                 {
                     Record r = result.next();
-                    answers.add( new Answer(r.get("body").asString()).setScore(r.get("score").asInt()));
+                    answers.add(
+                            new Answer()
+                                .setBody(r.get("body").asString())
+                                .setScore(r.get("score").asInt())
+                                .setParentPostId(r.get("answerId").asString()));
                 }
                 return answers;
             });
@@ -154,7 +163,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per per inserire il nodo Answer
-    public void insertAnswer(Answer answer, String postId){
+    public void insertAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("CREATE (a:Answer {answerId: $answerId}); ",
@@ -165,14 +174,14 @@ public class GraphDBManager {
                 tx.run("MATCH (a:Answer {answerId: $answerId}), " +
                                 "(q:Question {questionId: $questionId}) " +
                                 "CREATE (a)-[:ANSWERS_TO]->(q); ",
-                        parameters("answerId", answer.getAnswerId(), "questionId", postId));
+                        parameters("answerId", answer.getAnswerId(), "questionId", answer.getParentPostId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId: $userId}), " +
+                tx.run("MATCH (u:User {userId: $DisplayName}), " +
                                 "(a:Answer {answerId: $answerId}) " +
                                 "CREATE (u)-[:POSTS_ANSWER]->(a); ",
-                        parameters("userId", answer.getOwnerUserId(), "answerId", answer.getAnswerId()));
+                        parameters("DisplayName", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
                 return null;
             });
         }
@@ -197,20 +206,20 @@ public class GraphDBManager {
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
                 tx.run("CREATE (q:Question {questionId: $questionId}); ",
-                        parameters("questionId", post.getPostId()));
+                        parameters("questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
                                 "(q:Question {questionId: $questionId}) " +
                                 "CREATE (u)-[:POSTS_QUESTION]->(q); ",
-                        parameters("userId", post.getOwnerUserId(), "questionId", post.getPostId()));
+                        parameters("userId", post.getOwnerUserId(), "questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (q:Question {questionId: $questionId}) " +
                                 "FOREACH (tagName IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {name: tagName})); ",
-                        parameters("questionId", post.getPostId() ,"tagList", post.getTags()));
+                        parameters("questionId", post.getMongoPost_id() ,"tagList", post.getTags()));
                 return null;
             });
         }
@@ -292,13 +301,13 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
                                 "DETACH DELETE a; ",
-                        parameters("questionId", post.getPostId()));
+                        parameters("questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (q:Question {questionId: $questionId}) " +
                                 "DETACH DELETE q; ",
-                        parameters("questionId", post.getPostId()));
+                        parameters("questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -322,20 +331,11 @@ public class GraphDBManager {
         }
     }
 
-    public void removeUser(String userId){
+    public void removeUser(String userName){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (u:User {userId: $userId})-[:FOLLOWS]-(:User), " +
-                                "(u)-[:POSTS_QUESTION]->(q:Question), " +
-                                "(u)-[:POSTS_ANSWER]->(a:Answer), " +
-                                "DETACH DELETE u, q, a;",
-                        parameters("userId", userId));
-                return null;
-            });
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (t:Tag) "+
-                        "WHERE NOT (t)<-[:CONTAINS_TAG]-() " +
-                        "DELETE t");
+                tx.run("MATCH (u:User {displayName: $username}) DELETE u;",
+                        parameters("userId", userName));
                 return null;
             });
         }

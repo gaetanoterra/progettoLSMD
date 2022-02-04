@@ -61,7 +61,7 @@ public class ControllerFullPostInterface {
 
     public void fillInterface(Post post) {
         System.out.println(post);
-        currentPostId = post.getPostId();
+        currentPostId = post.getMongoPost_id();
         titleLabel.setText(post.getTitle());
         authorText.setText(post.getOwnerUserId());
         questionWebView.getEngine().loadContent(post.getBody(), "text/html");

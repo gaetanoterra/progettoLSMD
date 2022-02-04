@@ -32,42 +32,25 @@ public class DBManager {
     /*
     --------------------------- ANALYTICS ---------------------------
      */
-    //TODO: questa va fatta con il graphDB
     public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts(){ return graphDBManager.findMostAnsweredTopUserPosts(); }
 
     public String[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
-    //TODO: Non esiste un messaggio per ottenere i tag popolari tra gli utenti che stanno in una location. Creare un opcode e un messagio per questo
-    //per i most popular tags per lcation inserire nella pagina delle analytics una piechart che mostra i top 10, con una casella di testo per modificare la location
-    public String[] findMostPopularTagsByLocation(String location, int numTags){ return documentDBManager.findMostPopularTagsByLocation(location, numTags); }
-
-    //TODO: Non esiste un messaggio per ottenere i tag più popolari in generale. Creare un opcode e un messagio per questo
-    //per i most popular tags inserire nella pagina delle analytics una piechart che mostra i top 10
     public Map<String, Integer> findMostPopularTags() { return graphDBManager.findMostPopularTags(); }
 
-    //TODO: Non esiste un messaggio per ottenere il ranking degli utenti. Creare un opcode e un messagio per questo
     public User[] getUsersRank(){ return documentDBManager.getUsersRank(); }
 
     public HashMap<User, ArrayList<Pair<Post, Integer>>>  findHotTopicsforTopUsers(){ return graphDBManager.findHotTopicsForTopUsers(); }
 
-    //TODO: Non esiste un messaggio per ottenere gli utenti correlati. Creare un opcode e un messagio per questo
-    //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
     public ArrayList<String> getCorrelatedUsers(String username){
         return graphDBManager.getCorrelatedUsers(username);
     }
 
-    //TODO: Non esiste un messaggio per ottenere gli utenti raccomandati. Creare un opcode e un messagio per questo
-    //restituisco gli username degli utenti (nel graphDB ci sono solo quelli), poi quando seleziono uno specifico utente chiamo la getUserByUsername
     public ArrayList<String> getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
 
     /*
     --------------------------- USERS ---------------------------
      */
-
-
-    public User getUserDataById(String userId){
-        return documentDBManager.getUserDataById(userId);
-    }
 
     public User getUserDataByUsername(String username){
         return documentDBManager.getUserDataByUsername(username);
@@ -90,20 +73,9 @@ public class DBManager {
             return false;
     }
 
-    //TODO: perché è stata tolta?
     public boolean removeUser(User user){
-    /*    String userId = user.getUserId();
-        //prima recupero gli id dei follower e dei followed dell'utente dal graph db
-        List<String> userIdsFollower = graphDBManager.getUserIdsFollower(userId);
-        List<String> userIdsFollowed = graphDBManager.getUserIdsFollowed(userId);
-        //poi recupero gli id delle risposte dove l'utente ha votato
-        List<Triplet<String, String, Integer>> postIdsAnswer = graphDBManager.getAnswersVotedByUser(userId);
-        //poi posso eliminare l'utente dal graph db
-        graphDBManager.removeUser(userId);
-        //e infine posso eliminare l'utente dal document db (con gestione attributi utente ridondanti e dei voti)
-        return documentDBManager.removeUser(userId, userIdsFollower, userIdsFollowed, postIdsAnswer);
-    */
-        return true;
+        graphDBManager.removeUser(user.getDisplayName());
+        return documentDBManager.removeUser(user.getDisplayName());
     }
 
 
@@ -163,8 +135,8 @@ public class DBManager {
         return true;
     }
 
-    public ArrayList<Post> getUserAnswer(String username){
-        return documentDBManager.getUserAnswer(username);
+    public ArrayList<Answer> getUserAnswer(String username){
+        return graphDBManager.findUserAnswers(username);
     }
 
     /*

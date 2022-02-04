@@ -134,11 +134,6 @@ public class ServerConnectionManager extends Thread {
                         ClientInterface.fillMPTagChart(messageAnalyticMPTags.getTags());
                         break;
 
-                    case Message_Analytics_Most_Popular_Tags_Location:
-                        MessageAnalyticMPTagsLocation messageAnalyticMPTagsLocation = (MessageAnalyticMPTagsLocation) message;
-                        ClientInterface.fillMPTagLocationChart(messageAnalyticMPTagsLocation.getTags());
-                        break;
-
                     case Message_Analytics_User_Rank:
                         MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) message;
                         ClientInterface.fillUserRanking(messageAnalyticUserRanking.getUsers());

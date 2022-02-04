@@ -29,7 +29,6 @@ public class ControllerAnalysisInterface {
 
     private ServerConnectionManager serverConnectionManager = ClientInterface.getServerConnectionManager();
     private ObservableList<XYChart.Series<String, Integer>> tagObservableMap;
-    private ObservableList<String> tagLocationObservableList;
     private User[] usersRankingArray;
     private String[] usersExpertsArray;
     private ObservableList<String> usersRankingList;
@@ -44,7 +43,7 @@ public class ControllerAnalysisInterface {
     private Button button_back, button_search, button_update, button_search_experts;
 
     @FXML
-    private TextField text_field_location, text_field_experts;
+    private TextField text_field_experts;
 
     @FXML
     private BarChart<String, Integer> bar_chart_mptags;
@@ -63,7 +62,6 @@ public class ControllerAnalysisInterface {
         lastPageVisited = pageType;
         initMPUsersList();
         initTagsChart();
-        initTagsLocationList();
         initExpertUsersList();
         initHotTopicsMap();
     }
@@ -96,29 +94,6 @@ public class ControllerAnalysisInterface {
 
         Platform.runLater(() -> {bar_chart_mptags.setData(tagObservableMap);});
     }
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //                                                                                                                //
-    //                                         MOST POPULAR TAGS PER LOCATION                                         //
-    //                                                                                                                //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public void initTagsLocationList(){
-        tagLocationObservableList = FXCollections.observableArrayList();
-        list_view_mptags_location.setItems(tagLocationObservableList);
-    }
-
-    public void resetTagLocationList(){
-        if(tagLocationObservableList != null) tagLocationObservableList.clear();
-    }
-
-    //Platform.runLater is needed to avoid an IllegalStateException
-    public void fillTagLocationList(String[] tags){
-            Platform.runLater(() -> { tagLocationObservableList.addAll(tags); });
-    }
-
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,9 +152,7 @@ public class ControllerAnalysisInterface {
 
         Platform.runLater(
                 () -> {
-                    for (String u: usersExpertsArray) {
-                        usersExpertsList.add(u);
-                    }
+                    usersExpertsList.addAll(Arrays.asList(usersExpertsArray));
                 }
         );
     }
@@ -260,12 +233,6 @@ public class ControllerAnalysisInterface {
     public void eventButtonUpdate(ActionEvent actionEvent) throws IOException, InterruptedException {
         resetTagList();
         serverConnectionManager.send(new MessageAnalyticMPTags(null));
-    }
-
-    @FXML
-    public void eventButtonSearch(ActionEvent actionEvent) throws  IOException, InterruptedException {
-        resetTagLocationList();
-        serverConnectionManager.send(new MessageAnalyticMPTagsLocation(text_field_location.getText(), 10, null));
     }
 
     @FXML
