@@ -4,6 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.javatuples.Triplet;
 
 import java.time.Instant;
@@ -103,6 +104,10 @@ public class DBManager {
     }
 
     public boolean insertPost(Post newPost){
+
+        String globalPostId = DigestUtils.sha256Hex(newPost.getTitle() + newPost.getCreationDate().toString());
+        newPost.setGlobalId(globalPostId);
+
         boolean insertedPost = documentDBManager.insertPost(newPost);
         if (insertedPost) {
             // in insertPost il post è stato modificato aggiungendo l'id
@@ -122,16 +127,21 @@ public class DBManager {
     --------------------------- ANSWERS ---------------------------
      */
 
-    public boolean insertAnswer(Answer answer, String postId){
-        documentDBManager.insertAnswer(answer, postId);
+    //TODO: forse qui non è sha256
+    public boolean insertAnswer(Answer answer){
+
+        String globalAnswerId = DigestUtils.sha256Hex(answer.getBody() + answer.getCreationDate().toString());
+        answer.setAnswerId(globalAnswerId);
+
+        documentDBManager.insertAnswer(answer);
         // postCondition: l'id della risposta e' stato inserito dal documentDBManager
-        graphDBManager.insertAnswer(answer, postId);
+        graphDBManager.insertAnswer(answer);
         return true;
     }
 
-    public boolean removeAnswer(Answer answer, String postId){
-        documentDBManager.removeAnswer(answer, postId);
-        graphDBManager.removeAnswer(answer, postId);
+    public boolean removeAnswer(Answer answer){
+        documentDBManager.removeAnswer(answer);
+        graphDBManager.removeAnswer(answer);
         return true;
     }
 
@@ -191,9 +201,7 @@ public class DBManager {
     }
 
     public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
-        //TODO: UNCOMMENT!!!
-        //return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
-        return true;
+        return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
     }
 
     public ArrayList<String> getUserIdsFollower(String userId) {

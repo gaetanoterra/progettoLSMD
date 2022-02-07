@@ -68,7 +68,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
                 }
             });
 
-            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getMongoPost_id());
+            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getGlobalId());
 
             this.splitPanePost.setOnMouseClicked(arg0 -> {
                 try {

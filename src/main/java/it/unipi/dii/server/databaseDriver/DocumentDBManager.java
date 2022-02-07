@@ -154,7 +154,7 @@ public class DocumentDBManager {
 
         List<Answer> answersList = new ArrayList<>();
 
-        Document document = this.postsCollection.find(eq(new ObjectId(postId))).first();
+        Document document = this.postsCollection.find(eq("GlobalPostId", postId)).first();
 
         if(document == null) {
             System.out.println("Found no document marching the id " + postId);
@@ -165,7 +165,7 @@ public class DocumentDBManager {
             document.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
                     new Answer(
-                        answerDocument.getString("_id"),
+                        answerDocument.getString("answerId"),
                         answerDocument.getLong("CreationDate"),
                         answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerUserId"),
@@ -177,6 +177,7 @@ public class DocumentDBManager {
             });
 
             Post post = new Post(
+                    document.getObjectId("_id").toString(),
                     postId,
                     document.getString("Title"),
                     answersList,
@@ -226,6 +227,7 @@ public class DocumentDBManager {
             );*/
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
+                    doc.getString("GlobalPostId"),
                     doc.getString("Title"),
                     null,
                     null,
@@ -270,6 +272,7 @@ public class DocumentDBManager {
                             ))
                         )
                         .projection(new Document("Title",1)
+                                    .append("GlobalPostId", 1)
                                     .append("_id", 1)
                                     .append("ViewCount", 1)
                                     .append("OwnerUserId", 1)
@@ -279,6 +282,7 @@ public class DocumentDBManager {
                         )
                         .forEach(doc -> {
                             Post p = new Post(doc.getObjectId("_id").toString(),
+                                              doc.getString("GlobalPostId"),
                                               doc.getString("Title"),
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
@@ -348,7 +352,7 @@ public class DocumentDBManager {
         return Instant.now().toEpochMilli() + postId + userId;
     }
 
-    //TODO: rifare
+    //TODO: rifare. il parentPostId deve essere il GlobalPostId di mongo
     public boolean insertAnswer(Answer answer){
 
       //  postsCollection.updateOne(eq("_id", new ObjectId(postId)), Updates.push("Answers", doc));
@@ -361,6 +365,7 @@ public class DocumentDBManager {
     public boolean insertPost(Post post){
 
         Document doc = new Document()
+                .append("GlobalPostId", post.getGlobalId())
                 .append("Title", post.getTitle())
                 .append("Answers", post.getAnswers())
                 .append("CreationDate", post.getCreationDate())
@@ -421,12 +426,12 @@ public class DocumentDBManager {
         return res;
     }
 
-    public boolean removeAnswer(Answer answer, String postId){
+    public boolean removeAnswer(Answer answer){
         // ho bisogno di eliminare la risposta, ma anche di aggiornare l'attributo della reputation dell'utente
         // atomicamente recupero la risposta e la elimino dal post
         String answerId = answer.getAnswerId();
         Document beforeRemoveDocument = postsCollection.findOneAndUpdate(
-                and(eq("Id", postId), eq("Answers.Id", answerId)),
+                and(eq("Id", answer.getParentPostId()), eq("Answers.Id", answerId)),
                 new Document("$pull",
                         new Document("Answers",
                                 new Document("Id", answerId)
@@ -478,17 +483,17 @@ public class DocumentDBManager {
 
     public void updateVotesAnswerAndReputation(String postId, String answerId, int changeVote) {
         postsCollection.updateOne(
-                and(eq("Id", postId), eq("Answers.Id", answerId)),
+                and(eq("GlobalPostId", postId), eq("Answers.answerId", answerId)),
                 Updates.inc("Answers.$.Score", changeVote)
         );
-        Document postDocument = postsCollection.find(and(eq("Id", postId), eq("Answers.Id", answerId)))
+        Document postDocument = postsCollection.find(and(eq("GlobalPostId", postId), eq("Answers.answerId", answerId)))
                 .first();
         if (postDocument == null) {
             return;
         }
         List<Document> answerList = postDocument.getList("Answers", Document.class);
         for (Document answer: answerList) {
-            if (answer.getString("Id").equals(answerId)) {
+            if (answer.getString("answerId").equals(answerId)) {
                 usersCollection.updateOne(eq("Id", answer.getString("OwnerUserId")), inc("Reputation", changeVote));
                 break;
             }

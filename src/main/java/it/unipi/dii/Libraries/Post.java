@@ -33,6 +33,17 @@ public class Post implements Serializable {
         this.tags = tags;
     }
 
+    public Post(String mongoPost_id, String globalId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
+        this.mongoPost_id = mongoPost_id;
+        this.globalId = globalId;
+        this.title = title;
+        this.answers = answers;
+        this.creationDate = creationDate;
+        this.body = body;
+        this.ownerUserId = ownerUserId;
+        this.tags = tags;
+    }
+
     public Post(String mongoPost_id, String title, int answersNumber, String ownerUserId, List<String> tags){
         this.mongoPost_id = mongoPost_id;
         this.title = title;

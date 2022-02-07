@@ -54,6 +54,8 @@ public class GraphDBManager {
 
 
  */
+
+    //TODO: recuperare anche l'id del post per aprirlo quando si clicca
     public ArrayList<Answer> findUserAnswers(String username){
         try (Session session = dbConnection.session())
         {
@@ -255,7 +257,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per rimuovere il nodo Answer
-    public void removeAnswer(Answer answer, String postId){
+    public void removeAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (a:Answer {answerId: $answerId}) " +
@@ -266,7 +268,7 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
                                 "DELETE r; ",
-                        parameters( "questionId", postId, "answerId", answer.getAnswerId()));
+                        parameters( "questionId", answer.getParentPostId(), "answerId", answer.getAnswerId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -454,6 +456,8 @@ public class GraphDBManager {
         }
         RETURN top_users, title, answers_no
      */
+
+    //TODO: questa non viene chiamata da nessuna parte, infilarla
     public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
         String query =
                 """
@@ -489,4 +493,19 @@ public class GraphDBManager {
         }
     }
 
+    public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
+        try(Session session = dbConnection.session()){
+            boolean exists = (boolean) session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (:User {displayName: $displayName})-[r:FOLLOW]->(:User {displayName: $displayNameToCheck})" +
+                                "return r LIMIT 1",
+                        parameters("displayName", displayName, "displayName", displayNameToCheck));
+                if (result.hasNext()) {
+                    // esiste il follow
+                    return true;
+                }
+                return false;
+            });
+            return exists;
+        }
+    }
 }
