@@ -180,6 +180,7 @@ public class ServerConnectionManager extends Thread {
 
     public void send(Message messaggio) throws IOException {
         waiting = true;
+        messageOutputStream.reset();
         messageOutputStream.writeObject(messaggio);
     }
 
