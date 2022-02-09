@@ -1,17 +1,20 @@
 package it.unipi.dii.Libraries.Messages;
 
+import it.unipi.dii.Libraries.User;
+
 import java.util.ArrayList;
 
 public class MessageGetCorrelatedUsers extends Message {
-    private ArrayList<String> userList;
+    private ArrayList<User> userList;
     private String user;
-    public MessageGetCorrelatedUsers(ArrayList<String> userList, String user){
+
+    public MessageGetCorrelatedUsers(ArrayList<User> userList, String user){
         this.opcode = Opcode.Message_Get_Correlated_Users;
         this.userList = userList;
         this.user = user;
     }
 
-    public ArrayList<String> getObject() {
+    public ArrayList<User> getObject() {
         return this.userList;
     }
 
@@ -22,7 +25,7 @@ public class MessageGetCorrelatedUsers extends Message {
                 '}';
     }
 
-    public void setUserList(ArrayList<String> userList) { this.userList = userList; }
+    public void setUserList(ArrayList<User> userList) { this.userList = userList; }
 
     public String getUser() { return user; }
 }

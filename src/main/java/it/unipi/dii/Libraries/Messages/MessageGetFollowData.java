@@ -7,19 +7,19 @@ import it.unipi.dii.client.controllers.PageType;
 import java.util.ArrayList;
 
 public class MessageGetFollowData extends Message{
-    private ArrayList<String> followers;
+    private ArrayList<User> followers;
     private String userDisplayName;
     private Boolean type; //true se voglio i miei followers, false se voglio chi mi followa
 
     //usato per la risposta dal server
-    public MessageGetFollowData(ArrayList<String> followers, String displayName, Boolean type){
+    public MessageGetFollowData(ArrayList<User> followers, String displayName, Boolean type){
         this.opcode = Opcode.Message_Get_Follow_Data;
         this.followers = followers;
         this.userDisplayName = displayName;
         this.type = type;
     }
 
-    public void setFollowers(ArrayList<String> followers) {
+    public void setFollowers(ArrayList<User> followers) {
         this.followers = followers;
     }
 
@@ -27,7 +27,7 @@ public class MessageGetFollowData extends Message{
         return userDisplayName;
     }
 
-    public ArrayList<String> getFollowers() {
+    public ArrayList<User> getFollowers() {
         return followers;
     }
 

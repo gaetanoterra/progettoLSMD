@@ -13,14 +13,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
+import javafx.scene.image.ImageView;
 
-import javax.swing.text.html.ImageView;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-public class ControllerUserBriefViewCell extends ListCell<String> {
+public class ControllerUserBriefViewCell extends ListCell<User> {
 
     @FXML
     Label label_body;
@@ -29,7 +31,7 @@ public class ControllerUserBriefViewCell extends ListCell<String> {
     AnchorPane anchorPaneUser;
 
     @FXML
-    WebView web_view_displayname;
+    Label labelDisplayName;
 
     @FXML
     ImageView imageViewProfileInterfaceBrief;
@@ -46,7 +48,7 @@ public class ControllerUserBriefViewCell extends ListCell<String> {
     }
 
     @Override
-    protected void updateItem(String user, boolean empty) {
+    protected void updateItem(User user, boolean empty) {
         super.updateItem(user, empty);
 
         if(empty || user == null){
@@ -63,15 +65,15 @@ public class ControllerUserBriefViewCell extends ListCell<String> {
                 }
             }
 
-            web_view_displayname.getEngine().loadContent(user);
-            this.displayName = user;
+            this.displayName = user.getDisplayName();
+            labelDisplayName.setText(displayName);
 
-            User u = new User(null, displayName, null, null, null, null);
-            MessageGetUserData messageGetUserData = new MessageGetUserData(u, false, pageType);
+            if(!user.getProfileImage().equals(""))
+                imageViewProfileInterfaceBrief.setImage(new Image(user.getProfileImage()));
 
-            this.anchorPaneUser.setOnMouseClicked(arg0 -> {
+            this.labelDisplayName.setOnMouseClicked(mouseEvent -> {
                 try {
-                    serverConnectionManager.send(messageGetUserData);
+                    eventOpenUserProfile(user);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -81,4 +83,9 @@ public class ControllerUserBriefViewCell extends ListCell<String> {
             setGraphic(anchorPaneUser);
         }
     }
+
+    public void eventOpenUserProfile(User user) throws IOException {
+            serverConnectionManager.send(new MessageGetUserData(user, false, pageType));
+    }
+
 }

@@ -70,7 +70,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
 
             MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getGlobalId());
 
-            this.splitPanePost.setOnMouseClicked(arg0 -> {
+            this.titleLabel.setOnMouseClicked(arg0 -> {
                 try {
                     serverConnectionManager.send(messageGetPostByParameter);
                 } catch (IOException e) {

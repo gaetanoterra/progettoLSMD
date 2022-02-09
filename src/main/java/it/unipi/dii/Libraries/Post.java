@@ -15,7 +15,7 @@ public class Post implements Serializable {
     private String body;
     private String ownerUserId;
     private List<String> tags;
-    private Long views;
+    private Integer views;
 
     private int answersNumber;
 
@@ -33,8 +33,9 @@ public class Post implements Serializable {
         this.tags = tags;
     }
 
-    public Post(String mongoPost_id, String globalId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, List<String> tags){
+    public Post(String mongoPost_id, String globalId, String title, List<Answer> answers, Long creationDate, String body, String ownerUserId, String displayName, List<String> tags){
         this.mongoPost_id = mongoPost_id;
+        this.ownerUserName = displayName;
         this.globalId = globalId;
         this.title = title;
         this.answers = answers;
@@ -93,7 +94,7 @@ public class Post implements Serializable {
         return this.tags;
     }
 
-    public Long getViews() { return this.views; }
+    public Integer getViews() { return this.views; }
 
     public int getAnswersNumber() {
         return answersNumber;
@@ -148,7 +149,7 @@ public class Post implements Serializable {
         return this;
     }
 
-    public Post setViews(Long views) {
+    public Post setViews(Integer views) {
         this.views = views;
         return this;
     }

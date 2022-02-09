@@ -120,7 +120,7 @@
                         <children>
                            <VBox>
                               <children>
-                                 <ListView fx:id="list_view_correlated_users" maxWidth="-Infinity" onMouseClicked="#eventSelectItemCorrelated" orientation="VERTICAL" prefHeight="357.0" prefWidth="789.0" />
+                                 <ListView fx:id="list_view_correlated_users" maxWidth="-Infinity" orientation="VERTICAL" prefHeight="357.0" prefWidth="789.0" />
                               </children>
                            </VBox>
                         </children>
@@ -133,7 +133,7 @@
                         <children>
                            <VBox prefHeight="406.0" prefWidth="800.0">
                               <children>
-                                 <ListView fx:id="list_view_recommended_users" onMouseClicked="#eventSelectItemRecommended" orientation="VERTICAL" prefHeight="378.0" prefWidth="800.0" />
+                                 <ListView fx:id="list_view_recommended_users" orientation="VERTICAL" prefHeight="378.0" prefWidth="800.0" />
                               <HBox prefHeight="39.0" prefWidth="800.0">
                                  <children>
                                     <TextField fx:id="text_field_recommended_users" text="Inserire tag" />

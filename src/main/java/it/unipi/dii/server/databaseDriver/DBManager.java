@@ -43,11 +43,11 @@ public class DBManager {
 
     public HashMap<User, ArrayList<Pair<Post, Integer>>>  findHotTopicsforTopUsers(){ return graphDBManager.findHotTopicsForTopUsers(); }
 
-    public ArrayList<String> getCorrelatedUsers(String username){
+    public ArrayList<User> getCorrelatedUsers(String username){
         return graphDBManager.getCorrelatedUsers(username);
     }
 
-    public ArrayList<String> getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
+    public ArrayList<User> getRecommendedUsers(String username, String tagName){ return graphDBManager.getRecommendedUsers(username, tagName); }
 
     /*
     --------------------------- USERS ---------------------------
@@ -204,11 +204,11 @@ public class DBManager {
         return graphDBManager.checkFollowRelation(displayName, displayNameToCheck);
     }
 
-    public ArrayList<String> getUserIdsFollower(String userId) {
+    public ArrayList<User> getUserIdsFollower(String userId) {
         return graphDBManager.getUserIdsFollower(userId);
     }
 
-    public ArrayList<String> getUserIdsFollowed(String userId) {
+    public ArrayList<User> getUserIdsFollowed(String userId) {
         return graphDBManager.getUserIdsFollowed(userId);
     }
 }

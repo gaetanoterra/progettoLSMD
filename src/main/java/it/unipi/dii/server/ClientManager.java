@@ -99,7 +99,7 @@ public class ClientManager extends Thread{
                             case Create -> {
                                 post.setOwnerUserId(loggedUser.getUserId());
                                 post.setOwnerUserName(loggedUser.getDisplayName());
-                                post.setViews(0L);
+                                post.setViews(0);
                                 dbManager.insertPost(post);
                             }
                             case Delete -> {
@@ -144,7 +144,7 @@ public class ClientManager extends Thread{
                                     dbManager.removeAnswer(answer);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " is not admin nor owner of answer " + answer.getAnswerId() + ".");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " Message_Get_Follow_Data of answer " + answer.getAnswerId() + ".");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Answer " +
@@ -251,6 +251,9 @@ public class ClientManager extends Thread{
                     case Message_Get_User_Data:
                         MessageGetUserData msgGetUserData = (MessageGetUserData)msg;
                         User userToSearch = msgGetUserData.getObject();
+
+                        System.out.println(userToSearch);
+
                         if (userToSearch.getDisplayName() != null) {
                             String displayName = userToSearch.getDisplayName();
                             User userWithCompleteData = dbManager.getUserDataByUsername(displayName);

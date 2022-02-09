@@ -235,11 +235,11 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillProfileInterface(u);
     }
 
-    public static void fillCorrelatedUsersList(ArrayList<String> users){
+    public static void fillCorrelatedUsersList(ArrayList<User> users){
         controllerProfileInterface.fillPersonalCorrelatedUsers(users);
     }
 
-    public static void fillPersonalRecommendedUsers(ArrayList<String> users){
+    public static void fillPersonalRecommendedUsers(ArrayList<User> users){
         controllerProfileInterface.fillPersonalRecommendedUsers(users);
     }
 
@@ -247,11 +247,11 @@ public class ClientInterface extends Application{
         controllerProfileInterface.fillAnswersUsers(answers);
     }
 
-    public static void fillFollowerList(ArrayList<String> followers) {
+    public static void fillFollowerList(ArrayList<User> followers) {
         controllerProfileInterface.fillFollowerList(followers);
     }
 
-    public static void fillFollowedList(ArrayList<String> followers) {
+    public static void fillFollowedList(ArrayList<User> followers) {
         controllerProfileInterface.fillFollowedList(followers);
     }
 

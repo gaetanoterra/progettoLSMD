@@ -169,7 +169,7 @@ public class DocumentDBManager {
                         answerDocument.getLong("CreationDate"),
                         answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerUserId"),
-                        answerDocument.getString("OwnerDisplayName"),
+                        answerDocument.getString("DisplayName"),
                         answerDocument.getString("Body"),
                         postId
                     )
@@ -184,9 +184,10 @@ public class DocumentDBManager {
                     document.getLong("CreationDate"),
                     document.getString("Body"),
                     document.getString("OwnerUserId"),
+                    document.getString("DisplayName"),
                     document.getList("Tags", String.class)
             );
-            post.setOwnerUserName(document.getString("OwnerDisplayName"));
+            post.setOwnerUserName(document.getString("DisplayName"));
             return post;
         }
 
@@ -200,7 +201,7 @@ public class DocumentDBManager {
     public ArrayList<Post> getPostByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
-        postsCollection.find(all("OwnerDisplayName", username)).forEach(doc -> {
+        postsCollection.find(all("DisplayName", username)).forEach(doc -> {
             /*
             List<Answer> answersList = new ArrayList<>();
             doc.getList("Answers", Document.class).forEach((answerDocument) -> {
@@ -233,6 +234,7 @@ public class DocumentDBManager {
                     null,
                     null,
                     null,
+                    username,
                     null
             );
 
@@ -276,7 +278,7 @@ public class DocumentDBManager {
                                     .append("_id", 1)
                                     .append("ViewCount", 1)
                                     .append("OwnerUserId", 1)
-                                    .append("OwnerDisplayName", 1)
+                                    .append("DisplayName", 1)
                                     .append("Tags", 1)
                                     .append("AnswersNumber", new BasicDBObject("$size","$Answers"))
                         )
@@ -287,8 +289,8 @@ public class DocumentDBManager {
                                               doc.getInteger("AnswersNumber"),
                                               doc.getString("OwnerUserId"),
                                               doc.getList("Tags", String.class))
-                                    .setOwnerUserName(doc.getString("OwnerDisplayName"))
-                                    .setViews(doc.getLong("ViewCount").longValue());
+                                    .setOwnerUserName(doc.getString("DisplayName"))
+                                    .setViews(doc.getInteger("ViewCount"));
                             postArrayList.add(p);
                         }
         );
@@ -371,7 +373,7 @@ public class DocumentDBManager {
                 .append("CreationDate", post.getCreationDate())
                 .append("Body", post.getBody())
                 .append("OwnerUserId", post.getOwnerUserId())
-                .append("OwnerDisplayName", post.getOwnerUserName())
+                .append("DisplayName", post.getOwnerUserName())
                 .append("Tags", post.getTags())
                 .append("ViewCount", post.getViews());
 

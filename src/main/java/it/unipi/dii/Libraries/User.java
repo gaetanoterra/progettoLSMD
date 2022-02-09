@@ -43,6 +43,17 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
     }
 
+    public User(String userId, String displayName, String location, String aboutMe, String websiteURL, String pwd, String profileImage){
+        this.userId = userId;
+        this.displayName = displayName;
+        this.location = location;
+        this.aboutMe = aboutMe;
+        this.websiteURL = websiteURL;
+        this.password = pwd;
+        this.isAdmin = false;
+        this.profileImage = profileImage;
+    }
+
     public User(String userId, String displayName, String location, String aboutMe, String websiteURL){
         this(userId, displayName, location, aboutMe,  websiteURL, null);
     }

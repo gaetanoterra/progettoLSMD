@@ -40,17 +40,17 @@ public class ControllerProfileInterface {
     private ListView<Answer> list_view_answers;
     private ObservableList<Answer> answersObservableList;
     @FXML
-    private ListView<String> list_view_followers;
-    private ObservableList<String> followersObservableList;
+    private ListView<User> list_view_followers;
+    private ObservableList<User> followersObservableList;
     @FXML
-    private ListView<String> list_view_who_i_follow;
-    private ObservableList<String> whoIFollowObservableList;
+    private ListView<User> list_view_who_i_follow;
+    private ObservableList<User> whoIFollowObservableList;
     @FXML
-    private ListView<String> list_view_correlated_users;
-    private ObservableList<String> userCorrelatedObservableList;
+    private ListView<User> list_view_correlated_users;
+    private ObservableList<User> userCorrelatedObservableList;
     @FXML
-    private ListView<String> list_view_recommended_users;
-    private ObservableList<String> userRecommendedObservableList;
+    private ListView<User> list_view_recommended_users;
+    private ObservableList<User> userRecommendedObservableList;
     @FXML
     private Label displayNameLabel;
     @FXML
@@ -160,7 +160,7 @@ public class ControllerProfileInterface {
     }
 
     //fill the list of user's correlated users
-    public void fillPersonalCorrelatedUsers(ArrayList<String> users){
+    public void fillPersonalCorrelatedUsers(ArrayList<User> users){
         Platform.runLater(() -> {
             userCorrelatedObservableList.clear();
             userCorrelatedObservableList.addAll(users);
@@ -168,7 +168,7 @@ public class ControllerProfileInterface {
     }
 
     //fill the list of user's recommended users
-    public void fillPersonalRecommendedUsers(ArrayList<String> users){
+    public void fillPersonalRecommendedUsers(ArrayList<User> users){
         Platform.runLater(() -> {
             if (users != null) {
                 userRecommendedObservableList.clear();
@@ -178,7 +178,7 @@ public class ControllerProfileInterface {
     }
 
     //coloro che mi seguono
-    public void fillFollowerList(ArrayList<String> followers) {
+    public void fillFollowerList(ArrayList<User> followers) {
         Platform.runLater(() -> {
             if (followers != null) {
                 followersObservableList.clear();
@@ -188,7 +188,7 @@ public class ControllerProfileInterface {
     }
 
     //coloro che io seguo
-    public void fillFollowedList(ArrayList<String> followers) {
+    public void fillFollowedList(ArrayList<User> followers) {
         Platform.runLater(() -> {
             if (followers != null) {
                 whoIFollowObservableList.clear();
@@ -275,39 +275,6 @@ public class ControllerProfileInterface {
 
         serverConnectionManager.send(messageGetRecommendedUsers);
     }
-
-
-    public void eventSelectItemCorrelated(MouseEvent mouseEvent) throws IOException {
-
-        String displayName = list_view_correlated_users.getSelectionModel().getSelectedItem();
-        User u = new User(null,
-                displayName,
-                null,
-                null,
-                null,
-                null);
-
-        MessageGetUserData messageGetUserData = new MessageGetUserData(u, true, PageType.PROFILE_INTERFACE);
-
-        serverConnectionManager.send(messageGetUserData);
-    }
-
-
-    public void eventSelectItemRecommended(MouseEvent mouseEvent) throws IOException {
-
-        String displayName = list_view_recommended_users.getSelectionModel().getSelectedItem();
-        User u = new User(null,
-                displayName,
-                null,
-                null,
-                null,
-                null);
-
-        MessageGetUserData messageGetUserData = new MessageGetUserData(u, true, PageType.PROFILE_INTERFACE);
-
-        serverConnectionManager.send(messageGetUserData);
-    }
-
 
     public void eventButtonStats(ActionEvent actionEvent) throws IOException {
         //ClientInterface.resetInterface();

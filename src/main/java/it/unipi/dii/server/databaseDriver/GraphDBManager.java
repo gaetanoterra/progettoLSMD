@@ -6,6 +6,8 @@ import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
 import org.neo4j.driver.*;
 import java.util.*;
+
+import static org.neo4j.driver.Values.NULL;
 import static org.neo4j.driver.Values.parameters;
 
 import org.neo4j.driver.Record;
@@ -84,22 +86,29 @@ public class GraphDBManager {
 
     //si potrebbe aggiungere l'immagine del profilo (se inserita nel graph) alle cose da prendere
     //funzione che effettua la query per trovare gli utenti correlati all'utente username (amici di amici)
-    public ArrayList<String> getCorrelatedUsers(String username){
-        ArrayList<String> users = new ArrayList<>();
+    public ArrayList<User> getCorrelatedUsers(String username){
+        ArrayList<User> users = new ArrayList<>();
 
         try (Session session = dbConnection.session())
         {  //u2 might follow u back, so a cycle is present (u3 <> u), and u3 should not be already followed by u (so u3 <> u2)
             return session.readTransaction(tx -> {
                 Result result = tx.run( "MATCH (u3:User)<-[:FOLLOW]-(u2:User)<-[:FOLLOW]-(u:User {displayName: $userId}) " +
                                 "WHERE u3 <> u and u3 <> u2  " +
-                                "RETURN distinct u3.displayName AS Username " +
+                                "RETURN distinct u3.displayName AS Username, u3.profileImage as profileImage " +
                                 "LIMIT 20; ",
                         parameters( "userId", username) );
 
                 while(result.hasNext())
                 {
                     Record r = result.next();
-                    users.add(r.get("Username").asString());
+                    users.add(new User(
+                            null,
+                            r.get("Username").asString(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            r.get("profileImage").asString()));
                 }
                 return users;
             });
@@ -108,20 +117,34 @@ public class GraphDBManager {
 
     //TODO: controllare questa query
     //funzione che effettua la query per trovare gli utenti correlati ad un certo tag
-    public ArrayList<String> getRecommendedUsers(String userId, String tagName){
+    public ArrayList<User> getRecommendedUsers(String userId, String tagName){
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (u2: User)-[:POSTS_QUESTION]->(:Question)-[:CONTAINS_TAG]->(t:Tag {tagNames: $name}) "+
                                 "WHERE u2.userId <> $userId " +
-                                "RETURN distinct u2.displayName as Username " +
+                                "RETURN distinct u2.displayName as Username, u2.profileImage as profileImage " +
                                 "LIMIT 10;",
                         parameters("userId", userId, "name", tagName));
-                ArrayList<String> users = new ArrayList<>();
+                ArrayList<User> users = new ArrayList<>();
                 while(result.hasNext())
                 {
                     Record r = result.next();
-                    users.add(r.get("Username").asString());
+                    String image;
+
+                    if(r.get("profileImage") == NULL)
+                        image = "";
+                    else
+                        image = r.get("profileImage").asString();
+
+                    users.add(new User(
+                            null,
+                            r.get("Username").asString(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            image));
                 }
                 return users;
             });
@@ -130,36 +153,51 @@ public class GraphDBManager {
 
 
     //returns who follows the userId
-    public ArrayList<String> getUserIdsFollower(String userId) {
+    public ArrayList<User> getUserIdsFollower(String displayName) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollower = new ArrayList<>();
+                ArrayList<User> userFollower = new ArrayList<>();
                 tx.run("MATCH (fr:User)-[:FOLLOW]->(fd:User {displayName: $userIdFollowed}) " +
-                                        "RETURN fr.displayName as userIdFollower ",
-                                parameters("userIdFollowed", userId))
+                                        "RETURN fr.displayName as userDisplayNameFollower, fr.profileImage as profileImage ",
+                                parameters("userIdFollowed", displayName))
                         .stream().forEach(record ->
-                                userIdsFollower.add(record.get("userIdFollower").asString())
+                                userFollower.add(
+                                        new User(null,
+                                                record.get("userDisplayNameFollower").asString(),
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                record.get("profileImage").asString()))
                         );
-                System.out.println("found " + userIdsFollower.size() + "followers");
-                return userIdsFollower;
+
+                System.out.println("found " + userFollower.size() + "followers");
+                return userFollower;
             });
         }
     }
 
     //returns who the userId follows
-    public ArrayList<String> getUserIdsFollowed(String userId) {
+    public ArrayList<User> getUserIdsFollowed(String displayName) {
         try(Session session = dbConnection.session()){
             return session.writeTransaction(tx -> {
-                ArrayList<String> userIdsFollowed = new ArrayList<>();
+                ArrayList<User> userFollowed = new ArrayList<>();
                 tx.run("MATCH (fr:User {displayName: $userIdFollower})-[:FOLLOW]->(fd:User) " +
-                                        "RETURN fd.displayName as userIdFollowed ",
-                                parameters("userIdFollower", userId))
+                                        "RETURN fd.displayName as userDisplayNameFollowed, fd.profileImage as profileImage ",
+                                parameters("userIdFollower", displayName))
                         .stream().forEach(record ->
-                                userIdsFollowed.add(record.get("userIdFollowed").asString())
+                                userFollowed.add(new User(
+                                        null,
+                                        record.get("userDisplayNameFollowed").asString(),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        record.get("profileImage").asString()))
                         );
 
-                System.out.println("found " + userIdsFollowed.size() + "followers");
-                return userIdsFollowed;
+                System.out.println("found " + userFollowed.size() + "followers");
+                return userFollowed;
             });
         }
     }
@@ -207,19 +245,19 @@ public class GraphDBManager {
     public void insertPost(Post post){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
-                tx.run("CREATE (q:Question {questionId: $questionId}); ",
-                        parameters("questionId", post.getGlobalId()));
+                tx.run("CREATE (q:Question {QuestionId: $questionId, Title: $title}); ",
+                        parameters("questionId", post.getGlobalId(), "title", post.getTitle()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {userId: $userId}), " +
-                                "(q:Question {questionId: $questionId}) " +
+                                "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (u)-[:POSTS_QUESTION]->(q); ",
                         parameters("userId", post.getOwnerUserId(), "questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (q:Question {questionId: $questionId}) " +
+                tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                                 "FOREACH (tagName IN $tagList | MERGE (q)-[:CONTAINS_TAG]->(t:Tag {name: tagName})); ",
                         parameters("questionId", post.getMongoPost_id() ,"tagList", post.getTags()));
                 return null;
@@ -266,7 +304,7 @@ public class GraphDBManager {
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
+                tx.run("MATCH (:Answer {answerId: $answerId})-[r:ANSWERS_TO]->(:Question {QuestionId: $questionId}) " +
                                 "DELETE r; ",
                         parameters( "questionId", answer.getParentPostId(), "answerId", answer.getAnswerId()));
                 return null;
@@ -301,24 +339,25 @@ public class GraphDBManager {
          */
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {questionId: $questionId}) " +
+                tx.run("MATCH (a:Answer)-[:ANSWERS_TO]->(:Question {QuestionId: $questionId}) " +
                                 "DETACH DELETE a; ",
                         parameters("questionId", post.getGlobalId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (q:Question {questionId: $questionId}) " +
+                tx.run("MATCH (q:Question {QuestionId: $questionId}) " +
                                 "DETACH DELETE q; ",
                         parameters("questionId", post.getGlobalId()));
                 return null;
             });
+            /*
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (t:Tag) " +
                                 "WHERE t.name in $tagList AND WHERE NOT (t)<-[:CONTAINS_TAG]-() " +
                                 "DELETE t; ",
                         parameters("tagList", post.getTags()));
                 return null;
-            });
+            });*/
         }
     }
 
@@ -498,7 +537,7 @@ public class GraphDBManager {
             boolean exists = (boolean) session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User {displayName: $displayName})-[r:FOLLOW]->(:User {displayName: $displayNameToCheck})" +
                                 "return r LIMIT 1",
-                        parameters("displayName", displayName, "displayName", displayNameToCheck));
+                        parameters("displayName", displayName, "displayNameToCheck", displayNameToCheck));
                 if (result.hasNext()) {
                     // esiste il follow
                     return true;
