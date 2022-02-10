@@ -91,6 +91,14 @@ public class ControllerUserBriefViewCell extends ListCell<User> {
         }
     }
 
+    private void eventupdateImage(User user) {
+        try {
+            imageViewProfileInterfaceBrief.setImage(new Image(user.getProfileImage()));
+        }catch (IllegalArgumentException | NullPointerException e){
+            imageViewProfileInterfaceBrief.setImage(new Image("/images/anonymous_user.png"));
+        }
+    }
+
     public void eventOpenUserProfile(User user) throws IOException {
             serverConnectionManager.send(new MessageGetUserData(user, false, pageType));
     }

@@ -104,17 +104,17 @@ public class DocumentDBManager {
     }
 
 
-    public Post getPostById(String postId){
+    public Post getPostById(String globalPostId){
 
         List<Answer> answersList = new ArrayList<>();
 
-        Document document = this.postsCollection.find(eq("GlobalPostId", postId)).first();
+        Document document = this.postsCollection.find(eq("GlobalPostId", globalPostId)).first();
 
         if(document == null) {
-            System.out.println("Found no document marching the id " + postId);
+            System.out.println("Found no document marching the id " + globalPostId);
             return new Post();
         }else{
-            this.increaseViewsPost(postId);
+            this.increaseViewsPost(globalPostId);
 
             document.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
@@ -125,14 +125,14 @@ public class DocumentDBManager {
                         answerDocument.getString("OwnerUserId"),
                         answerDocument.getString("DisplayName"),
                         answerDocument.getString("Body"),
-                        postId
+                        document.getObjectId("_id").toString()
                     )
                 );
             });
 
             Post post = new Post(
                     document.getObjectId("_id").toString(),
-                    postId,
+                    globalPostId,
                     document.getString("Title"),
                     answersList,
                     document.getLong("CreationDate"),
@@ -147,8 +147,8 @@ public class DocumentDBManager {
 
     }
 
-    private void increaseViewsPost(String postId) {
-        this.postsCollection.updateOne(eq("_id", new ObjectId(postId)), inc("ViewCount", 1));
+    private void increaseViewsPost(String globalPostId) {
+        this.postsCollection.updateOne(eq("GlobalPostId", globalPostId), inc("ViewCount", 1));
     }
 
     public ArrayList<Post> getPostByOwnerUsername(String username) {
@@ -262,6 +262,8 @@ public class DocumentDBManager {
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"))
                     .setProfileImage(userDoc.getString("ProfileImageUrl"));
 
+            if(userDoc.getBoolean("IsAdmin") != null && userDoc.getBoolean("IsAdmin") == true)
+                user.setIsAdmin(true);
         }
 
         return user;
@@ -315,7 +317,7 @@ public class DocumentDBManager {
                 .append("OwnerDisplayName", answer.getOwnerUserName())
                 .append("Score", 0);
         return (postsCollection.updateOne(
-                Filters.eq("_id", new ObjectId(answer.getParentPostId())),
+                Filters.eq("GlobalPostId", answer.getParentPostId()),
                 Updates.push("Answers", answerDocument)
         ).getModifiedCount()> 0);
 
@@ -457,14 +459,14 @@ public class DocumentDBManager {
 
     public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followerNumber", 1));
-        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followedNumber", 1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", 1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", 1));
     }
 
     public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
         //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
-        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followerNumber", -1));
-        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followedNumber", -1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", -1));
+        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", -1));
     }
 
 

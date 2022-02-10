@@ -215,13 +215,13 @@ public class ClientManager extends Thread{
                         }
                         switch (msgVote.getOperation()) {
                             case Create -> dbManager.insertRelationVote(
-                                    loggedUser.getUserId(),
+                                    loggedUser.getDisplayName(),
                                     answer.getAnswerId(),
                                     answer.getParentPostId(),
                                     msgVote.getVoto()
                             );
                             case Delete -> dbManager.removeRelationVote(
-                                    loggedUser.getUserId(),
+                                    loggedUser.getDisplayName(),
                                     answer.getAnswerId(),
                                     answer.getParentPostId(),
                                     msgVote.getVoto()
@@ -251,8 +251,6 @@ public class ClientManager extends Thread{
                     case Message_Get_User_Data:
                         MessageGetUserData msgGetUserData = (MessageGetUserData)msg;
                         User userToSearch = msgGetUserData.getObject();
-
-                        System.out.println(userToSearch);
 
                         if (userToSearch.getDisplayName() != null) {
                             String displayName = userToSearch.getDisplayName();

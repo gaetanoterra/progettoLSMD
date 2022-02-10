@@ -38,6 +38,7 @@ public class ControllerFullPostInterface {
     private ObservableList<Answer> answerObservableList;
     private ServerConnectionManager serverConnectionManager;
     private String currentPostId;
+    private String currentGlobalPostId;
     private PageType lastPage;
 
 
@@ -62,6 +63,7 @@ public class ControllerFullPostInterface {
     public void fillInterface(Post post) {
         System.out.println(post);
         currentPostId = post.getMongoPost_id();
+        currentGlobalPostId = post.getGlobalId();
         titleLabel.setText(post.getTitle());
         authorText.setText(post.getOwnerUserId());
         questionWebView.getEngine().loadContent(post.getBody(), "text/html");
@@ -75,7 +77,8 @@ public class ControllerFullPostInterface {
         }
         String answerBody = answerTextArea.getText();
 
-        ClientInterface.postNewAnswer(currentPostId, answerBody);
+        //uso il global per poter recuperare il post da mongo
+        ClientInterface.postNewAnswer(currentGlobalPostId, answerBody);
     }
 
     public void eventButtonRefresh(ActionEvent actionEvent) {

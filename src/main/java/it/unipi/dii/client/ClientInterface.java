@@ -150,9 +150,9 @@ public class ClientInterface extends Application{
     //                                                                                                                //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void getFullPostInterface(String id, PageType pageType) {
+    public static void getFullPostInterface(String globalId, PageType pageType) {
         try {
-            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, id));
+            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, globalId));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -167,8 +167,10 @@ public class ClientInterface extends Application{
         });
     }
 
-    public static void postNewAnswer(String postId, String body) {
+    public static void postNewAnswer(String globalPostId, String body) {
         Answer answer = new Answer(body);
+        answer.setParentPostId(globalPostId);
+
         try {
             serverConnectionManager.send(new MessageAnswer(OperationCD.Create, answer));
         } catch (IOException e) {
@@ -232,26 +234,32 @@ public class ClientInterface extends Application{
     }
 
     public static void fillProfileInterface(User u) throws IOException {
+        controllerProfileInterface.resetInterface();
         controllerProfileInterface.fillProfileInterface(u);
     }
 
     public static void fillCorrelatedUsersList(ArrayList<User> users){
+        controllerProfileInterface.resetCorrelatedInterface();
         controllerProfileInterface.fillPersonalCorrelatedUsers(users);
     }
 
     public static void fillPersonalRecommendedUsers(ArrayList<User> users){
+        controllerProfileInterface.resetRecommendedInterface();
         controllerProfileInterface.fillPersonalRecommendedUsers(users);
     }
 
     public static void fillAnswersUsers(ArrayList<Answer> answers){
+        controllerProfileInterface.resetAnswersInterface();
         controllerProfileInterface.fillAnswersUsers(answers);
     }
 
     public static void fillFollowerList(ArrayList<User> followers) {
+        controllerProfileInterface.resetFollowerInterface();
         controllerProfileInterface.fillFollowerList(followers);
     }
 
     public static void fillFollowedList(ArrayList<User> followers) {
+        controllerProfileInterface.resetFollowedInterface();
         controllerProfileInterface.fillFollowedList(followers);
     }
 

@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
@@ -70,6 +71,13 @@ public class ControllerExternalUserInterface {
             label_website.setText(user.getWebsiteURL());
         if (user.getAboutMe() != null)
             text_area_aboutme.setText(user.getAboutMe());
+
+        try {
+            profileImageImageView.setImage(new Image(user.getProfileImage()));
+        }catch (IllegalArgumentException | NullPointerException e){
+            profileImageImageView.setImage(new Image("/images/anonymous_user.png"));
+        }
+
         //user is logged, is admin, and it's not its own profile (only admin can remove others)
         this.button_delete_account.setVisible(ClientInterface.getLog() != null && ClientInterface.getLog().isAdmin() && !ClientInterface.getLog().getUserId().equals(user.getUserId()));
 

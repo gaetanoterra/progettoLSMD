@@ -90,10 +90,11 @@ public class DBManager {
 
 
 
-    public Post getPostById(String postId){
-        return documentDBManager.getPostById(postId);
+    public Post getPostById(String globalPostId){
+        return documentDBManager.getPostById(globalPostId);
     }
 
+    //TODO: se c'è tempo farla con neo4j (occhio ai tag)
     public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
         return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
     }
@@ -130,7 +131,7 @@ public class DBManager {
     //TODO: forse qui non è sha256
     public boolean insertAnswer(Answer answer){
 
-        String globalAnswerId = DigestUtils.sha256Hex(answer.getBody() + answer.getCreationDate().toString());
+        String globalAnswerId = DigestUtils.sha1Hex(answer.getBody() + answer.getCreationDate().toString());
         answer.setAnswerId(globalAnswerId);
 
         documentDBManager.insertAnswer(answer);
@@ -154,12 +155,12 @@ public class DBManager {
      */
     // se voto su/giu, e non ho votato -> punteggio + voto, e tipo voto registrato
     // se voto su/giu e ho votato -> altra situazione, e tipo voto aggiornato
-    public boolean insertRelationVote(String userIdVoter, String answerId, String postId, int voteAnswer){
-        int previousVote = graphDBManager.getVote(userIdVoter, answerId);
+    public boolean insertRelationVote(String userDisplayNameVoter, String answerId, String postId, int voteAnswer){
+        int previousVote = graphDBManager.getVote(userDisplayNameVoter, answerId);
         if (previousVote == 0) {
             //niente voto -> registro normalmente
             documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
-            graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
+            graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
         }
         else {
             // esiste già un voto -> eliminare quello precedente e inserire quello nuovo
@@ -168,20 +169,20 @@ public class DBManager {
             // se previousVote == 1 e voto == -1 -> voto answer += -2 e aggiorno relazione con nuovo voto
             if (previousVote == voteAnswer) {
                 documentDBManager.updateVotesAnswerAndReputation(postId, answerId, -voteAnswer);
-                graphDBManager.removeRelationVote(userIdVoter, answerId);
+                graphDBManager.removeRelationVote(userDisplayNameVoter, answerId);
             }
             else {
                 documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer - previousVote);
-                graphDBManager.insertRelationVote(userIdVoter, answerId, voteAnswer);
+                graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
             }
         }
 
         return true;
     }
-    public boolean removeRelationVote(String userId, String answerId, String postId, int voteAnswer){
+    public boolean removeRelationVote(String displayName, String answerId, String postId, int voteAnswer){
         //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo e aggiornarlo
         documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
-        graphDBManager.removeRelationVote(userId, answerId);
+        graphDBManager.removeRelationVote(displayName, answerId);
         return true;
     }
 
@@ -189,14 +190,14 @@ public class DBManager {
     --------------------------- FOLLOWs ---------------------------
      */
 
-    public boolean insertFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        graphDBManager.insertFollowRelationAndUpdate(userIdFollower, userIdFollowed);
-        documentDBManager.insertUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+    public boolean insertFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
+        graphDBManager.insertFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
+        documentDBManager.insertUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
         return true;
     }
-    public boolean removeFollowRelationAndUpdate(String userIdFollower, String userIdFollowed){
-        graphDBManager.removeFollowRelationAndUpdate(userIdFollower, userIdFollowed);
-        documentDBManager.removeUserFollowerAndFollowedRelation(userIdFollower, userIdFollowed);
+    public boolean removeFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
+        graphDBManager.removeFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
+        documentDBManager.removeUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
         return true;
     }
 

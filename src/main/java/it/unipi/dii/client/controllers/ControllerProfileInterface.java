@@ -127,9 +127,11 @@ public class ControllerProfileInterface {
         //serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
 
         Platform.runLater(() -> {
+
             if (u.getProfileImage() != null) {
                 profileImageImageView.setImage(new Image(u.getProfileImage()));
             }
+
             displayNameLabel.setText(u.getDisplayName());
             aboutMeWebView.getEngine().loadContent(u.getAboutMe());
             locationLabel.setText(u.getLocation());
@@ -305,5 +307,29 @@ public class ControllerProfileInterface {
 
     public void loadCorrelatedUsers(Event event) throws IOException {
         serverConnectionManager.send(new MessageGetCorrelatedUsers(null, serverConnectionManager.getLoggedUser().getDisplayName()));
+    }
+
+    public void resetInterface() {
+        postObservableList.removeAll();
+    }
+
+    public void resetCorrelatedInterface() {
+        userCorrelatedObservableList.removeAll();
+    }
+
+    public void resetRecommendedInterface() {
+        userRecommendedObservableList.removeAll();
+    }
+
+    public void resetAnswersInterface() {
+        answersObservableList.removeAll();
+    }
+
+    public void resetFollowerInterface() {
+        followersObservableList.removeAll();
+    }
+
+    public void resetFollowedInterface() {
+        whoIFollowObservableList.removeAll();
     }
 }

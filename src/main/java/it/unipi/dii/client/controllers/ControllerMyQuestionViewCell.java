@@ -31,6 +31,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
     private PageType lastPage;
     private ServerConnectionManager serverConnectionManager;
     private String postId;
+    private String globalPostId;
 
     public ControllerMyQuestionViewCell(PageType pageType){
         serverConnectionManager = ClientInterface.getServerConnectionManager();
@@ -58,6 +59,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
 
             this.titleLabel.setText(post.getTitle());
             this.postId = post.getMongoPost_id();
+            this.globalPostId = post.getGlobalId();
 
             //this.viewsLabel.setText("Answers:\n" + post.getAnswersNumber());
             this.deleteBinImageview.setOnMouseClicked(mouseEvent -> {
@@ -68,14 +70,8 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
                 }
             });
 
-            MessageGetPostByParameter messageGetPostByParameter = new MessageGetPostByParameter(Parameter.Id, post.getGlobalId());
-
             this.titleLabel.setOnMouseClicked(arg0 -> {
-                try {
-                    serverConnectionManager.send(messageGetPostByParameter);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                ClientInterface.getFullPostInterface(globalPostId, lastPage);
             });
 
             setText(null);

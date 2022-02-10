@@ -36,6 +36,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
 
     private FXMLLoader pbvFXMLLoader;
     private String mongoPostID;
+    private String globalId;
     private PageType currentPageType;
     private ContextMenu contextMenu;
 
@@ -67,14 +68,17 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
             titleTextLabel.setText(post.getTitle());
 
             this.mongoPostID = post.getMongoPost_id();
+            this.globalId = post.getGlobalId();
+
             initContextMenu(post);
             this.anchorPanePost.setOnContextMenuRequested(contextMenuEvent ->
                 contextMenu.show(this.anchorPanePost, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY())
             );
-            this.anchorPanePost.setOnMouseClicked(mouseEvent -> {
+
+            this.titleTextLabel.setOnMouseClicked(mouseEvent -> {
                 MouseButton button = mouseEvent.getButton();
                 if (button == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                    ClientInterface.getFullPostInterface(mongoPostID, currentPageType);
+                    ClientInterface.getFullPostInterface(globalId, currentPageType);
                 }
             });
 
