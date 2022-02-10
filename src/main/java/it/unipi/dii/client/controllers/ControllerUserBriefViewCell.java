@@ -68,19 +68,26 @@ public class ControllerUserBriefViewCell extends ListCell<User> {
             this.displayName = user.getDisplayName();
             labelDisplayName.setText(displayName);
 
-            if(!user.getProfileImage().equals(""))
+            try {
                 imageViewProfileInterfaceBrief.setImage(new Image(user.getProfileImage()));
+            }catch (IllegalArgumentException iae){
+                imageViewProfileInterfaceBrief.setImage(new Image("/images/anonymous_user.png"));
+            }finally{
+                this.labelDisplayName.setOnMouseClicked(mouseEvent -> {
+                    try {
+                        eventOpenUserProfile(user);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
 
-            this.labelDisplayName.setOnMouseClicked(mouseEvent -> {
-                try {
-                    eventOpenUserProfile(user);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                this.anchorPaneUser.setOnScroll(mouseEvent -> {
+                    eventupdateImage(user);
+                });
 
-            setText(null);
-            setGraphic(anchorPaneUser);
+                setText(null);
+                setGraphic(anchorPaneUser);
+            }
         }
     }
 

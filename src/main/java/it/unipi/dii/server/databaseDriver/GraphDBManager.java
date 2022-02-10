@@ -57,13 +57,12 @@ public class GraphDBManager {
 
  */
 
-    //TODO: recuperare anche l'id del post per aprirlo quando si clicca
     public ArrayList<Answer> findUserAnswers(String username){
         try (Session session = dbConnection.session())
         {
             return session.readTransaction(tx -> {
                 Result result = tx.run("""
-                                        CALL db.index.fulltext.queryNodes("display_name_fulltext_index", $username)
+                                        CALL db.index.fulltext.queryNodes("displayname_fulltext_index", $username)
                                         YIELD node
                                         MATCH (node)-[:ANSWERS_WITH]->(a:Answer)<-[v:VOTE]-(uv:User)
                                         RETURN a.answerId as answerId, a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC

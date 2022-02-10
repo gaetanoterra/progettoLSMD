@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<SplitPane fx:id="answerCellSplitPane" dividerPositions="0.20236336779911374" prefHeight="217.0" prefWidth="679.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane fx:id="answerCellSplitPane" dividerPositions="0.20236336779911374" prefHeight="217.0" prefWidth="679.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
    <items>
       <BorderPane fx:id="votesBoderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="132.0">
          <top>

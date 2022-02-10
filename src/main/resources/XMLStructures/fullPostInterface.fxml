@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<AnchorPane prefHeight="608.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface">
+<AnchorPane prefHeight="608.0" prefWidth="849.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerFullPostInterface">
    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="684.0" prefWidth="849.0">
       <BorderPane prefHeight="61.0" prefWidth="849.0">
          <top>

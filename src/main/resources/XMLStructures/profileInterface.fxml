@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<ScrollPane prefHeight="772.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerProfileInterface">
+<ScrollPane prefHeight="772.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerProfileInterface">
 
       <VBox prefHeight="754.0" prefWidth="800.0" spacing="15.0">
          <HBox alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="800.0" spacing="15.0">

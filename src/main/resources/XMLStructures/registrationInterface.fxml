@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/signupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerRegistrationInterface">
+<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/signupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerRegistrationInterface">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="191.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="583.0" minWidth="10.0" prefWidth="328.0" />

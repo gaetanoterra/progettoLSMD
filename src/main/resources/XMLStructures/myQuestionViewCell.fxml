@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<SplitPane fx:id="splitPanePost" dividerPositions="0.19901719901719903" prefHeight="120.0" prefWidth="763.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane fx:id="splitPanePost" dividerPositions="0.19901719901719903" prefHeight="120.0" prefWidth="763.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
   <items>
       <Label fx:id="viewsLabel" alignment="TOP_CENTER" prefHeight="16.0" prefWidth="103.0" text="Votes">
          <font>

@@ -7,10 +7,10 @@ import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.time.Instant;
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
@@ -41,12 +41,20 @@ public class DocumentDBManager {
 
     //indici su mongodb
     private final String indexes = """
-    db.Posts.createIndex({"Answers.Id": 1}, {unique: true, partialFilterExpression: {"Answers.Id": {$exists: true}}, name: "Answers.Id"})
-    db.Posts.createIndex({Id: 1}, {unique: true, name: "Id"})
-    db.Posts.createIndex({Body: "text"}, {name:"Body"})
-    db.Users.createIndex({Id: 1}, {unique: true, name: "Id"})
+        db.Users.createIndex({DisplayName:1}, { unique: true } )
+        db.Posts.createIndex({Title:"text",Body:"text"});
         """;
 
+    private void init(){
+
+        postsCollection.createIndex(Indexes.compoundIndex(
+                                                Indexes.text("Title"),
+                                                Indexes.text("Body")
+                                    )
+        );
+        usersCollection.createIndex(new Document("DisplayName",1), new IndexOptions().unique(true));
+        postsCollection.createIndex(new Document("GlobalPostId",1), new IndexOptions().unique(true));
+    }
     public DocumentDBManager(){
         this(DBExecutionMode.LOCAL);
     }
@@ -60,67 +68,13 @@ public class DocumentDBManager {
         mongoDatabase = mongoClient.getDatabase("PseudoStackOverDB");
         postsCollection = mongoDatabase.getCollection(POSTSCOLLECTION);
         usersCollection = mongoDatabase.getCollection(USERSCOLLECTION);
-
+        init();
     }
 
     public void close(){
         this.mongoClient.close();
     }
 
-    public String[] findMostPopularTagsByLocation(String location, int numTags){
-        //trovo tutti gli utenti relativi ad una locazione
-        //scorro tutti i post che hanno ownerUserId tra gli utenti trovati prima
-        //raggruppo per tag e li conto
-        ArrayList<String> tagList = new ArrayList<>();
-        ArrayList<String> userIdList = new ArrayList<>();
-
-        usersCollection.find(eq("Location", location)).forEach(document -> {
-            userIdList.add(document.getInteger("Id").toString());
-        });
-
-        /*try (MongoCursor<Document> cursor = usersCollection.find(eq("Location", location)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                User u = new User();
-                //mi interessa solo lo userId
-                u.setId(doc.getString("_id"));
-                userList.add(u);
-            }
-        }*/
-
-        //adesso che ho la lista di utenti scorro i post e trovo quelli che hanno ownerUserId tra i miei
-        Bson matchStage = match(in("OwnerUserId", (userIdList.toArray(new String[userIdList.size()]))));
-        Bson unwindStage = unwind("$Tags");
-        //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
-        Bson groupStage = group("$Tags", sum("totaleTags",1));
-        Bson sortStage = sort(descending("totaleTags"));
-        Bson limitStage = limit(numTags);
-
-        postsCollection.aggregate(
-                Arrays.asList(
-                        matchStage,
-                        unwindStage,
-                        groupStage,
-                        sortStage,
-                        limitStage
-                )
-        ).forEach(doc ->
-                tagList.add(doc.getString("_id"))
-        );
-
-        /*try (MongoCursor<Document> cursor = postsCollection.aggregate(Arrays.asList(matchStage, unwindStage, groupStage, sortStage, limitStage)).iterator())
-        {
-            while (cursor.hasNext())
-            {
-                Document doc = cursor.next();
-                tagList.add(doc.getString("_id"));
-            }
-        }*/
-
-        return ((tagList.toArray(new String[tagList.size()]).length == 0)? null : tagList.toArray(new String[tagList.size()]));
-    }
 
     //restituisco gli id degli utenti più esperti
     public String[] findTopExpertsByTag(String tag, int num){
@@ -194,7 +148,6 @@ public class DocumentDBManager {
     }
 
     private void increaseViewsPost(String postId) {
-        // Assuming the document already exists in the MongoDB collection
         this.postsCollection.updateOne(eq("_id", new ObjectId(postId)), inc("ViewCount", 1));
     }
 
@@ -202,7 +155,7 @@ public class DocumentDBManager {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(all("DisplayName", username)).forEach(doc -> {
-            /*
+
             List<Answer> answersList = new ArrayList<>();
             doc.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
@@ -219,23 +172,14 @@ public class DocumentDBManager {
             });
             Post p = new Post(
                     doc.getObjectId("_id").toString(),
+                    doc.getString("GlobalPostId"),
                     doc.getString("Title"),
                     answersList,
                     doc.getLong("CreationDate"),
                     doc.getString("Body"),
                     doc.getString("OwnerUserId"),
+                    doc.getString("DisplayName"),
                     doc.getList("Tags", String.class)
-            );*/
-            Post p = new Post(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("GlobalPostId"),
-                    doc.getString("Title"),
-                    null,
-                    null,
-                    null,
-                    null,
-                    username,
-                    null
             );
 
             posts.add(p);
@@ -348,20 +292,33 @@ public class DocumentDBManager {
         return user.toArray(new User[user.size()]);
     }
 
-    private String generateTempIdAnswer(String postId, String userId) {
-        //millisecondi da epoch + id del post + id dell'utente
-        // - L
-        return Instant.now().toEpochMilli() + postId + userId;
-    }
-
-    //TODO: rifare. il parentPostId deve essere il GlobalPostId di mongo
+    /*
+    db.Posts.updateOne(
+        { _id: ??},
+        {$push: {
+                Answers:{
+                    answerId: ??,
+                    Body: ??,
+                    CreationDate: ??,
+                    OwnerDisplayName:??,
+                    Score:0
+                }
+            }
+        }
+    );
+     */
     public boolean insertAnswer(Answer answer){
+        Document answerDocument = new Document()
+                .append("answerId", answer.getAnswerId())
+                .append("Body", answer.getBody())
+                .append("CreationDate", answer.getCreationDate())
+                .append("OwnerDisplayName", answer.getOwnerUserName())
+                .append("Score", 0);
+        return (postsCollection.updateOne(
+                Filters.eq("_id", new ObjectId(answer.getParentPostId())),
+                Updates.push("Answers", answerDocument)
+        ).getModifiedCount()> 0);
 
-      //  postsCollection.updateOne(eq("_id", new ObjectId(postId)), Updates.push("Answers", doc));
-        // 3)
-       // postsCollection.deleteOne(eq("TempId", tempId));
-
-        return true;
     }
 
     public boolean insertPost(Post post){
@@ -379,9 +336,7 @@ public class DocumentDBManager {
 
         try {
             InsertOneResult result = postsCollection.insertOne(doc);
-            post.setMongoPost_id(result.getInsertedId().asObjectId().getValue().toString());
             // set post id as the objectId
-            postsCollection.updateOne(eq("_id", result.getInsertedId().asObjectId().getValue()), set("Id", post.getMongoPost_id()));
             return result.wasAcknowledged();
         }
         catch (MongoWriteException mwe) {
@@ -405,9 +360,6 @@ public class DocumentDBManager {
 
         try {
             InsertOneResult result = usersCollection.insertOne(userDoc);
-            user.setUserId(result.getInsertedId().asObjectId().getValue().toString());
-            // set user id as the objectId
-            usersCollection.updateOne(eq("_id", result.getInsertedId().asObjectId().getValue()), set("Id", user.getUserId()));
             return result.wasAcknowledged();
         }
         catch (MongoWriteException mwe) {
@@ -433,7 +385,7 @@ public class DocumentDBManager {
         // atomicamente recupero la risposta e la elimino dal post
         String answerId = answer.getAnswerId();
         Document beforeRemoveDocument = postsCollection.findOneAndUpdate(
-                and(eq("Id", answer.getParentPostId()), eq("Answers.Id", answerId)),
+                and(eq("_id", answer.getParentPostId()), eq("Answers.answerId", answerId)),
                 new Document("$pull",
                         new Document("Answers",
                                 new Document("Id", answerId)
@@ -465,8 +417,7 @@ public class DocumentDBManager {
     }
 
     public boolean removeUser(String displayName){
-        usersCollection.deleteOne(eq("DisplayName", displayName));
-        return true;
+        return (usersCollection.deleteOne(eq("DisplayName", displayName)).getDeletedCount() > 0);
     }
 
     public boolean updateUserData(User user){
