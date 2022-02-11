@@ -80,11 +80,9 @@ public class DocumentDBManager {
         Bson matchTag = match(eq("Tags", tag));
         Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
-        Bson groupByOwnerUserId = group("$Answers.OwnerUserId", sum("totaleRisposteUtente",1));
+        Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente",1));
         Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
         Bson limitStage = limit(num);
-
-        //Bson projectStage = project(fields(include("$Answers.OwnerUserId")));
 
         postsCollection.aggregate(
                 Arrays.asList(
