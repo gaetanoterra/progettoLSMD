@@ -5,7 +5,6 @@ import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.javatuples.Triplet;
 
 import java.time.Instant;
 import java.util.*;
@@ -22,7 +21,7 @@ public class DBManager {
 
     public DBManager(DBExecutionMode dbe){
         documentDBManager = new DocumentDBManager(dbe);
-        graphDBManager = new GraphDBManager();
+        graphDBManager = new GraphDBManager(dbe);
     }
 
     public void close(){
@@ -95,8 +94,8 @@ public class DBManager {
     }
 
     //TODO: se c'è tempo farla con neo4j (occhio ai tag)
-    public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
-        return documentDBManager.getPostByOwnerUsername(ownerPostUsername);
+    public ArrayList<Post> getPostsByOwnerUsername(String ownerPostUsername) {
+        return documentDBManager.getPostsByOwnerUsername(ownerPostUsername);
     }
 
 

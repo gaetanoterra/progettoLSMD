@@ -152,7 +152,7 @@ public class ClientInterface extends Application{
 
     public static void getFullPostInterface(String globalId, PageType pageType) {
         try {
-            serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Id, globalId));
+            serverConnectionManager.send(new MessageGetPostsByParameter(Parameter.Id, globalId));
         } catch (IOException e) {
             e.printStackTrace();
         }

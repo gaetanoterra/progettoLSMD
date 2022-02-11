@@ -1,6 +1,6 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
+import it.unipi.dii.Libraries.Messages.MessageGetPostsByParameter;
 import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
@@ -97,7 +97,7 @@ public class ControllerPostSearchInterface {
     @FXML
     public void eventButtonSearch(ActionEvent actionEvent) throws IOException {
        resetInterface();
-       serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Text,textfield_search.getText()));
+       serverConnectionManager.send(new MessageGetPostsByParameter(Parameter.Text,textfield_search.getText()));
     }
 
     @FXML

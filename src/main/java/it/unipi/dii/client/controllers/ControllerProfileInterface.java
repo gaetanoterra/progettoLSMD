@@ -16,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,7 +25,6 @@ import javafx.scene.web.WebView;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class ControllerProfileInterface {
@@ -119,7 +117,7 @@ public class ControllerProfileInterface {
 
     public void fillProfileInterface(User u) throws IOException {
         //carico subito i post
-        serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
+        serverConnectionManager.send(new MessageGetPostsByParameter(Parameter.Username, serverConnectionManager.getLoggedUser().getDisplayName()));
 
         //serverConnectionManager.send(new MessageGetAnswers(serverConnectionManager.getLoggedUser().getDisplayName()));
         //serverConnectionManager.send(new MessageGetFollowData(null, serverConnectionManager.getLoggedUser().getDisplayName(), true));

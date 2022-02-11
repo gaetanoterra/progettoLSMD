@@ -232,20 +232,20 @@ public class ClientManager extends Thread{
                         break;
 
                     case Message_Get_Posts_By_Parameter:
-                        MessageGetPostByParameter msgParameter = (MessageGetPostByParameter) msg;
+                        MessageGetPostsByParameter msgParameter = (MessageGetPostsByParameter) msg;
 
                         ArrayList<Post>  postArrayList = new ArrayList<>();
 
                         switch (msgParameter.getParameter()) {
                             case Text -> postArrayList.addAll(dbManager.getPostsByText(msgParameter.getValue()));
-                            case Username -> postArrayList = dbManager.getPostByOwnerUsername(msgParameter.getValue());
+                            case Username -> postArrayList = dbManager.getPostsByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
                         System.out.println("sending out new Message_Get_Posts_By_Parameter containing " +
                                             postArrayList.size() +
                                             " posts"
                         );
-                        send(new MessageGetPostByParameter(msgParameter.getParameter(), ((MessageGetPostByParameter) msg).getValue(),  postArrayList));
+                        send(new MessageGetPostsByParameter(msgParameter.getParameter(), ((MessageGetPostsByParameter) msg).getValue(),  postArrayList));
                         break;
 
                     case Message_Get_User_Data:

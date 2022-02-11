@@ -26,7 +26,7 @@ public class Server {
     public Server(int portNumber, int backlogLength, DBExecutionMode dbe) throws IOException{
         this.portNumber = portNumber;
         this.backlogLength = backlogLength;
-        this.dbManager = new DBManager();
+        this.dbManager = new DBManager(dbe);
         this.serverSocket = new ServerSocket(this.portNumber, this.backlogLength);
         // Per mantenere traccia dei thread creati (e quindi delle connessioni con i client)
         // li conservo in una lista, visto che essendo i thread normali thread (e non daemon), vivranno

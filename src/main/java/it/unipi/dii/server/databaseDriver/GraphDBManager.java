@@ -1,5 +1,6 @@
 package it.unipi.dii.server.databaseDriver;
 
+import com.mongodb.client.MongoClients;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
@@ -25,13 +26,20 @@ public class GraphDBManager {
         }
     }
 
-    public GraphDBManager(){
-        String uri = "bolt://localhost:7687";
+    public GraphDBManager(DBExecutionMode dbe) {
+        String uri = null;
+        switch (dbe) {
+            case LOCAL -> uri = "bolt://localhost:7687";
+            case CLUSTER -> uri = "bolt://172.16.4.117:7687";
+        }
         String user = "neo4j";
         String password = "NEO4J";
         dbConnection = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
-
         init();
+    }
+
+    public GraphDBManager(){
+        this(DBExecutionMode.LOCAL);
     }
 
     public void close(){
@@ -364,7 +372,7 @@ public class GraphDBManager {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fr:User {displayName: $userDisplayNameFollower})-[r:FOLLOW]->(fd:User {displayName: $userdisplayNameFollowed}) " +
                                 "DELETE r; ",
-                        parameters("displayName", userDisplayNameFollower, "userdisplayNameFollowed", userdisplayNameFollowed));
+                        parameters("userDisplayNameFollower", userDisplayNameFollower, "userdisplayNameFollowed", userdisplayNameFollowed));
                 return null;
             });
         }

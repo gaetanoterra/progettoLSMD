@@ -1,6 +1,6 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
+import it.unipi.dii.Libraries.Messages.MessageGetPostsByParameter;
 import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.Post;
@@ -55,7 +55,7 @@ public class ControllerExternalUserInterface {
         fillExternalUserInterface();
 
         //sending the request for user posts
-        this.serverConnectionManager.send(new MessageGetPostByParameter(Parameter.Username, user.getDisplayName()));
+        this.serverConnectionManager.send(new MessageGetPostsByParameter(Parameter.Username, user.getDisplayName()));
         this.serverConnectionManager.send(new MessageFollow(Opcode.Message_Follow, OperationCD.Check, user));
     }
 

@@ -7,7 +7,6 @@ import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -46,7 +45,6 @@ public class DocumentDBManager {
         """;
 
     private void init(){
-
         postsCollection.createIndex(Indexes.compoundIndex(
                                                 Indexes.text("Title"),
                                                 Indexes.text("Body")
@@ -62,8 +60,7 @@ public class DocumentDBManager {
     public DocumentDBManager(DBExecutionMode dbe){
         switch (dbe) {
             case LOCAL   -> mongoClient = MongoClients.create("mongodb://localhost:27017");
-            case REMOTE  -> mongoClient = MongoClients.create("mongodb://localhost:27017");   //TODO: aggiungere Modalità remota
-            case CLUSTER -> mongoClient = MongoClients.create("mongodb://host-1:27020, host-2:27020, host-3:27020/?retryWrites=true&w=majority&wtimeout=10000");
+            case CLUSTER -> mongoClient = MongoClients.create("mongodb://172.16.4.117:27017,172.16.4.118:27017,172.16.4.119:27017/?replicaSet=pseudostackoverdb&retryWrites=true&w=majority&wtimeout=10000");
         }
         mongoDatabase = mongoClient.getDatabase("PseudoStackOverDB");
         postsCollection = mongoDatabase.getCollection(POSTSCOLLECTION);
@@ -151,7 +148,7 @@ public class DocumentDBManager {
         this.postsCollection.updateOne(eq("GlobalPostId", globalPostId), inc("ViewCount", 1));
     }
 
-    public ArrayList<Post> getPostByOwnerUsername(String username) {
+    public ArrayList<Post> getPostsByOwnerUsername(String username) {
 
         ArrayList<Post> posts = new ArrayList<>();
         postsCollection.find(all("DisplayName", username)).forEach(doc -> {
@@ -180,12 +177,12 @@ public class DocumentDBManager {
                     doc.getString("OwnerUserId"),
                     doc.getString("DisplayName"),
                     doc.getList("Tags", String.class)
-            );
+            ).setViews(doc.getInteger("ViewCount"));
 
             posts.add(p);
         });
 
-        System.out.println("getPostByOwnerUsername: found " + posts.size() + " posts matching the username " + username);
+        System.out.println("getPostsByOwnerUsername: found " + posts.size() + " posts matching the username " + username);
         return posts;
     }
 

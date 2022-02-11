@@ -2,7 +2,6 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
-import it.unipi.dii.client.controllers.ControllerPostSearchInterface;
 import it.unipi.dii.client.controllers.PageType;
 
 import java.io.*;
@@ -95,11 +94,11 @@ public class ServerConnectionManager extends Thread {
                         break;
 
                     case Message_Get_Posts_By_Parameter:
-                        MessageGetPostByParameter messageGetPostByParameter = (MessageGetPostByParameter) message;
-                        switch (messageGetPostByParameter.getParameter()){
-                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostByParameter.getPostList(), messageGetPostByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
-                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostByParameter.getPostList().get(0));
-                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostByParameter.getPostList());
+                        MessageGetPostsByParameter messageGetPostsByParameter = (MessageGetPostsByParameter) message;
+                        switch (messageGetPostsByParameter.getParameter()){
+                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostsByParameter.getPostList(), messageGetPostsByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
+                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostsByParameter.getPostList().get(0));
+                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostsByParameter.getPostList());
                         }
                         break;
 

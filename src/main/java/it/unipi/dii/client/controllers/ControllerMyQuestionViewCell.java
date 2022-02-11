@@ -1,9 +1,7 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostByParameter;
 import it.unipi.dii.Libraries.Messages.MessagePost;
 import it.unipi.dii.Libraries.Messages.OperationCD;
-import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
