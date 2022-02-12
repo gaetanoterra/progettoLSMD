@@ -16,40 +16,24 @@ import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Indexes.descending;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
 
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 
-//TODO: Necessaria revisione dei metodi per verificare se sono stati implementati nella loro completezza
 public class DocumentDBManager {
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private final String POSTSCOLLECTION = "Posts";
     private final String USERSCOLLECTION = "Users";
-    //TODO: Da rimuovere se necessario
-    private final String IdMetadata = "MetadataDocument";
-    //TODO: Da rimuovere se necessario
-    private final String IdValueMetadata = "LastId";
     private MongoCollection<Document> postsCollection;
     private MongoCollection<Document> usersCollection;
 
-    //indici su mongodb
-    private final String indexes = """
-        db.Users.createIndex({DisplayName:1}, { unique: true } )
-        db.Posts.createIndex({Title:"text",Body:"text"});
-        """;
-
     private void init(){
-        postsCollection.createIndex(Indexes.compoundIndex(
-                                                Indexes.text("Title"),
-                                                Indexes.text("Body")
-                                    )
-        );
+        postsCollection.createIndex(
+                Indexes.compoundIndex(Indexes.text("Title"), Indexes.text("Body")));
         usersCollection.createIndex(new Document("DisplayName",1), new IndexOptions().unique(true));
         postsCollection.createIndex(new Document("GlobalPostId",1), new IndexOptions().unique(true));
     }
@@ -71,16 +55,26 @@ public class DocumentDBManager {
     public void close(){
         this.mongoClient.close();
     }
-
-
+/*
+    db.Posts.aggregate(
+    [
+        {$match: {"Tags":"??"}},
+        {$unwind: "$Answers"},
+        {$match: {"Answers.DisplayName":{$ne:null}}},
+        {$group: { _id:"$Answers.DisplayName", totaleRisposteUtente: { $sum: "$Answers.Score" } } },
+        {$sort:  { "totaleRisposteUtente": -1 } }
+    ]
+)
+*/
     //restituisco gli id degli utenti più esperti
     public String[] findTopExpertsByTag(String tag, int num){
         ArrayList<String> userIdList = new ArrayList<>();
 
+        Bson matchNonNullUsername = match(eq("Answers.DisplayName", ne("Answers.DisplayName",null)));
         Bson matchTag = match(eq("Tags", tag));
         Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
-        Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente",1));
+        Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente","$Answers.Score"));
         Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
         Bson limitStage = limit(num);
 
@@ -88,6 +82,7 @@ public class DocumentDBManager {
                 Arrays.asList(
                         matchTag,
                         unwindAnswers,
+                        matchNonNullUsername,
                         groupByOwnerUserId,
                         sortByCountDesc,
                         limitStage
@@ -237,6 +232,7 @@ public class DocumentDBManager {
         System.out.println("found " + postArrayList.size() + " posts matching the text given as input");
         return postArrayList;
     }
+
     public User getUserDataByUsername(String displayName){
 
         Document userDoc = usersCollection.find(eq("DisplayName", displayName)).first();
@@ -263,7 +259,6 @@ public class DocumentDBManager {
 
         return user;
     }
-
 
     public User[] getUsersRank(){
 
@@ -365,7 +360,6 @@ public class DocumentDBManager {
         }
     }
 
-    //
     public boolean checkUser(String displayName) {
         boolean res = false;
 

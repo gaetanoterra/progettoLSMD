@@ -29,7 +29,7 @@ public class GraphDBManager {
     public GraphDBManager(DBExecutionMode dbe) {
         String uri = null;
         switch (dbe) {
-            case LOCAL -> uri = "bolt://localhost:7687";
+            case LOCAL -> uri   = "bolt://localhost:7687";
             case CLUSTER -> uri = "bolt://172.16.4.117:7687";
         }
         String user = "neo4j";
@@ -69,10 +69,7 @@ public class GraphDBManager {
         }
 
     }
-/*
 
-
- */
 
     public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
         try(Session session = dbConnection.session()){
@@ -132,8 +129,7 @@ public class GraphDBManager {
         }
     }
 
-    //si potrebbe aggiungere l'immagine del profilo (se inserita nel graph) alle cose da prendere
-    //funzione che effettua la query per trovare gli utenti correlati all'utente username (amici di amici)
+
     public ArrayList<User> getCorrelatedUsers(String username){
         ArrayList<User> users = new ArrayList<>();
 
@@ -163,8 +159,7 @@ public class GraphDBManager {
         }
     }
 
-    //TODO: controllare questa query
-    //funzione che effettua la query per trovare gli utenti correlati ad un certo tag
+
     public ArrayList<User> getRecommendedUsers(String displayName, String tagName){
         try (Session session = dbConnection.session())
         {
@@ -544,7 +539,6 @@ public class GraphDBManager {
         RETURN top_users, title, answers_no
      */
 
-    //TODO: questa non viene chiamata da nessuna parte, infilarla
     public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
         String query =
                 """
