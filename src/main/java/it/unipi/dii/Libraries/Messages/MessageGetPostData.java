@@ -2,8 +2,6 @@ package it.unipi.dii.Libraries.Messages;
 
 import it.unipi.dii.Libraries.Post;
 
-import java.util.ArrayList;
-
 //classe inutilizzata?
 public class MessageGetPostData extends MessageReadObjectQuery {
 

@@ -1,5 +1,6 @@
 package it.unipi.dii.client.controllers;
 
+import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.MessageGetUserData;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
@@ -7,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
-import it.unipi.dii.Libraries.Answer;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
@@ -56,7 +56,7 @@ public class ControllerAnswerCell extends ListCell<Answer> {
             setText(null);
             setGraphic(null);
         }else{
-            answerCellFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/answerCell.fxml"));
+            answerCellFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/AnswerCell.fxml"));
             answerCellFXMLLoader.setController(this);
             try {
                 this.answerCellFXMLLoader.load();
@@ -98,7 +98,7 @@ public class ControllerAnswerCell extends ListCell<Answer> {
                         currentPageType
                 ));
             } catch (IOException e) {
-                System.out.println("Can't find user");
+                System.out.println("User not found");
             }
         });
         contextMenu.getItems().addAll(item1);

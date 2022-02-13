@@ -1,17 +1,19 @@
 package it.unipi.dii.server.databaseDriver;
 
-import com.mongodb.client.MongoClients;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.*;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.neo4j.driver.Values.NULL;
 import static org.neo4j.driver.Values.parameters;
-
-import org.neo4j.driver.Record;
 
 
 //classe preposta ad effettuare le query del graph database
@@ -52,15 +54,10 @@ public class GraphDBManager {
         try (Session session = dbConnection.session()){
             Map<String, Integer> tags = new HashMap<>();
 
-            List<Record> records = session.readTransaction(new TransactionWork<List<Record>>() {
-                @Override
-                public List<Record> execute (Transaction tx){
-                    return tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
-                            "RETURN t.tagNames as Name, count(*) AS NQuestions " +
-                            "ORDER BY NQuestions DESC " +
-                            "LIMIT 10").list();
-                }
-            });
+            List<Record> records = session.readTransaction(tx -> tx.run("MATCH (q:Question)-[:CONTAINS_TAG]->(t:Tag) " +
+                    "RETURN t.tagNames as Name, count(*) AS NQuestions " +
+                    "ORDER BY NQuestions DESC " +
+                    "LIMIT 10").list());
 
             for(final Record record : records){
                 tags.put(record.get("Name").asString(), record.get("NQuestions").asInt());
@@ -69,35 +66,6 @@ public class GraphDBManager {
         }
 
     }
-
-
-    public ArrayList<Post> getPostByOwnerUsername(String ownerPostUsername) {
-        try(Session session = dbConnection.session()){
-            return session.writeTransaction(tx -> {
-                ArrayList<Post> userPosts = new ArrayList<>();
-                tx.run("MATCH (u:User {displayName: $userDisplayName})-[:POSTS_QUESTION]->(q:Question) " +
-                                        "RETURN q.QuestionId as questionId, q.Title as title",
-                                parameters("userDisplayName", ownerPostUsername))
-                        .stream().forEach(record ->
-                                userPosts.add(
-                                        new Post(null,
-                                                record.get("questionId").asString(),
-                                                record.get("title").asString(),
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                ownerPostUsername,
-                                                null))
-                        );
-
-                System.out.println("found " + userPosts.size() + " posts");
-                return userPosts;
-            });
-        }
-
-    }
-
 
     //CREATE FULLTEXT INDEX displayname_fulltext_index IF NOT EXISTS FOR (n:User) ON EACH [ n.displayName]
     public ArrayList<Answer> findUserAnswers(String username){
@@ -122,7 +90,7 @@ public class GraphDBManager {
                                 .setParentPostId(r.get("answerId").asString()));
                 }
 
-                System.out.println("found " + answers.size() + " answers");
+                System.out.println("Found " + answers.size() + " answers");
 
                 return answers;
             });
@@ -214,7 +182,7 @@ public class GraphDBManager {
                                                 record.get("profileImage").asString()))
                         );
 
-                System.out.println("found " + userFollower.size() + "followers");
+                System.out.println("Found " + userFollower.size() + " followers");
                 return userFollower;
             });
         }
@@ -239,7 +207,7 @@ public class GraphDBManager {
                                         record.get("profileImage").asString()))
                         );
 
-                System.out.println("found " + userFollowed.size() + "followers");
+                System.out.println("Found " + userFollowed.size() + " followers");
                 return userFollowed;
             });
         }
@@ -427,7 +395,7 @@ public class GraphDBManager {
 
     public int getVote(String displayName, String answerId){
         try(Session session = dbConnection.session()){
-            int voto = (int) session.readTransaction(tx -> {
+            return session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User {displayName: $displayName})-[r:VOTE]->(:Answer {answerId: $answerId})" +
                                 "return r.VoteTypeId as Voto LIMIT 1",
                         parameters("displayName", displayName, "answerId", answerId));
@@ -437,7 +405,6 @@ public class GraphDBManager {
                 }
                 return 0;
             });
-            return voto;
         }
     }
 
@@ -490,11 +457,12 @@ public class GraphDBManager {
                     l.add(record.get("tag_names").asString());
                     Post p = new Post().setTags(l);
                     if(!hotTopicsForTopUsersHashMap.containsKey(u)){
-                        hotTopicsForTopUsersHashMap.put(u, new ArrayList<Pair<Post, Integer>>());
+                        hotTopicsForTopUsersHashMap.put(u, new ArrayList<>());
                     }
 
-                    ((ArrayList<Pair<Post, Integer>>)hotTopicsForTopUsersHashMap.get(u)).add(
-                            new Pair(p, record.get("tags_top_users").asInt()));
+                    hotTopicsForTopUsersHashMap.get(u).add(
+                            new Pair(p, record.get("tags_top_users").asInt())
+                    );
 
 
                 }
@@ -552,7 +520,7 @@ public class GraphDBManager {
                     ORDER BY u.displayName, answers_no DESC LIMIT 3
                     RETURN title, answers_no
                 }
-                RETURN top_users, title, answers_no        
+                RETURN top_users, title, answers_no
                 """;
 
         try(Session session = dbConnection.session()){
@@ -565,9 +533,9 @@ public class GraphDBManager {
                             .setTitle(result.next().get("title").asString())
                             .setOwnerUserName(result.next().get("top_users").asString());
                     if(!mostAnsweredTopUserPostsHashMap.containsKey(u)){
-                        mostAnsweredTopUserPostsHashMap.put(u, new ArrayList<Post>());
+                        mostAnsweredTopUserPostsHashMap.put(u, new ArrayList<>());
                     }
-                    ((ArrayList<Post>)mostAnsweredTopUserPostsHashMap.get(u)).add(p);
+                    mostAnsweredTopUserPostsHashMap.get(u).add(p);
                 }
                 return mostAnsweredTopUserPostsHashMap;
             });
@@ -576,17 +544,13 @@ public class GraphDBManager {
 
     public boolean checkFollowRelation(String displayName, String displayNameToCheck) {
         try(Session session = dbConnection.session()){
-            boolean exists = (boolean) session.readTransaction(tx -> {
+            return session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User {displayName: $displayName})-[r:FOLLOW]->(:User {displayName: $displayNameToCheck})" +
                                 "return r LIMIT 1",
                         parameters("displayName", displayName, "displayNameToCheck", displayNameToCheck));
-                if (result.hasNext()) {
-                    // esiste il follow
-                    return true;
-                }
-                return false;
+                // esiste il follow
+                return result.hasNext();
             });
-            return exists;
         }
     }
 }

@@ -1,9 +1,9 @@
 package it.unipi.dii.server;
 
-import java.io.IOException;
-
 import it.unipi.dii.server.databaseDriver.DBExecutionMode;
 import org.apache.commons.cli.*;
+
+import java.io.IOException;
 
 public class ServerStart {
 
@@ -66,7 +66,7 @@ public class ServerStart {
             System.out.println("A new server socket cannot be allocated. See stack trace for error details");
             ioe.printStackTrace();
         } catch (ParseException pe) {
-            System.out.println("Unexpected parsing exception:" + pe.getMessage());
+            System.out.println("Unexpected parsing exception: " + pe.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

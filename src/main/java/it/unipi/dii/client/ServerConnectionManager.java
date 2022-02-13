@@ -4,41 +4,34 @@ import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.controllers.PageType;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 
 //classe preposta a ricevere le risposte dal server e passare i risultati ai vari Controller
 public class ServerConnectionManager extends Thread {
 
     private ObjectOutputStream messageOutputStream;
-    private  ObjectInputStream messageInputStream;
+    private ObjectInputStream messageInputStream;
     private Socket clientSocket;
-    private static boolean waiting = true; //vedo se sto aspettando la risposta del server
-    private int portNumber;
     private User loggedUser;
 
     public ServerConnectionManager(int porta, InetAddress in) throws IOException{
-        portNumber = porta;
         clientSocket = new Socket(in, porta);
         messageOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        messageInputStream  = new ObjectInputStream(clientSocket.getInputStream());
-    }
-
-    public ServerConnectionManager(int porta, InetAddress in, ClientInterface cl) throws IOException{
-        portNumber = porta;
-        clientSocket = new Socket(in, porta);
-        messageOutputStream = new  ObjectOutputStream(clientSocket.getOutputStream());
         messageInputStream = new ObjectInputStream(clientSocket.getInputStream());
     }
 
     public void run(){
 
         try {
-            System.out.println("richiesta connessione inviata al server");
+            System.out.println("Requested connection to server");
 
             while(true){
                 Message message = receive();
-                System.out.println("ricevuto messaggio dal server di tipo:" + message.getOpcode());
+                System.out.println("Received message with opCode: " + message.getOpcode());
 
                 switch (message.getOpcode()){
 
@@ -178,17 +171,8 @@ public class ServerConnectionManager extends Thread {
     }
 
     public void send(Message messaggio) throws IOException {
-        waiting = true;
         messageOutputStream.reset();
         messageOutputStream.writeObject(messaggio);
-    }
-
-    public static boolean isWaiting(){
-        return waiting;
-    }
-
-    public static void setWaiting(boolean in_attesa) {
-        ServerConnectionManager.waiting = in_attesa;
     }
 
     public void setLoggedUser(User loggedUser) {

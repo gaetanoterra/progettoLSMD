@@ -1,8 +1,6 @@
 package it.unipi.dii.Libraries.Messages;
 
-import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
-import it.unipi.dii.client.controllers.PageType;
 
 import java.util.ArrayList;
 

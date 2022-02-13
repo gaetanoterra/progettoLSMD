@@ -1,6 +1,5 @@
 package it.unipi.dii.Libraries.Messages;
 
-import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -36,7 +35,7 @@ public class ControllerFriendOfFriendsViewCell extends ListCell<User> {
             setGraphic(null);
         } else {
             if (this.fofFXMLLoader == null) {
-                this.fofFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/myQuestionViewCell.fxml"));
+                this.fofFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/MyQuestionViewCell.fxml"));
                 this.fofFXMLLoader.setController(this);
                 try {
                     this.fofFXMLLoader.load();

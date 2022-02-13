@@ -9,11 +9,11 @@ import it.unipi.dii.client.ServerConnectionManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.event.ActionEvent;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class ControllerAnalysisInterface {
-
-    //TODO: quando premo sul bottone per accedere alla pagina delle statistiche devo lanciare la query per popolare la pie chart dei most popular tags
-    //TODO: quando premo update aggiorno la pie chart dei most popular tags
 
     private ServerConnectionManager serverConnectionManager = ClientInterface.getServerConnectionManager();
     private ObservableList<XYChart.Series<String, Integer>> tagObservableMap;
@@ -57,7 +54,6 @@ public class ControllerAnalysisInterface {
     @FXML
     private TableColumn<Map<String, String>, String> table_column_user, table_column_tags;
 
-    //TODO: metodo da chiamare allo switch in questa interfaccia
     public void initAnalyticsInterface(PageType pageType) throws IOException {
         lastPageVisited = pageType;
         initMPUsersList();
@@ -122,7 +118,6 @@ public class ControllerAnalysisInterface {
         );
     }
 
-    //TODO: necessario metodo che selezionando un utente della lista apre il suo profilo (va modificata la switchScene aggiungendo l'utente su cui switchare, servirà anche per aprire un Post specifico)
     public void eventSelectItem(MouseEvent mouseEvent) throws IOException {
         serverConnectionManager.send(
                 new MessageGetUserData(
@@ -157,11 +152,14 @@ public class ControllerAnalysisInterface {
         );
     }
 
-    //TODO: necessario metodo che selezionando un utente della lista apre il suo profilo (va modificata la switchScene aggiungendo l'utente su cui switchare, servirà anche per aprire un Post specifico)
-    public void eventSelectExpert(MouseEvent mouseEvent) {
-
-        //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);
-        System.out.println(list_view_experts.getSelectionModel().getSelectedItem());
+    public void eventSelectExpert(MouseEvent mouseEvent) throws IOException {
+        serverConnectionManager.send(
+                new MessageGetUserData(
+                        new User(null, list_view_mpusers.getSelectionModel().getSelectedItem(), null, null, null, null),
+                        false,
+                        PageType.ANALYSIS_INTERFACE
+                )
+        );
     }
 
 
@@ -182,7 +180,6 @@ public class ControllerAnalysisInterface {
 
     public void resetHotTopicsMap(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
 
-    //TODO: fare questa query con un hashmap
     public void fillHotTopicsMap(HashMap<User, ArrayList<Pair<Post, Integer>>>  map){
 
         HashMap<User, ArrayList<Pair<Post, Integer>>> lista = map;

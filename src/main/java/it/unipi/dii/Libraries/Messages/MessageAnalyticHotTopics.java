@@ -6,12 +6,12 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MessageAnalyticHotTopics extends Message{
-    private HashMap<User, ArrayList<Pair<Post, Integer>>>  map;
 
-    public MessageAnalyticHotTopics(HashMap<User, ArrayList<Pair<Post, Integer>>>  map){
+    private HashMap<User, ArrayList<Pair<Post, Integer>>> map;
+
+    public MessageAnalyticHotTopics(HashMap<User, ArrayList<Pair<Post, Integer>>> map) {
         this.map = map;
         this.opcode = Opcode.Message_Analytic_Hot_Topics;
     }

@@ -1,7 +1,5 @@
 package it.unipi.dii.client.controllers;
 
-import it.unipi.dii.Libraries.Messages.MessageGetPostsByParameter;
-import it.unipi.dii.Libraries.Messages.Parameter;
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;

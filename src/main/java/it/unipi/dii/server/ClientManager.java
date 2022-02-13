@@ -12,7 +12,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 //classe preposta a ricevere le richieste dal client e richiamare le funzioni del DBManager
-//prova branch-gaetano
 public class ClientManager extends Thread{
 
     private final DBManager dbManager;
@@ -33,7 +32,7 @@ public class ClientManager extends Thread{
         try{
             while(true) {
                 Message msg = receive();
-                System.out.println("received  message:" + msg.getOpcode());
+                System.out.println("Received message with opCode: " + msg.getOpcode());
 
                 switch (msg.getOpcode()){
 
@@ -164,8 +163,8 @@ public class ClientManager extends Thread{
 
                             case Delete -> {
                                 dbManager.removeUser(user);
-                                System.out.println("loggedUser: " + loggedUser.getDisplayName());
-                                System.out.println("userPassed: " + user.getDisplayName());
+                                System.out.println("Logged user: " + loggedUser.getDisplayName());
+                                System.out.println("User inside message: " + user.getDisplayName());
                                 if (user.getDisplayName().equals(loggedUser.getDisplayName())){
                                     //se sto eliminando il mio account,effettuo un logout e torno alla postsearchinterface
                                     loggedUser = null;
@@ -241,7 +240,7 @@ public class ClientManager extends Thread{
                             case Username -> postArrayList = dbManager.getPostsByOwnerUsername(msgParameter.getValue());
                             case Id -> postArrayList.add(dbManager.getPostById(msgParameter.getValue()));
                         }
-                        System.out.println("sending out new Message_Get_Posts_By_Parameter containing " +
+                        System.out.println("Sending out a new Message_Get_Posts_By_Parameter containing " +
                                             postArrayList.size() +
                                             " posts"
                         );

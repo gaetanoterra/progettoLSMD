@@ -64,7 +64,7 @@ public class ControllerRegistrationInterface {
                 errorRegistrationLabel.setText("");
             }
             else {
-                System.out.println("Failed registration");
+                System.out.println("Registration failed");
                 errorRegistrationLabel.setText("Username already present");
                 errorRegistrationLabel.setTextFill(Color.web("#0076a3"));
             }

@@ -3,9 +3,7 @@ package it.unipi.dii.client.controllers;
 import it.unipi.dii.client.ClientInterface;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-
-import java.io.IOException;
+import javafx.scene.control.TextArea;
 
 //classe preposta a controllare l'interfaccia del messaggio
 public class ControllerMessage {

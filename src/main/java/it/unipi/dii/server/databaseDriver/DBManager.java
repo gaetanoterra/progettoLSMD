@@ -93,7 +93,6 @@ public class DBManager {
         return documentDBManager.getPostById(globalPostId);
     }
 
-    //TODO: se c'è tempo farla con neo4j (occhio ai tag)
     public ArrayList<Post> getPostsByOwnerUsername(String ownerPostUsername) {
         return documentDBManager.getPostsByOwnerUsername(ownerPostUsername);
     }
@@ -127,7 +126,6 @@ public class DBManager {
     --------------------------- ANSWERS ---------------------------
      */
 
-    //TODO: forse qui non è sha256
     public boolean insertAnswer(Answer answer){
 
         String globalAnswerId = DigestUtils.sha1Hex(answer.getBody() + answer.getCreationDate().toString());
@@ -179,7 +177,6 @@ public class DBManager {
         return true;
     }
     public boolean removeRelationVote(String displayName, String answerId, String postId, int voteAnswer){
-        //TODO: L'operazione DELETE non viene utilzzata, valutare se mantenere questo metodo e aggiornarlo
         documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
         graphDBManager.removeRelationVote(displayName, answerId);
         return true;

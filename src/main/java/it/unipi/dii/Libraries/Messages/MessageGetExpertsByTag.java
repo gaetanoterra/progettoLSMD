@@ -1,9 +1,5 @@
 package it.unipi.dii.Libraries.Messages;
 
-import it.unipi.dii.Libraries.User;
-
-import java.util.ArrayList;
-
 //classe messaggio, utilizzata per richiedere utenti per tag al server
 public class MessageGetExpertsByTag extends Message {
 

@@ -46,7 +46,7 @@ public class ControllerMyQuestionViewCell extends ListCell<Post> {
             setGraphic(null);
         } else {
             if (this.mqvcFXMLLoader == null) {
-                this.mqvcFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/myQuestionViewCell.fxml"));
+                this.mqvcFXMLLoader = new FXMLLoader(getClass().getResource("/XMLStructures/MyQuestionViewCell.fxml"));
                 this.mqvcFXMLLoader.setController(this);
                 try {
                     this.mqvcFXMLLoader.load();

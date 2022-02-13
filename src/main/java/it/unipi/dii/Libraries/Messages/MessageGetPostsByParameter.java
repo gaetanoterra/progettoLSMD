@@ -5,7 +5,7 @@ import it.unipi.dii.Libraries.Post;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-//classe messaggio, utilizzata per richiedere Post in base ad un parametro answer al server
+//classe messaggio, utilizzata per richiedere Post in base a un parametro answer al server
 public class MessageGetPostsByParameter extends Message{
 
     private Parameter parameter;
@@ -13,17 +13,11 @@ public class MessageGetPostsByParameter extends Message{
     private ArrayList<Post> postList;
 
     public MessageGetPostsByParameter(Parameter parameter, String value){
-        this.opcode = Opcode.Message_Get_Posts_By_Parameter;
-        this.parameter = parameter;
-        this.value = value;
-        this.postList = null;
+        this(parameter, value, new ArrayList<>());
     }
 
     public MessageGetPostsByParameter(Parameter parameter, String value, Post[] post){
-        this.opcode = Opcode.Message_Get_Posts_By_Parameter;
-        this.parameter = parameter;
-        this.value = value;
-        this.postList = new ArrayList<>(Arrays.asList(post));
+        this(parameter, value, new ArrayList<>(Arrays.asList(post)));
     }
 
     public MessageGetPostsByParameter(Parameter parameter, String value, ArrayList<Post> post){

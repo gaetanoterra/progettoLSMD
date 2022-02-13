@@ -2,12 +2,10 @@ package it.unipi.dii.client.controllers;
 
 import it.unipi.dii.Libraries.Messages.MessageGetUserData;
 import it.unipi.dii.Libraries.Post;
-
 import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -107,7 +105,7 @@ public class ControllerPostBriefViewCell extends ListCell<Post> {
                         currentPageType
                 ));
             } catch (IOException e) {
-                System.out.println("Can't find user");
+                System.out.println("User not found");
             }
         });
         contextMenu.getItems().addAll(item1);

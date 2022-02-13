@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/signupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipi.dii.client.controllers.ControllerRegistrationInterface">
+<GridPane fx:id="signUpGridPane" alignment="CENTER" hgap="5.0" minHeight="494.0" minWidth="500.0" prefHeight="682.0" prefWidth="664.0" stylesheets="@../Style/SignupInterface.css" vgap="5.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.client.controllers.ControllerRegistrationInterface">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="191.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="583.0" minWidth="10.0" prefWidth="328.0" />
@@ -30,6 +37,24 @@
             <Font name="Courier New" size="16.0" />
          </font>
       </Label>
+      <VBox prefHeight="42.0" prefWidth="327.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <TextField fx:id="userNameTextField" prefHeight="26.0" prefWidth="166.0" />
+            <Label fx:id="errorRegistrationLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="327.0" textAlignment="CENTER" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets top="30.0" />
+         </GridPane.margin>
+      </VBox>
+      <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="249.0" text="E-Mail address" GridPane.rowIndex="3">
+         <font>
+            <Font name="Courier New" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="eMailTextField" prefHeight="26.0" prefWidth="166.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="250.0" text="Password:" GridPane.rowIndex="4">
          <font>
             <Font name="Courier New" size="16.0" />
@@ -47,26 +72,8 @@
          </font>
       </Label>
       <TextArea fx:id="aboutMeTextArea" prefHeight="105.0" prefWidth="363.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Button fx:id="registerButton" mnemonicParsing="false" onAction="#eventButtonRegister" prefHeight="40.0" prefWidth="106.0" text="Register" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-      <Label id="newUserLabel" fx:id="newUserLabel" alignment="CENTER" prefHeight="16.0" prefWidth="303.0" text="NEW USER" GridPane.columnIndex="1" />
-      <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="249.0" text="E-Mail address" GridPane.rowIndex="3">
-         <font>
-            <Font name="Courier New" size="16.0" />
-         </font>
-      </Label>
-      <TextField fx:id="eMailTextField" prefHeight="26.0" prefWidth="166.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <Button mnemonicParsing="false" onAction="#eventRegistrationBack" prefHeight="42.0" prefWidth="79.0" text="Back" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <VBox prefHeight="42.0" prefWidth="327.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-         <children>
-            <TextField fx:id="userNameTextField" prefHeight="26.0" prefWidth="166.0" />
-            <Label fx:id="errorRegistrationLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="327.0" textAlignment="CENTER" />
-         </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <GridPane.margin>
-            <Insets top="30.0" />
-         </GridPane.margin>
-      </VBox>
+      <Button mnemonicParsing="false" onAction="#eventButtonRegister" prefHeight="40.0" prefWidth="106.0" text="Register" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <Label alignment="CENTER" prefHeight="16.0" prefWidth="303.0" text="NEW USER" GridPane.columnIndex="1" />
    </children>
 </GridPane>

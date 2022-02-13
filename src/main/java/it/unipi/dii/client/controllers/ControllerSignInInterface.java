@@ -21,13 +21,9 @@ public class ControllerSignInInterface {
     @FXML
     private Label errorMessageSignInLabel;
     @FXML
-    private TextField textfield_signin_username;
+    private TextField textfieldSignInUsername;
     @FXML
     private PasswordField signInPasswordField;
-    @FXML
-    private Button button_confirm_signin;
-    @FXML
-    private Button button_signup_signin;
 
     public ControllerSignInInterface(){
         this.serverConnectionManager = ClientInterface.getServerConnectionManager();
@@ -38,7 +34,7 @@ public class ControllerSignInInterface {
     public void eventButtonConfirmSignIn(ActionEvent actionEvent) throws IOException {
         serverConnectionManager.send(new MessageLogin(new User()
                                                             .setPassword(signInPasswordField.getText())
-                                                            .setDisplayName(textfield_signin_username.getText())));
+                                                            .setDisplayName(textfieldSignInUsername.getText())));
 
     }
 

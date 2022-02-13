@@ -22,7 +22,7 @@
                </BorderPane.margin></Text>
          </left>
       </BorderPane>
-      <Separator fx:id="titleSeparator" prefWidth="200.0" stylesheets="@../Style/FullPostInterfaceStyle.css" />
+      <Separator prefWidth="200.0" stylesheets="@../Style/FullPostInterfaceStyle.css" />
       <HBox prefHeight="161.0" prefWidth="849.0">
          <children>
             <WebView fx:id="questionWebView" prefHeight="88.0" prefWidth="770.0">
@@ -66,7 +66,7 @@
                   <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="button_back" mnemonicParsing="false" onAction="#eventButtonBack" prefHeight="25.0" prefWidth="59.0" text="Back">
+            <Button mnemonicParsing="false" onAction="#eventButtonBack" prefHeight="25.0" prefWidth="59.0" text="Back">
                <HBox.margin>
                   <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
                </HBox.margin>

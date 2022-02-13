@@ -33,7 +33,6 @@ public class Server {
         // anche se il server dovesse crashare, ma senza le risorse necessarie per collegarsi al database,
         // visto che attualmente sono come dei singleton gestiti dal server e assegnati ai vari client, e quindi
         // cadendo il server con una eccezione libero pure le risorse legate ai database
-        //TODO: Verificare se questa gestione dei thread ha senso nella classe
         this.clientManagersCreated = new ArrayList<>();
     }
 

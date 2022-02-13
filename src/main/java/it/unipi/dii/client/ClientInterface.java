@@ -2,9 +2,8 @@ package it.unipi.dii.client;
 
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.*;
-import it.unipi.dii.Libraries.User;
 import it.unipi.dii.Libraries.Post;
-
+import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.controllers.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -38,9 +37,6 @@ public class ClientInterface extends Application{
     private static ControllerWrite controllerWriteInterface;
     private static ControllerExternalUserInterface controllerExternalUserInterface;
 
-
-    //TODO: necessario un metodo e una variabile che teng conto dell'ultima interfaccia visitata per implementare i back buttons (forse mantenere la pagina all'interno dei vari controller). allo switch della pagina si chiama un metodo init dove si inizializza la lastPageVisited
-
     @Override
     public void start (Stage primaryStage) throws Exception{
         initScenesArray();
@@ -61,41 +57,41 @@ public class ClientInterface extends Application{
     private void initScenesArray() throws IOException  {
         scenes = new Scene[PageType.values().length];
 
-        FXMLLoader PostSearchInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
-        scenes[PageType.POST_SEARCH_INTERFACE.ordinal()] = new Scene(PostSearchInterfaceloader.load());
-        controllerPostSearchInterface = PostSearchInterfaceloader.getController();
+        FXMLLoader PostSearchInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/PostSearchInterface.fxml"));
+        scenes[PageType.POST_SEARCH_INTERFACE.ordinal()] = new Scene(PostSearchInterfaceLoader.load());
+        controllerPostSearchInterface = PostSearchInterfaceLoader.getController();
 
-        FXMLLoader signInInterfaceloader  = new FXMLLoader(getClass().getResource("/XMLStructures/signin.fxml"));
-        scenes[PageType.SIGN_IN.ordinal()] = new Scene(signInInterfaceloader.load());
-        controllerSignInInterface = signInInterfaceloader.getController();
+        FXMLLoader signInInterfaceLoader  = new FXMLLoader(getClass().getResource("/XMLStructures/SigninInterface.fxml"));
+        scenes[PageType.SIGN_IN.ordinal()] = new Scene(signInInterfaceLoader.load());
+        controllerSignInInterface = signInInterfaceLoader.getController();
 
-        FXMLLoader signupInterfaceloader = new FXMLLoader(getClass().getResource("/XMLStructures/registrationInterface.fxml"));
-        scenes[PageType.SIGN_UP.ordinal()] = new Scene(signupInterfaceloader.load());
-        controllerSignUpInterface = signupInterfaceloader.getController();
+        FXMLLoader signupInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/SignupInterface.fxml"));
+        scenes[PageType.SIGN_UP.ordinal()] = new Scene(signupInterfaceLoader.load());
+        controllerSignUpInterface = signupInterfaceLoader.getController();
 
-        FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/fullPostInterface.fxml"));
+        FXMLLoader fullPostInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/FullPostInterface.fxml"));
         scenes[PageType.FULL_POST.ordinal()] = new Scene(fullPostInterfaceLoader.load());
         controllerFullPostInterface = fullPostInterfaceLoader.getController();
 
-        FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/profileInterface.fxml"));
+        FXMLLoader profileInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/ProfileInterface.fxml"));
         scenes[PageType.PROFILE_INTERFACE.ordinal()] = new Scene(profileInterfaceLoader.load());
         controllerProfileInterface = profileInterfaceLoader.getController();
 
-        FXMLLoader analysisInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/analysisInterface.fxml"));
+        FXMLLoader analysisInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/AnalysisInterface.fxml"));
         scenes[PageType.ANALYSIS_INTERFACE.ordinal()] = new Scene(analysisInterfaceLoader.load());
         controllerAnalysisInterface = analysisInterfaceLoader.getController();
 
 
-        FXMLLoader writeInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/write.fxml"));
+        FXMLLoader writeInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/WriteInterface.fxml"));
         scenes[PageType.WRITE.ordinal()] = new Scene(writeInterfaceLoader.load());
         controllerWriteInterface = writeInterfaceLoader.getController();
 
-        FXMLLoader externalUserInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/externalUserInterface.fxml"));
+        FXMLLoader externalUserInterfaceLoader = new FXMLLoader(getClass().getResource("/XMLStructures/ExternalUserInterface.fxml"));
         scenes[PageType.EXTERNAL_PROFILE.ordinal()] = new Scene(externalUserInterfaceLoader.load());
         controllerExternalUserInterface = externalUserInterfaceLoader.getController();
 
    /*
-        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/analysisInterface.fxml"));
+        interfaces[PageType.ANALYSIS_INTERFACE.ordinal()]   = new FXMLLoader(getClass().getResource("/AnalysisInterface.fxml"));
      */
     }
 
@@ -106,7 +102,7 @@ public class ClientInterface extends Application{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void fillPostSearchInterface(List<Post> postList){
-        System.out.println("Updating Full Post interface with " + postList.size() + " posts.");
+        System.out.println("Updating Full Post interface with " + postList.size() + " posts");
         controllerPostSearchInterface.resetInterface();
         controllerPostSearchInterface.fillPostPane(postList);
     }
@@ -316,22 +312,24 @@ public class ClientInterface extends Application{
 
     public static void fillMPTagChart(Map<String, Integer> tags){
         controllerAnalysisInterface.resetTagList();
-        if(tags != null)
+        if(tags != null) {
             controllerAnalysisInterface.fillTagList(tags);
-        //TODO: chiamare un metodo della controllerAnalysisInterface che riempia la piechart
+        }
     }
 
 
     public static void fillUserRanking(User[] users){
         controllerAnalysisInterface.resetMPUsersList();
-        if(users != null)
+        if(users != null) {
             controllerAnalysisInterface.fillMPUsersList(users);
+        }
     }
 
     public static void fillExpertsByTag(String[] users){
         controllerAnalysisInterface.resetExpertUsersList();
-        if(users != null)
+        if(users != null) {
             controllerAnalysisInterface.fillExpertUsersList(users);
+        }
     }
 
     public static void fillHotTopicsUsers(HashMap<User, ArrayList<Pair<Post, Integer>>> map){

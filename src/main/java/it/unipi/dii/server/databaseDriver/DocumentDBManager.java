@@ -1,5 +1,6 @@
 package it.unipi.dii.server.databaseDriver;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
@@ -9,18 +10,16 @@ import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.*;
 
-import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Indexes.descending;
 import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
-
-import com.mongodb.BasicDBObject;
-import org.bson.types.ObjectId;
 
 public class DocumentDBManager {
 
@@ -101,7 +100,7 @@ public class DocumentDBManager {
         Document document = this.postsCollection.find(eq("GlobalPostId", globalPostId)).first();
 
         if(document == null) {
-            System.out.println("Found no document marching the id " + globalPostId);
+            System.out.println("Found no document matching the id " + globalPostId);
             return new Post();
         }else{
             this.increaseViewsPost(globalPostId);
@@ -175,7 +174,7 @@ public class DocumentDBManager {
             posts.add(p);
         });
 
-        System.out.println("getPostsByOwnerUsername: found " + posts.size() + " posts matching the username " + username);
+        System.out.println("Found " + posts.size() + " posts matching the username " + username);
         return posts;
     }
 
@@ -229,7 +228,7 @@ public class DocumentDBManager {
                         }
         );
 
-        System.out.println("found " + postArrayList.size() + " posts matching the text given as input");
+        System.out.println("Found " + postArrayList.size() + " posts matching the text given as input");
         return postArrayList;
     }
 
@@ -253,7 +252,7 @@ public class DocumentDBManager {
                     .setWebsiteURL(userDoc.getString("WebsiteUrl"))
                     .setProfileImage(userDoc.getString("ProfileImageUrl"));
 
-            if(userDoc.getBoolean("IsAdmin") != null && userDoc.getBoolean("IsAdmin") == true)
+            if(userDoc.getBoolean("IsAdmin") != null && userDoc.getBoolean("IsAdmin"))
                 user.setIsAdmin(true);
         }
 
@@ -383,11 +382,13 @@ public class DocumentDBManager {
                         )
                 )
         );
-        // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
-        for (Document answerDoc: beforeRemoveDocument.getList("Answers", Document.class)) {
-            if (answerDoc.getString("Id").equals(answerId)) {
-                usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
-                break;
+        if (beforeRemoveDocument != null) {
+            // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
+            for (Document answerDoc : beforeRemoveDocument.getList("Answers", Document.class)) {
+                if (answerDoc.getString("Id").equals(answerId)) {
+                    usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+                    break;
+                }
             }
         }
 
@@ -400,8 +401,10 @@ public class DocumentDBManager {
         Document beforeRemoveDocument = postsCollection.findOneAndDelete(eq("GlobalPostId", post.getGlobalId()));
         // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
         // questa operazione va fatta su tutti gli utenti che hanno risposto
-        for (Document answerDoc: beforeRemoveDocument.getList("Answers", Document.class)) {
-            usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+        if (beforeRemoveDocument != null) {
+            for (Document answerDoc : beforeRemoveDocument.getList("Answers", Document.class)) {
+                usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+            }
         }
 
         return true;
@@ -447,61 +450,13 @@ public class DocumentDBManager {
 
 
     public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
-        //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
         usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", 1));
         usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", 1));
     }
 
     public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
-        //TODO: Controllare se l'aggiornamento è corretto (differenza poco chiara tra followerNumber e followedNumber)
         usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", -1));
         usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", -1));
     }
-
-
-
-    /*
-          db.Posts.aggregate(
-              [
-                  { $unwind: { path:"$Tags" } },
-                  { $group:  { _id:"$Tags", tagsNo: { $count: {} } } },
-                  { $sort:   { "tagsNo": -1 } }
-              ]
-          );
-          [
-            { _id: 'c#', tagsNo: 9540 },
-            { _id: '.net', tagsNo: 7174 },
-            { _id: 'java', tagsNo: 5284 },
-            { _id: 'asp.net', tagsNo: 4649 },
-            { _id: 'c++', tagsNo: 3830 },
-            { _id: 'javascript', tagsNo: 3409 },
-            { _id: 'php', tagsNo: 2794 },
-            { _id: 'python', tagsNo: 2606 },
-            { _id: 'sql-server', tagsNo: 2537 },
-            { _id: 'sql', tagsNo: 2523 },
-            { _id: 'windows', tagsNo: 1842 },
-            { _id: 'html', tagsNo: 1770 },
-            { _id: 'visual-studio', tagsNo: 1529 },
-            { _id: 'database', tagsNo: 1508 },
-            { _id: 'mysql', tagsNo: 1464 },
-            { _id: 'c', tagsNo: 1437 },
-            { _id: 'jquery', tagsNo: 1279 },
-            { _id: 'asp.net-mvc', tagsNo: 1216 },
-            { _id: 'css', tagsNo: 1185 },
-            { _id: 'xml', tagsNo: 1176 }
-          ]
-      */
-    public Map<String,Integer> findMostPopularTags(){
-        HashMap<String,Integer> mostPopularTagsHashMap = new HashMap<>();
-        postsCollection.aggregate(
-                Arrays.asList(
-                        Aggregates.unwind("$Tags"),
-                        Aggregates.group("$Tags", new BsonField("tagsNo", Aggregates.count())),
-                        Aggregates.sort(Sorts.descending("tagsNo"))
-                )
-        ).forEach(doc -> mostPopularTagsHashMap.put(doc.getString("_id"), doc.getInteger("tagsNo")));
-        return  mostPopularTagsHashMap;
-    }
-
 
 }

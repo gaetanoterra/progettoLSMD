@@ -61,7 +61,6 @@ public class ControllerFullPostInterface {
     }
 
     public void fillInterface(Post post) {
-        System.out.println(post);
         currentPostId = post.getMongoPost_id();
         currentGlobalPostId = post.getGlobalId();
         titleLabel.setText(post.getTitle());

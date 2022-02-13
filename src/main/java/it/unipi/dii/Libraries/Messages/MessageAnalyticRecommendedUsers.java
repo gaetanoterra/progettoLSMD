@@ -4,9 +4,9 @@ public class MessageAnalyticRecommendedUsers extends Message {
     private String username;
     private String tag;
     private String[] users;
-    private int numUSers = 10;
+    private int numUsers = 10;
 
-    public MessageAnalyticRecommendedUsers (String username,String tag, String[] users){
+    public MessageAnalyticRecommendedUsers(String username,String tag, String[] users) {
         this.opcode = Opcode.Message_Analytics_Recommended_Users;
         this.username = username;
         this.tag = tag;
@@ -21,7 +21,7 @@ public class MessageAnalyticRecommendedUsers extends Message {
 
     public void setUsers(String[] users) { this.users = users; }
 
-    public void setNumUSers(int numUSers) { this.numUSers = numUSers; }
+    public void setNumUsers(int numUsers) { this.numUsers = numUsers; }
 
     public void setTag(String tag) { this.tag = tag; }
 

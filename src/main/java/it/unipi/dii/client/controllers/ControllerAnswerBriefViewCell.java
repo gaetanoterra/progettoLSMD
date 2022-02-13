@@ -3,12 +3,10 @@ package it.unipi.dii.client.controllers;
 import it.unipi.dii.Libraries.Answer;
 import it.unipi.dii.Libraries.Messages.MessageAnswer;
 import it.unipi.dii.Libraries.Messages.OperationCD;
-
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;

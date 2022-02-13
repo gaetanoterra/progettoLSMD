@@ -2,9 +2,6 @@ package it.unipi.dii.client.controllers;
 
 
 import it.unipi.dii.Libraries.Answer;
-import it.unipi.dii.Libraries.Messages.MessageLogOut;
-import it.unipi.dii.Libraries.Messages.MessageUser;
-import it.unipi.dii.Libraries.Messages.Opcode;
 import it.unipi.dii.Libraries.Messages.*;
 import it.unipi.dii.Libraries.Post;
 import it.unipi.dii.Libraries.User;
@@ -23,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 
 
@@ -234,7 +230,6 @@ public class ControllerProfileInterface {
         }
         else {
             String aboutMe = (String) aboutMeWebView.getEngine().executeScript("decodeURI(document.body.innerHTML)");
-            System.out.println(aboutMe);
             aboutMeWebView.getEngine().loadContent(aboutMe);
         }
 

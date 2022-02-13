@@ -3,7 +3,6 @@ package it.unipi.dii.client.controllers;
 import it.unipi.dii.Libraries.Messages.MessagePost;
 import it.unipi.dii.Libraries.Messages.OperationCD;
 import it.unipi.dii.Libraries.Post;
-import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 import javafx.event.ActionEvent;
@@ -30,7 +29,7 @@ public class ControllerWrite {
     public void eventButtonSend(ActionEvent actionEvent) throws IOException {
         //invio il post
         List<String> tags = Arrays.asList(textfield_tags_post.getText().split(";"));
-        tags.replaceAll((str) -> str.strip());
+        tags.replaceAll(String::strip);
         tags.removeIf((str) -> str.equals(""));
 
         Post post = new Post();
@@ -47,7 +46,7 @@ public class ControllerWrite {
         ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 
-    public void eventButtonCloseWrite(ActionEvent actionEvent) throws IOException {
+    public void eventButtonCloseWrite(ActionEvent actionEvent) {
         ClientInterface.switchScene(PageType.PROFILE_INTERFACE);
     }
 }
