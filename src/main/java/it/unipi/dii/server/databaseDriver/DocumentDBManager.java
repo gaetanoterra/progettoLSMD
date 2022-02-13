@@ -70,8 +70,8 @@ public class DocumentDBManager {
     public String[] findTopExpertsByTag(String tag, int num){
         ArrayList<String> userIdList = new ArrayList<>();
 
-        Bson matchNonNullUsername = match(eq("Answers.DisplayName", ne("Answers.DisplayName",null)));
-        Bson matchTag = match(eq("Tags", tag));
+        Bson matchNonNullUsername = match(ne("Answers.OwnerDisplayName", null));
+        Bson matchTag = match(in("Tags", tag));
         Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente","$Answers.Score"));
