@@ -75,8 +75,9 @@ public class GraphDBManager {
                 Result result = tx.run("""
                                         CALL db.index.fulltext.queryNodes("displayname_fulltext_index", $username)
                                         YIELD node
-                                        MATCH (node)-[:ANSWERS_WITH]->(a:Answer)<-[v:VOTE]-(uv:User)
-                                        RETURN a.answerId as answerId, a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC
+                                        MATCH (node)-[:ANSWERS_WITH]->(a:Answer)-[:BELONGS_TO]->(q:Question)
+                                        OPTIONAL MATCH (a)<-[:VOTE]-(v:User)
+                                        RETURN a.answerId as answerId, q.QuestionId as postId, a.body as body, sum(v.VoteTypeId) as score ORDER BY score DESC
                                         """,
                                         parameters( "username", username) );
                 ArrayList<Answer> answers = new ArrayList<>();
@@ -85,9 +86,12 @@ public class GraphDBManager {
                     Record r = result.next();
                     answers.add(
                             new Answer()
-                                .setBody(r.get("body").asString())
+                                .setBody(r.get("body").asString("Empty body"))
                                 .setScore(r.get("score").asInt())
-                                .setParentPostId(r.get("answerId").asString()));
+                                .setAnswerId(r.get("answerId").asString())
+                                .setParentPostId(r.get("postId").asString())
+                                .setOwnerUserName(username)
+                    );
                 }
 
                 System.out.println("Found " + answers.size() + " answers");

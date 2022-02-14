@@ -155,7 +155,7 @@ public class ControllerAnalysisInterface {
     public void eventSelectExpert(MouseEvent mouseEvent) throws IOException {
         serverConnectionManager.send(
                 new MessageGetUserData(
-                        new User(null, list_view_mpusers.getSelectionModel().getSelectedItem(), null, null, null, null),
+                        new User(null, list_view_experts.getSelectionModel().getSelectedItem(), null, null, null, null),
                         false,
                         PageType.ANALYSIS_INTERFACE
                 )
@@ -208,10 +208,15 @@ public class ControllerAnalysisInterface {
         table_view_hot_topics.setItems(hotTopicsObservableMap);
     }
 
-    public void eventShowHotUser(MouseEvent mouseEvent) {
+    public void eventShowHotUser(MouseEvent mouseEvent) throws IOException {
 
-        //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);
-        System.out.println(table_view_hot_topics.getSelectionModel().getSelectedItem());
+        serverConnectionManager.send(
+                new MessageGetUserData(
+                        new User(null, table_view_hot_topics.getSelectionModel().getSelectedItem().get("User"), null, null, null, null),
+                        false,
+                        PageType.ANALYSIS_INTERFACE
+                )
+        );
     }
 
 

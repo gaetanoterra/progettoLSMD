@@ -64,7 +64,8 @@ public class ControllerExternalUserInterface {
             label_location.setText(user.getLocation());
         if (user.getCreationDate() != null)
             label_creation_date.setText(user.convertMillisToDate(user.getCreationDate()).toString());
-        label_reputation.setText(Integer.toString(user.getReputation()));
+        if (user.getReputation() != null)
+            label_reputation.setText(Integer.toString(user.getReputation()));
         if (user.getWebsiteURL() != null)
             label_website.setText(user.getWebsiteURL());
         if (user.getAboutMe() != null)

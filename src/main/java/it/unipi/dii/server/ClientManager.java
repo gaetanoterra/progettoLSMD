@@ -143,7 +143,7 @@ public class ClientManager extends Thread{
                                     dbManager.removeAnswer(answer);
                                 }
                                 else {
-                                    System.out.println("User " + loggedUser.getDisplayName() + " Message_Get_Follow_Data of answer " + answer.getAnswerId() + ".");
+                                    System.out.println("User " + loggedUser.getDisplayName() + " Message_Answer of answer " + answer.getAnswerId() + ".");
                                 }
                             }
                             default -> throw new OpcodeNotValidException("Opcode of Message_Answer " +

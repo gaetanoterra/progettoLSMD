@@ -82,7 +82,7 @@ public class ControllerFullPostInterface {
 
     public void eventButtonRefresh(ActionEvent actionEvent) {
         //riscarica il post dal postId
-        ClientInterface.getFullPostInterface(currentPostId, lastPage);
+        ClientInterface.getFullPostInterface(currentGlobalPostId, lastPage);
     }
 
     public void eventButtonBack(ActionEvent actionEvent) {

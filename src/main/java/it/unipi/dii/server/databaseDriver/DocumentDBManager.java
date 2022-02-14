@@ -112,9 +112,9 @@ public class DocumentDBManager {
                         answerDocument.getLong("CreationDate"),
                         answerDocument.getInteger("Score"),
                         answerDocument.getString("OwnerUserId"),
-                        answerDocument.getString("DisplayName"),
+                        answerDocument.getString("OwnerDisplayName"),
                         answerDocument.getString("Body"),
-                        document.getObjectId("_id").toString()
+                        globalPostId
                     )
                 );
             });
@@ -149,13 +149,13 @@ public class DocumentDBManager {
             doc.getList("Answers", Document.class).forEach((answerDocument) -> {
                 answersList.add(
                         new Answer(
-                                answerDocument.getString("Id"),
+                                answerDocument.getString("answerId"),
                                 answerDocument.getLong("CreationDate"),
                                 answerDocument.getInteger("Score"),
                                 answerDocument.getString("OwnerUserId"),
                                 answerDocument.getString("OwnerDisplayName"),
                                 answerDocument.getString("Body"),
-                                doc.getObjectId("_id").toHexString()
+                                doc.getString("GlobalPostId")
                         )
                 );
             });
@@ -375,18 +375,28 @@ public class DocumentDBManager {
         // atomicamente recupero la risposta e la elimino dal post
         String answerId = answer.getAnswerId();
         Document beforeRemoveDocument = postsCollection.findOneAndUpdate(
-                and(eq("_id", answer.getParentPostId()), eq("Answers.answerId", answerId)),
+                and(eq("GlobalPostId", answer.getParentPostId()), eq("Answers.answerId", answerId)),
                 new Document("$pull",
                         new Document("Answers",
-                                new Document("Id", answerId)
+                                new Document("answerId", answerId)
                         )
                 )
         );
         if (beforeRemoveDocument != null) {
             // ora posso recuperare lo score e aggiornare la reputation con l'opposto dello score (così annullo i voti fatti sulla risposta)
             for (Document answerDoc : beforeRemoveDocument.getList("Answers", Document.class)) {
-                if (answerDoc.getString("Id").equals(answerId)) {
+                if (answerDoc.getString("answerId").equals(answerId)) {
+                    // utenti importati dal dataset
                     usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+                    // nuovi utenti
+                    try {
+                        ObjectId objectId = new ObjectId(answerDoc.getString("OwnerUserId"));
+                        usersCollection.updateOne(eq("_id", objectId), inc("Reputation", -answerDoc.getInteger("Score")));
+                    }
+                    catch (IllegalArgumentException e ) {
+                        //ok, allora era Id
+                    }
+
                     break;
                 }
             }
@@ -403,7 +413,16 @@ public class DocumentDBManager {
         // questa operazione va fatta su tutti gli utenti che hanno risposto
         if (beforeRemoveDocument != null) {
             for (Document answerDoc : beforeRemoveDocument.getList("Answers", Document.class)) {
+                // utenti importati dal dataset
                 usersCollection.updateOne(eq("Id", answerDoc.getString("OwnerUserId")), inc("Reputation", -answerDoc.getInteger("Score")));
+                // nuovi utenti
+                try {
+                    ObjectId objectId = new ObjectId(answerDoc.getString("OwnerUserId"));
+                    usersCollection.updateOne(eq("_id", objectId), inc("Reputation", -answerDoc.getInteger("Score")));
+                }
+                catch (IllegalArgumentException e ) {
+                    //ok, allora era Id
+                }
             }
         }
 
@@ -441,11 +460,19 @@ public class DocumentDBManager {
         List<Document> answerList = postDocument.getList("Answers", Document.class);
         for (Document answer: answerList) {
             if (answer.getString("answerId").equals(answerId)) {
+                // utenti importati dal dataset
                 usersCollection.updateOne(eq("Id", answer.getString("OwnerUserId")), inc("Reputation", changeVote));
+                // nuovi utenti
+                try {
+                    ObjectId objectId = new ObjectId(answer.getString("OwnerUserId"));
+                    usersCollection.updateOne(eq("_id", objectId), inc("Reputation", changeVote));
+                }
+                catch (IllegalArgumentException e ) {
+                    //ok, allora era Id
+                }
                 break;
             }
         }
-
     }
 
 

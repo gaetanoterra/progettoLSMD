@@ -74,15 +74,15 @@ public class User implements Serializable {
         return this.password;
     }
 
-    public int getFollowersNumber() {
+    public Integer getFollowersNumber() {
         return this.followersNumber;
     }
 
-    public int getFollowedNumber() {
+    public Integer getFollowedNumber() {
         return this.followedNumber;
     }
 
-    public int getReputation() {
+    public Integer getReputation() {
         return this.reputation;
     }
 
