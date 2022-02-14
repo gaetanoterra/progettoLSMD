@@ -58,18 +58,17 @@ public class ControllerExternalUserInterface {
     }
 
     private void fillExternalUserInterface() {
-        if (user.getDisplayName() != null)
-            label_display_name.setText(user.getDisplayName());
-        if (user.getLocation() != null)
-            label_location.setText(user.getLocation());
-        if (user.getCreationDate() != null)
+        if (user.getCreationDate() != null) {
             label_creation_date.setText(user.convertMillisToDate(user.getCreationDate()).toString());
-        if (user.getReputation() != null)
-            label_reputation.setText(Integer.toString(user.getReputation()));
-        if (user.getWebsiteURL() != null)
-            label_website.setText(user.getWebsiteURL());
-        if (user.getAboutMe() != null)
-            text_area_aboutme.setText(user.getAboutMe());
+        }
+        else {
+            label_creation_date.setText("");
+        }
+        label_display_name.setText(user.getDisplayName() != null ? user.getDisplayName() : "");
+        label_location.setText(user.getLocation() != null ? user.getLocation() : "");
+        label_reputation.setText(user.getReputation() != null ? Integer.toString(user.getReputation()) : "");
+        label_website.setText(user.getWebsiteURL() != null ? user.getWebsiteURL() : "");
+        text_area_aboutme.setText(user.getAboutMe() != null ? user.getAboutMe() : "");
 
         try {
             profileImageImageView.setImage(new Image(user.getProfileImage()));
