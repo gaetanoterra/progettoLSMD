@@ -4,7 +4,7 @@ import it.unipi.dii.Libraries.User;
 
 import java.util.ArrayList;
 
-public class MessageGetCorrelatedUsers extends Message {
+public class MessageGetCorrelatedUsers extends MessageReadObjectQuery {
     private ArrayList<User> userList;
     private String user;
 

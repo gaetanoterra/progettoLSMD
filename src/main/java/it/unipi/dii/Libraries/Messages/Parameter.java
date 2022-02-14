@@ -3,11 +3,9 @@ package it.unipi.dii.Libraries.Messages;
 import java.io.Serializable;
 
 public enum Parameter implements Serializable {
-    Date  (0),
-    Tags  (1),
-    Username (2),
-    Id(3),
-    Text (4);
+    Username (0),
+    Id(1),
+    Text (2);
 
     private final byte parameterType;
     Parameter(int parameterType){ this.parameterType = (byte) parameterType; }
@@ -15,10 +13,8 @@ public enum Parameter implements Serializable {
     @Override
     public String toString() {
         return switch (this.parameterType) {
-            case 0 -> "DATE";
-            case 1 -> "TAGS";
-            case 2 -> "USERNAME";
-            case 3 -> "ID";
+            case 0 -> "USERNAME";
+            case 1 -> "ID";
             default -> "TEXT";
         };
     }

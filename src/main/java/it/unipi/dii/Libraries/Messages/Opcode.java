@@ -16,16 +16,13 @@ public enum Opcode {
     Message_Vote                                    (11),
     Message_Post                                    (12),
     Message_Update_User_data                        (13),
-    Message_Analytics_Most_Popular_Tags_Location    (14),
-    Message_Analytics_Most_Popular_Tags             (15),
-    Message_Analytics_User_Rank                     (16),
-    Message_Analytics_Correlated_Users              (17),
-    Message_Analytics_Recommended_Users             (18),
-    Message_Analytic_Hot_Topics                     (19),
-    Message_Get_Correlated_Users                    (20),
-    Message_Get_Recommended_Users                   (21),
-    Message_Get_User_Answers                        (22),
-    Message_Get_Follow_Data                         (23);
+    Message_Analytics_Most_Popular_Tags             (14),
+    Message_Analytics_User_Rank                     (15),
+    Message_Analytic_Hot_Topics                     (16),
+    Message_Get_Correlated_Users                    (17),
+    Message_Get_Recommended_Users                   (18),
+    Message_Get_User_Answers                        (19),
+    Message_Get_Follow_Data                         (20);
     private final byte opcode;
 
     Opcode(int opcode){

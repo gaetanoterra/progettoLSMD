@@ -4,7 +4,7 @@ import it.unipi.dii.Libraries.User;
 
 import java.util.ArrayList;
 
-public class MessageGetFollowData extends Message{
+public class MessageGetFollowData extends MessageReadObjectQuery{
     private ArrayList<User> followers;
     private String userDisplayName;
     private Boolean type; //true se voglio i miei followers, false se voglio chi mi followa
@@ -17,16 +17,17 @@ public class MessageGetFollowData extends Message{
         this.type = type;
     }
 
+    @Override
+    public ArrayList<User> getObject() {
+        return followers;
+    }
+
     public void setFollowers(ArrayList<User> followers) {
         this.followers = followers;
     }
 
     public String getUserDisplayName() {
         return userDisplayName;
-    }
-
-    public ArrayList<User> getFollowers() {
-        return followers;
     }
 
     public Boolean getType() {

@@ -7,7 +7,7 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MessageAnalyticHotTopics extends Message{
+public class MessageAnalyticHotTopics extends MessageReadObjectQuery{
 
     private HashMap<User, ArrayList<Pair<Post, Integer>>> map;
 
@@ -19,7 +19,8 @@ public class MessageAnalyticHotTopics extends Message{
     @Override
     public Opcode getOpcode() { return super.getOpcode(); }
 
-    public HashMap<User, ArrayList<Pair<Post, Integer>>>  getMap() { return map; }
+    @Override
+    public HashMap<User, ArrayList<Pair<Post, Integer>>>  getObject() { return map; }
 
     public void setMap(HashMap<User, ArrayList<Pair<Post, Integer>>> map) { this.map = map; }
 }

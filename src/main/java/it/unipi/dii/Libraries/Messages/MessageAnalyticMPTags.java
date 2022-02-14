@@ -2,7 +2,7 @@ package it.unipi.dii.Libraries.Messages;
 
 import java.util.Map;
 
-public class MessageAnalyticMPTags extends Message {
+public class MessageAnalyticMPTags extends MessageReadObjectQuery {
 
     private Map<String, Integer> tags;
 
@@ -14,7 +14,8 @@ public class MessageAnalyticMPTags extends Message {
     @Override
     public Opcode getOpcode() { return super.getOpcode(); }
 
-    public Map<String, Integer> getTags() { return tags; }
+    @Override
+    public Map<String, Integer> getObject() { return tags; }
 
     public void setTags(Map<String, Integer> tags) { this.tags = tags; }
 }

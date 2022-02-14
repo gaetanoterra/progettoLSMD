@@ -2,7 +2,7 @@ package it.unipi.dii.Libraries.Messages;
 
 import it.unipi.dii.Libraries.User;
 
-public class MessageAnalyticUserRanking extends Message {
+public class MessageAnalyticUserRanking extends MessageReadObjectQuery {
     private int numUsers = 10;
     private User[] users;
 
@@ -14,7 +14,8 @@ public class MessageAnalyticUserRanking extends Message {
     @Override
     public Opcode getOpcode() { return super.getOpcode(); }
 
-    public User[] getUsers() { return users; }
+    @Override
+    public User[] getObject() { return users; }
 
     public void setUsers(User[] users) { this.users = users; }
 }

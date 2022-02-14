@@ -31,6 +31,7 @@ public class ControllerAnalysisInterface {
     private ObservableList<String> usersRankingList;
     private ObservableList<String> usersExpertsList;
     private ObservableList<Map<String, String>> hotTopicsObservableMap;
+    private ObservableList<Map<String, String>> mostAnsweredTopUsersPostsObservableMap;
     private PageType lastPageVisited;
 
     @FXML
@@ -217,6 +218,57 @@ public class ControllerAnalysisInterface {
                         PageType.ANALYSIS_INTERFACE
                 )
         );
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                                                //
+    //                                         MOST ANSWERED TOP USERS POSTS                                          //
+    //                                                                                                                //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void iniMostAnsweredTopUsersPosts() throws IOException {
+        mostAnsweredTopUsersPostsObservableMap = FXCollections.observableArrayList();
+        serverConnectionManager.send(new MessageAnalyticHotTopics(null));
+
+        table_column_user.setCellValueFactory(new MapValueFactory("User"));
+        table_column_tags.setCellValueFactory(new MapValueFactory("Tags"));
+    }
+
+    public void resetMostAnsweredTopUsersPosts(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
+
+    //TODO: fare questa query con un hashmap
+    public void fillMostAnsweredTopUsersPosts(HashMap<User, ArrayList<Pair<Post, Integer>>>  map){
+
+        HashMap<User, ArrayList<Pair<Post, Integer>>> lista = map;
+
+        Iterator it = lista.entrySet().iterator();
+
+        while(it.hasNext()){
+            //for (User u:map.keySet()) {
+            Map<String, String> rawData = new HashMap<>();
+
+            Entry item = (Entry) it.next();
+            User u = (User) item.getKey();
+            ArrayList<Pair<Post, Integer>> elem = (ArrayList<Pair<Post, Integer>>) item.getValue();
+            String s = "";
+
+            for (Pair<Post, Integer> e:elem) {
+                s = s + e.getKey().getTags().toString() + "(" + e.getValue() + ") ";
+            }
+
+            rawData.put("User", u.getDisplayName());
+            rawData.put("Tags", s);
+
+            hotTopicsObservableMap.add(rawData);
+        }
+
+        table_view_hot_topics.setItems(hotTopicsObservableMap);
+    }
+
+    public void eventShowMostAnsweredTopUsersPost(MouseEvent mouseEvent) {
+
+        //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);
+        System.out.println(table_view_hot_topics.getSelectionModel().getSelectedItem());
     }
 
 

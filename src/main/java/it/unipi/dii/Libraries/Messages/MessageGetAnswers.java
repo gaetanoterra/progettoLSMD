@@ -4,7 +4,7 @@ import it.unipi.dii.Libraries.Answer;
 
 import java.util.ArrayList;
 
-public class MessageGetAnswers extends Message{
+public class MessageGetAnswers extends MessageReadObjectQuery{
     private String displayName;
     private ArrayList<Answer> answerArrayList;
 
@@ -18,9 +18,10 @@ public class MessageGetAnswers extends Message{
         this.answerArrayList = answers;
     }
 
-    public String getDisplayName() { return displayName; }
+    @Override
+    public ArrayList<Answer> getObject(){ return this.answerArrayList;}
 
-    public ArrayList<Answer> getAnswerArrayList(){ return this.answerArrayList;}
+    public String getDisplayName() { return displayName; }
 
     public void setAnswerArrayList(ArrayList<Answer> answerArrayList) { this.answerArrayList = answerArrayList; }
 }

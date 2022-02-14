@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 //classe messaggio, utilizzata per richiedere Post in base a un parametro answer al server
-public class MessageGetPostsByParameter extends Message{
+public class MessageGetPostsByParameter extends MessageReadObjectQuery{
 
     private Parameter parameter;
     private String value;
@@ -27,11 +27,12 @@ public class MessageGetPostsByParameter extends Message{
         this.postList = post;
     }
 
+    @Override
+    public ArrayList<Post> getObject(){ return this.postList;}
+
     public Parameter getParameter() { return parameter; }
 
     public String getValue() { return value; }
-
-    public ArrayList<Post> getPostList(){ return this.postList;}
 
     @Override
     public String toString() {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 //classe messaggio, utilizzata per richiedere utenti e post più popolari al server
-public class MessageGetTopUsersPosts extends Message {
+public class MessageGetTopUsersPosts extends MessageReadObjectQuery {
 
     private Map<User, ArrayList<Post>>  mostAnsweredTopUsersPostsMap;
 
@@ -19,7 +19,9 @@ public class MessageGetTopUsersPosts extends Message {
         this.opcode = Opcode.Message_Get_Top_Users_Posts;
         this.mostAnsweredTopUsersPostsMap = map;
     }
-    public Map<User, ArrayList<Post>>  getMostAnsweredTopUsersPostsMap() {
+
+    @Override
+    public Map<User, ArrayList<Post>>  getObject() {
         return mostAnsweredTopUsersPostsMap;
     }
 

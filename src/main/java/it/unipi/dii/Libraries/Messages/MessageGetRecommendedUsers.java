@@ -4,7 +4,7 @@ import it.unipi.dii.Libraries.User;
 
 import java.util.ArrayList;
 
-public class MessageGetRecommendedUsers extends Message{
+public class MessageGetRecommendedUsers extends MessageReadObjectQuery{
 
     private ArrayList<User> users;
     private String displayName;
@@ -18,11 +18,12 @@ public class MessageGetRecommendedUsers extends Message{
     }
 
     @Override
+    public ArrayList<User> getObject() { return users; }
+
+    @Override
     public Opcode getOpcode() { return super.getOpcode(); }
 
     public String getDisplayName() { return displayName; }
-
-    public ArrayList<User> getUsers() { return users; }
 
     public String getTag() { return tag; }
 

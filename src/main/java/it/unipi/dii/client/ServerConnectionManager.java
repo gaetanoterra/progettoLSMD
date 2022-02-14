@@ -78,7 +78,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_Experts:
                         MessageGetExpertsByTag messageGetExpertsByTag = (MessageGetExpertsByTag) message;
-                        ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getUsersList());
+                        ClientInterface.fillExpertsByTag(messageGetExpertsByTag.getObject());
                         break;
 
                     case Message_Get_Post_Data:
@@ -89,9 +89,9 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_Posts_By_Parameter:
                         MessageGetPostsByParameter messageGetPostsByParameter = (MessageGetPostsByParameter) message;
                         switch (messageGetPostsByParameter.getParameter()){
-                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostsByParameter.getPostList(), messageGetPostsByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
-                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostsByParameter.getPostList().get(0));
-                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostsByParameter.getPostList());
+                            case Username -> ClientInterface.fillUserPostInterface(messageGetPostsByParameter.getObject(), messageGetPostsByParameter.getValue()); // utilizzabile per il fill sia del personal profile che di quello esterno
+                            case Id   -> ClientInterface.fillFullPostInterface(messageGetPostsByParameter.getObject().get(0));
+                            case Text -> ClientInterface.fillPostSearchInterface(messageGetPostsByParameter.getObject());
                         }
                         break;
 
@@ -105,7 +105,7 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_User_Answers:
                         MessageGetAnswers messageGetAnswers = (MessageGetAnswers) message;
-                        ClientInterface.fillAnswersUsers(messageGetAnswers.getAnswerArrayList());
+                        ClientInterface.fillAnswersUsers(messageGetAnswers.getObject());
                         break;
 
                     case Message_Follow:
@@ -123,17 +123,17 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Analytics_Most_Popular_Tags:
                         MessageAnalyticMPTags messageAnalyticMPTags = (MessageAnalyticMPTags) message;
-                        ClientInterface.fillMPTagChart(messageAnalyticMPTags.getTags());
+                        ClientInterface.fillMPTagChart(messageAnalyticMPTags.getObject());
                         break;
 
                     case Message_Analytics_User_Rank:
                         MessageAnalyticUserRanking messageAnalyticUserRanking = (MessageAnalyticUserRanking) message;
-                        ClientInterface.fillUserRanking(messageAnalyticUserRanking.getUsers());
+                        ClientInterface.fillUserRanking(messageAnalyticUserRanking.getObject());
                         break;
 
                     case Message_Analytic_Hot_Topics:
                         MessageAnalyticHotTopics messageAnalyticHotTopics = (MessageAnalyticHotTopics) message;
-                        ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getMap());
+                        ClientInterface.fillHotTopicsUsers(messageAnalyticHotTopics.getObject());
                         break;
 
                     case Message_Get_Correlated_Users:
@@ -143,16 +143,16 @@ public class ServerConnectionManager extends Thread {
 
                     case Message_Get_Recommended_Users:
                         MessageGetRecommendedUsers messageGetRecommendedUsers = (MessageGetRecommendedUsers) message;
-                        ClientInterface.fillPersonalRecommendedUsers(messageGetRecommendedUsers.getUsers());
+                        ClientInterface.fillPersonalRecommendedUsers(messageGetRecommendedUsers.getObject());
                         break;
 
                     case Message_Get_Follow_Data:
                         MessageGetFollowData messageGetFollowData = (MessageGetFollowData) message;
                         if (messageGetFollowData.getType()){
-                            ClientInterface.fillFollowerList(messageGetFollowData.getFollowers());
+                            ClientInterface.fillFollowerList(messageGetFollowData.getObject());
                         }
                         else {
-                            ClientInterface.fillFollowedList(messageGetFollowData.getFollowers());
+                            ClientInterface.fillFollowedList(messageGetFollowData.getObject());
                         }
 
                         break;

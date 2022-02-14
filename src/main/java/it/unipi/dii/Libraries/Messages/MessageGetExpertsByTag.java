@@ -1,7 +1,7 @@
 package it.unipi.dii.Libraries.Messages;
 
 //classe messaggio, utilizzata per richiedere utenti per tag al server
-public class MessageGetExpertsByTag extends Message {
+public class MessageGetExpertsByTag extends MessageReadObjectQuery {
 
     private String tag;
     private String[] usersList;
@@ -18,7 +18,8 @@ public class MessageGetExpertsByTag extends Message {
         this.usersList = usersList;
     }
 
-    public String[] getUsersList() {
+    @Override
+    public String[] getObject() {
         return usersList;
     }
 
