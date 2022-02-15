@@ -1,0 +1,16 @@
+\textcolor{mydark}{db.Posts.find(}\par
+~~~~\textcolor{mydark}{\{}\par
+~~~~~~~~\textcolor{mybrown}{\$text}\textcolor{mydark}{:\{}\textcolor{mybrown}{\$search}: \textcolor{mygreen}{"??"}\textcolor{mydark}{\},}\par
+~~~~~~~~\textcolor{mybrown}{\$or}\textcolor{mydark}{:[}\par
+~~~~~~~~~~~~\textcolor{mydark}{\{Title: \{}\textcolor{mybrown}{\$regex}: \textcolor{mygreen}{/.*??.* /i}\textcolor{mydark}{\}\},}\par
+~~~~~~~~~~~~\textcolor{mydark}{\{Body:\{}\textcolor{mybrown}{\$regex}: \textcolor{mygreen}{/.*??.* /i}\textcolor{mydark}{\}\}}\par
+~~~~~~~~\textcolor{mydark}{]}\par
+~~~~\textcolor{mydark}{\},}\par
+~~~~\textcolor{mydark}{\{}\par
+~~~~~~\textcolor{mydark}{\_id:}\textcolor{mygreen}{ 1}\textcolor{mydark}{,}\par
+~~~~~~\textcolor{mydark}{Title:}\textcolor{mygreen}{ 1}\textcolor{mydark}{,}\par
+~~~~~~\textcolor{mydark}{Tags:}\textcolor{mygreen}{ 1}\textcolor{mydark}{,}\par
+~~~~~~\textcolor{mydark}{numberOfAnswers:\{}\textcolor{mybrown}{\$size}:\textcolor{mygreen}{"\$Answers" }\textcolor{mydark}{\},}\par
+~~~~~~\textcolor{mydark}{ViewCount:}\textcolor{mygreen}{ 1}\textcolor{mydark}{,}\par
+~~~~\textcolor{mydark}{\},}\par
+\textcolor{mydark}{);}

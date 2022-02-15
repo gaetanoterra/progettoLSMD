@@ -1,0 +1,9 @@
+ db.\textcolor{mygreen}{index}.fulltext.queryNodes(\textcolor{Dandelion}{"displayname\_fulltext\_index"}, \textcolor{Dandelion}{"???"})\par
+\textcolor{mygreen}{YIELD node}\par
+\textcolor{mygreen}{MATCH} (node)-[:ANSWERS\_WITH]->(a:Answer)\par
+~~~~~~~~~~~~<-[v:VOTE]-(uv:User)\par
+\textcolor{mygreen}{RETURN} a.answerId as answerId,\par
+~~~~~~a.body as body, \par
+~~~~~~sum(v.VoteTypeId) as score \par
+\textcolor{mygreen}{ORDER BY} score \textcolor{mygreen}{DESC}
+

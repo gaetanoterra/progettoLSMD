@@ -1,0 +1,14 @@
+\textcolor{mydark}{db.Posts.aggregate(}
+    \par
+    ~~\textcolor{mydark}{[}\par
+    ~~~~ \textcolor{mydark}{\{}\textcolor{mybrown}{\$match}: \textcolor{mydark}{\{}\textcolor{mygreen}{"Tags":"??"}\textcolor{mydark}{\}}\textcolor{mydark}{\}},\par
+    ~~~~~~\textcolor{mydark}{\{}\textcolor{mybrown}{\$unwind}: \textcolor{mygreen}{"\$Answers"}\textcolor{mydark}{\}},\par
+    ~~~~~~\textcolor{mydark}{\{}\textcolor{mybrown}{\$match}: \textcolor{mydark}{\{}\textcolor{mygreen}{"Answers.DisplayName"}:\textcolor{mydark}{\{}\textcolor{mybrown}{\$ne}:\textcolor{red}{null}\textcolor{mydark}{\}}\textcolor{mydark}{\}}\textcolor{mydark}{\}},\par
+    ~~~~~~\textcolor{mydark}{\{}\textcolor{mybrown}{\$group}: \par
+    ~~~~~~\textcolor{mydark}{\{}\par
+    ~~~~~~~~\textcolor{mydark}{\_id:} \textcolor{mygreen}{"\$Answers.DisplayName"},\par
+    ~~~~~~~~\textcolor{mydark}{totaleRisposteUtente:\{}\textcolor{mybrown}{\$sum}:\textcolor{mygreen}{"\$Answers.Score"}\textcolor{mydark}{\}}\textcolor{mydark}{\}}\par
+    ~~~~~~\textcolor{mydark}{\},}\par
+    ~~~~~~~\textcolor{mydark}{\{}\textcolor{mybrown}{\$sort}: \textcolor{mydark}{\{}\textcolor{mygreen}{ "totaleRisposteUtente"}: -1 \textcolor{mydark}{\}} \textcolor{mydark}{\}}\par
+    ~~~~\textcolor{mydark}{]}\par
+\textcolor{mydark}{)}

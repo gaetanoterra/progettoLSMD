@@ -1,0 +1,6 @@
+\textcolor{mygreen}{MATCH}  (u3:User)<-[:FOLLOW]-(u2:User)\par
+~~~~~~~~~~~~~~<-[:FOLLOW]-(u:User displayName: \textcolor{Dandelion}{"???"})\par
+\textcolor{mygreen}{WHERE}  u3 <> u \textcolor{mygreen}{and}  u3 <> u2 \par
+\textcolor{mygreen}{RETURN distinct}  u3.displayName  \textcolor{mygreen}{AS}  Username, \par
+~~~~~~~~~~~~~~~u3.profileImage \textcolor{mygreen}{AS}  profileImage \par
+\textcolor{mygreen}{LIMIT}  20;

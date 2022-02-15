@@ -367,7 +367,6 @@ public class GraphDBManager {
         return true;
     }
 
-
     public void removePost(Post post){
         /*
         Rimuovere le risposte su graph db a quel post (con annesse relazioni, usando detach delete questa ultima parte è automatica)
@@ -459,7 +458,6 @@ public class GraphDBManager {
     a list with only one element(the one in the "tag_names" column above) and an integer corresponding  to the "tags_top_users"
     field.
    */
-
     public HashMap<User, ArrayList<Pair<Post, Integer>>> findHotTopicsForTopUsers(){
         String query =
                 """
@@ -501,7 +499,7 @@ public class GraphDBManager {
         }
     }
 
-     /*
+    /*
     The following query outputs data in this format
 
     ╒═══════════╤═══════════════════════════════════════════════════════════════════════════════════════╤════════════╕
@@ -521,7 +519,6 @@ public class GraphDBManager {
     ╘════════════════════════════════════════════════════════════════════════════════════════════════════════════════╛
 
    */
-
 
     /*
         MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)

@@ -1,0 +1,15 @@
+\textcolor{mygreen}{MATCH} (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)\par
+\textcolor{mygreen}{WITH} topUsers.displayName \textcolor{mygreen}{as} top\_users, \textcolor{mygreen}{count}(\*) as folllower\_no\par
+\textcolor{mygreen}{ORDER BY} folllower\_no DESC LIMIT 10\par
+\textcolor{mygreen}{CALL} \{\par
+    ~~~~~~\textcolor{mygreen}{WITH} top\_users \par
+    ~~~~~~\textcolor{mygreen}{MATCH} (a:Answer)-[b\_to:BELONGS\_TO]->(quest:Question)\par
+    ~~~~~~~~~~~~<-[pq:POSTS\_QUESTION]-(u:User{displayName:top\_users})\par
+    ~~~~~~\textcolor{mygreen}{WITH} u.displayName \textcolor{mygreen}{as} t\_users,\par
+    ~~~~~~~~~~~~~~~~quest.Title \textcolor{mygreen}{as} title, \par
+    ~~~~~~~~~~~~~~~~\textcolor{mygreen}{count}(\*) \textcolor{mygreen}{as} answers\_no\par
+    ~~~~~~\textcolor{mygreen}{ORDER BY} u.displayName, answers\_no \textcolor{mygreen}{DESC}\par
+    ~~~~~~\textcolor{mygreen}{LIMIT} 3\par
+    ~~~~~~\textcolor{mygreen}{RETURN} title, answers\_no\par
+\}\par
+\textcolor{mygreen}{RETURN} top\_users, title, answers\_no        

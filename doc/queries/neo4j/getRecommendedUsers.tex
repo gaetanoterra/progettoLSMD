@@ -1,0 +1,6 @@
+\textcolor{mygreen}{MATCH}  (u2: User)-[:POSTS\_QUESTION]->(:Question)\par 
+-[:CONTAINS\_TAG]->(t:Tag {tagNames: \textcolor{Dandelion}{"???"} })\par
+WHERE u2.displayName <> \textcolor{Dandelion}{"???"}  \par
+\textcolor{mygreen}{RETURN distinct}  u2.displayName \textcolor{mygreen}{AS}  Username, \par
+~~~~~~~~~~~~~~~~u2.profileImage \textcolor{mygreen}{AS}  profileImage \par
+\textcolor{mygreen}{LIMIT}  10;

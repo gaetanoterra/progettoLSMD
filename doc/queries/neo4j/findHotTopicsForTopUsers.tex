@@ -1,0 +1,14 @@
+\textcolor{mygreen}{MATCH} (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)\par
+\textcolor{mygreen}{WITH} topUsers\.displayName \textcolor{mygreen}{as} t\_us, count(\*) \textcolor{mygreen}{as} follower\_no\par
+\textcolor{mygreen}{ORDER BY} follower\_no
+\textcolor{mygreen}{DESC LIMIT} 10 \par
+\textcolor{mygreen}{MATCH} (t:Tag)<-[c\_tag:CONTAINS\_TAG]-(q:Question)\par
+~~~~~~~~~~~~~~<-[b\_to:BELONGS\_TO]-(a:Answer)\par
+~~~~~~~~~~~~~~<-[an\_with:ANSWERS\_WITH]-(u:User{displayName:t\_us})\par
+\textcolor{mygreen}{WITH} u.displayName \textcolor{mygreen}{as} top\_users,\par
+~~~~~~~~~~follower\_no,\par
+~~~~~~~~~~t.tagNames \textcolor{mygreen}{as} tag\_names,\par
+~~~~~~~~~~count(\*) \textcolor{mygreen}{as} tags\_top\_users \par
+\textcolor{mygreen}{ORDER BY} tags\_top\_users  \textcolor{mygreen}{DESC} \par
+\textcolor{mygreen}{RETURN} top\_users, follower\_no, tag\_names, tags\_top\_users \par
+\textcolor{mygreen}{LIMIT} 10

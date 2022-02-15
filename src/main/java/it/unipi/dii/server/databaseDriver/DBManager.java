@@ -79,13 +79,16 @@ public class DBManager {
                     .setFollowersNumber(0)
                     .setReputation(0);
             boolean insertedUserInMongoDB = documentDBManager.insertUser(newUser);
-            if (!insertedUserInMongoDB) {
-                LOGGER.log(Level.SEVERE, "Failed to insert User in MongoDB " + newUser);
-            }
             boolean insertedUserInNeo4J = graphDBManager.insertUser(newUser);
+
             if(!insertedUserInNeo4J){
                 LOGGER.log(Level.SEVERE, "Failed to insert User in Neo4j  " + newUser);
             }
+
+            if (!insertedUserInMongoDB) {
+                LOGGER.log(Level.SEVERE, "Failed to insert User in MongoDB " + newUser);
+            }
+
             return insertedUserInMongoDB && insertedUserInNeo4J ;
         }
         else
@@ -95,15 +98,14 @@ public class DBManager {
     public boolean removeUser(User user){
         boolean removedUserMongoDB = graphDBManager.removeUser(user.getDisplayName());
         if (!removedUserMongoDB) {
-            LOGGER.log(Level.SEVERE, "Failed to remove User in MongoDB " + user);
+            LOGGER.log(Level.SEVERE, "Failed to remove User in Neo4j " + user);
         }
         if(!documentDBManager.removeUser(user.getDisplayName())) {
-            LOGGER.log(Level.SEVERE, "Failed to remove User in Neo4j " + user);
+            LOGGER.log(Level.SEVERE, "Failed to remove User in Mongo " + user);
             return false;
         }
         return removedUserMongoDB;
     }
-
 
     public boolean updateUserData(User user){
          if(!documentDBManager.updateUserData(user)){
@@ -118,7 +120,6 @@ public class DBManager {
      */
 
 
-
     public Post getPostById(String globalPostId){
         return documentDBManager.getPostById(globalPostId);
     }
@@ -126,7 +127,6 @@ public class DBManager {
     public ArrayList<Post> getPostsByOwnerUsername(String ownerPostUsername) {
         return documentDBManager.getPostsByOwnerUsername(ownerPostUsername);
     }
-
 
     public ArrayList<Post> getPostsByText(String text){
         return documentDBManager.getPostsByText(text);
@@ -137,17 +137,17 @@ public class DBManager {
         String globalPostId = DigestUtils.sha256Hex(newPost.getTitle() + newPost.getCreationDate().toString());
         newPost.setGlobalId(globalPostId);
 
+        boolean insertedPostInneo4j = graphDBManager.insertPost(newPost);
+        if( !insertedPostInneo4j){
+            LOGGER.log(Level.SEVERE, "Failed to insert post in Neo4j " + newPost);
+            return false;
+        }
         boolean insertedPostInMongo = documentDBManager.insertPost(newPost);
         if (!insertedPostInMongo) {
             LOGGER.log(Level.SEVERE, "Failed to insert post in MongoDB " + newPost);
         }
 
-        if( !graphDBManager.insertPost(newPost)){
-            LOGGER.log(Level.SEVERE, "Failed to insert post in Neo4j " + newPost);
-            return false;
-        }
-
-        return insertedPostInMongo;
+        return true ;
     }
 
     public boolean removePost(Post post){
@@ -165,14 +165,15 @@ public class DBManager {
         String globalAnswerId = DigestUtils.sha1Hex(answer.getBody() + answer.getCreationDate().toString());
         answer.setAnswerId(globalAnswerId);
 
-         boolean insertedAnswerInMongo = documentDBManager.insertAnswer(answer);
-         if(!insertedAnswerInMongo)
-             LOGGER.log(Level.SEVERE, "Failed to insert post in MongoDB " + answer);
-
         // postCondition: l'id della risposta e' stato inserito dal documentDBManager
         boolean insertedAnswerInNeo4j = graphDBManager.insertAnswer(answer);
-        if(!insertedAnswerInNeo4j)
+        if(!insertedAnswerInNeo4j) {
             LOGGER.log(Level.SEVERE, "Failed to insert post in Neo4j " + answer);
+            return false;
+        }
+        boolean insertedAnswerInMongo = documentDBManager.insertAnswer(answer);
+        if(!insertedAnswerInMongo)
+             LOGGER.log(Level.SEVERE, "Failed to insert post in MongoDB " + answer);
 
         return true;
     }
