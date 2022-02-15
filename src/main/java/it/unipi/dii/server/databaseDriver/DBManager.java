@@ -6,15 +6,29 @@ import it.unipi.dii.Libraries.User;
 import javafx.util.Pair;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.time.Instant;
 import java.util.*;
 
 //classe preposta a ricevere le richieste dal clientManager e a propagarle al documentDB e al graphDB
 public class DBManager {
-
+    private final static Logger LOGGER = Logger.getLogger(DBManager.class.getName());
     private DocumentDBManager documentDBManager;
     private GraphDBManager graphDBManager;
+    private final String LOGGER_PROPERTIES = "/logging.properties";
 
+    private void loadLoggerConfiguration() {
+        try {
+            LogManager.getLogManager().readConfiguration(DBManager.class.getResourceAsStream(LOGGER_PROPERTIES));
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Failed to load the logger configuration.");
+        }
+        LOGGER.log(Level.INFO, "logger configuration loaded succesfully");
+    }
     public DBManager(){
        this(DBExecutionMode.LOCAL);
     }
@@ -22,6 +36,7 @@ public class DBManager {
     public DBManager(DBExecutionMode dbe){
         documentDBManager = new DocumentDBManager(dbe);
         graphDBManager = new GraphDBManager(dbe);
+        loadLoggerConfiguration();
     }
 
     public void close(){
@@ -63,24 +78,39 @@ public class DBManager {
                     .setFollowedNumber(0)
                     .setFollowersNumber(0)
                     .setReputation(0);
-            boolean insertedUser = documentDBManager.insertUser(newUser);
-            if (insertedUser) {
-                graphDBManager.insertUser(newUser);
+            boolean insertedUserInMongoDB = documentDBManager.insertUser(newUser);
+            if (!insertedUserInMongoDB) {
+                LOGGER.log(Level.SEVERE, "Faield to insert User in MongoDB " + newUser);
             }
-            return insertedUser;
+            boolean insertedUserInNeo4J = graphDBManager.insertUser(newUser);
+            if(!insertedUserInNeo4J){
+                LOGGER.log(Level.SEVERE, "Faield to insert User in Neo4j  " + newUser);
+            }
+            return insertedUserInMongoDB && insertedUserInNeo4J ;
         }
         else
             return false;
     }
 
     public boolean removeUser(User user){
-        graphDBManager.removeUser(user.getDisplayName());
-        return documentDBManager.removeUser(user.getDisplayName());
+        boolean removedUserMongoDB = graphDBManager.removeUser(user.getDisplayName());
+        if (!removedUserMongoDB) {
+            LOGGER.log(Level.SEVERE, "Faield to remove User in MongoDB " + user);
+        }
+        if(!documentDBManager.removeUser(user.getDisplayName())) {
+            LOGGER.log(Level.SEVERE, "Faield to remove User in Neo4j " + user);
+            return false;
+        }
+        return removedUserMongoDB;
     }
 
 
     public boolean updateUserData(User user){
-        return documentDBManager.updateUserData(user);
+         if(!documentDBManager.updateUserData(user)){
+             LOGGER.log(Level.SEVERE, "Faield to update User data in MongoDB " + user);
+             return false;
+         }
+         return true;
     }
 
     /*
@@ -107,13 +137,17 @@ public class DBManager {
         String globalPostId = DigestUtils.sha256Hex(newPost.getTitle() + newPost.getCreationDate().toString());
         newPost.setGlobalId(globalPostId);
 
-        boolean insertedPost = documentDBManager.insertPost(newPost);
-        if (insertedPost) {
-            // in insertPost il post è stato modificato aggiungendo l'id
-            graphDBManager.insertPost(newPost);
+        boolean insertedPostInMongo = documentDBManager.insertPost(newPost);
+        if (!insertedPostInMongo) {
+            LOGGER.log(Level.SEVERE, "Failed to insert post in MongoDB " + newPost);
         }
 
-        return insertedPost;
+        if( !graphDBManager.insertPost(newPost)){
+            LOGGER.log(Level.SEVERE, "Failed to insert post in Neo4j " + newPost);
+            return false;
+        }
+
+        return insertedPostInMongo;
     }
 
     public boolean removePost(Post post){
@@ -131,16 +165,29 @@ public class DBManager {
         String globalAnswerId = DigestUtils.sha1Hex(answer.getBody() + answer.getCreationDate().toString());
         answer.setAnswerId(globalAnswerId);
 
-        documentDBManager.insertAnswer(answer);
+         boolean insertedAnswerInMongo = documentDBManager.insertAnswer(answer);
+         if(!insertedAnswerInMongo)
+             LOGGER.log(Level.SEVERE, "Failed to insert post in MongoDB " + answer);
+
         // postCondition: l'id della risposta e' stato inserito dal documentDBManager
-        graphDBManager.insertAnswer(answer);
+        boolean insertedAnswerInNeo4j = graphDBManager.insertAnswer(answer);
+        if(!insertedAnswerInNeo4j)
+            LOGGER.log(Level.SEVERE, "Failed to insert post in Neo4j " + answer);
+
         return true;
     }
 
     public boolean removeAnswer(Answer answer){
-        documentDBManager.removeAnswer(answer);
-        graphDBManager.removeAnswer(answer);
-        return true;
+
+        boolean removedAnswerInMongo = documentDBManager.removeAnswer(answer);
+        boolean removedAnswerInNeo4j = graphDBManager.removeAnswer(answer);
+        if(!removedAnswerInMongo)
+            LOGGER.log(Level.SEVERE, "Failed to remove post in MongoDB " + answer);
+
+        if(!removedAnswerInNeo4j)
+            LOGGER.log(Level.SEVERE, "Failed to remove post in Neo4J " + answer);
+
+        return removedAnswerInMongo && removedAnswerInNeo4j;
     }
 
     public ArrayList<Answer> getUserAnswer(String username){
@@ -154,10 +201,12 @@ public class DBManager {
     // se voto su/giu e ho votato -> altra situazione, e tipo voto aggiornato
     public boolean insertRelationVote(String userDisplayNameVoter, String answerId, String postId, int voteAnswer){
         int previousVote = graphDBManager.getVote(userDisplayNameVoter, answerId);
+        boolean updatedVoteInMongo ;
+        boolean updatedVoteInNeo4j ;
         if (previousVote == 0) {
             //niente voto -> registro normalmente
-            documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
-            graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
+            updatedVoteInMongo = documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
+            updatedVoteInNeo4j = graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
         }
         else {
             // esiste già un voto -> eliminare quello precedente e inserire quello nuovo
@@ -165,21 +214,33 @@ public class DBManager {
             // se previousVote == -1 e voto == +1 -> voto answer += 2 e aggiorno relazione con nuovo voto
             // se previousVote == 1 e voto == -1 -> voto answer += -2 e aggiorno relazione con nuovo voto
             if (previousVote == voteAnswer) {
-                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, -voteAnswer);
-                graphDBManager.removeRelationVote(userDisplayNameVoter, answerId);
+                updatedVoteInMongo = documentDBManager.updateVotesAnswerAndReputation(postId, answerId, -voteAnswer);
+                updatedVoteInNeo4j = graphDBManager.removeRelationVote(userDisplayNameVoter, answerId);
             }
             else {
-                documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer - previousVote);
-                graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
+                updatedVoteInMongo = documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer - previousVote);
+                updatedVoteInNeo4j = graphDBManager.insertRelationVote(userDisplayNameVoter, answerId, voteAnswer);
             }
         }
-
-        return true;
+        if(!updatedVoteInMongo){
+            LOGGER.log(Level.SEVERE,"Vote of " + userDisplayNameVoter + " on answer:" + answerId + " not inserted in MongoDB" );
+        }
+        if(!updatedVoteInNeo4j){
+            LOGGER.log(Level.SEVERE,"Vote of " + userDisplayNameVoter + " on answer:" + answerId + " not inserted in Neo4J" );
+        }
+        return updatedVoteInMongo && updatedVoteInNeo4j;
     }
+
     public boolean removeRelationVote(String displayName, String answerId, String postId, int voteAnswer){
-        documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
-        graphDBManager.removeRelationVote(displayName, answerId);
-        return true;
+        boolean updatedVoteInMongo = documentDBManager.updateVotesAnswerAndReputation(postId, answerId, voteAnswer);
+        boolean updatedVoteInNeo4j = graphDBManager.removeRelationVote(displayName, answerId);
+        if(!updatedVoteInMongo){
+            LOGGER.log(Level.SEVERE,"Vote of " + displayName + " on answer:" + answerId + " not removed in MongoDB" );
+        }
+        if(!updatedVoteInNeo4j){
+            LOGGER.log(Level.SEVERE,"Vote of " + displayName + " on answer:" + answerId + " not removed in Neo4j" );
+        }
+        return updatedVoteInMongo && updatedVoteInNeo4j;
     }
 
     /*
@@ -187,14 +248,27 @@ public class DBManager {
      */
 
     public boolean insertFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
-        graphDBManager.insertFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
-        documentDBManager.insertUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
-        return true;
+        boolean updatedVoteInNeo4j = graphDBManager.insertFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
+        boolean updatedVoteInMongo = documentDBManager.insertUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
+        if(!updatedVoteInMongo){
+            LOGGER.log(Level.SEVERE,"Failed insertion of follow relation bewteen " + userDisplayNameFollower + " and " + userDisplayNameFollowed + " in MongoDB" );
+        }
+        if(!updatedVoteInNeo4j){
+            LOGGER.log(Level.SEVERE,"Failed insertion of follow relation bewteen " + userDisplayNameFollower + " and " + userDisplayNameFollowed + " in Neo4j" );
+        }
+        return updatedVoteInMongo && updatedVoteInNeo4j;
     }
+
     public boolean removeFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
-        graphDBManager.removeFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
-        documentDBManager.removeUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
-        return true;
+        boolean updatedVoteInNeo4j = graphDBManager.removeFollowRelationAndUpdate(userDisplayNameFollower, userDisplayNameFollowed);
+        boolean updatedVoteInMongo = documentDBManager.removeUserFollowerAndFollowedRelation(userDisplayNameFollower, userDisplayNameFollowed);
+        if(!updatedVoteInMongo){
+            LOGGER.log(Level.SEVERE,"Failed removal of follow relation bewteen " + userDisplayNameFollower + " and " + userDisplayNameFollowed + " in MongoDB" );
+        }
+        if(!updatedVoteInNeo4j){
+            LOGGER.log(Level.SEVERE,"Failed removal of follow relation bewteen " + userDisplayNameFollower + " and " + userDisplayNameFollowed + " in Neo4j" );
+        }
+        return updatedVoteInMongo && updatedVoteInNeo4j;
     }
 
     public boolean checkFollowRelation(String displayName, String displayNameToCheck) {

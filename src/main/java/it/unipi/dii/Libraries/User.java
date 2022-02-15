@@ -185,4 +185,23 @@ public class User implements Serializable {
 
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", password='" + password + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", followersNumber=" + followersNumber +
+                ", followedNumber=" + followedNumber +
+                ", reputation=" + reputation +
+                ", creationDate=" + creationDate +
+                ", lastAccessDate=" + lastAccessDate +
+                ", isAdmin=" + isAdmin +
+                ", location='" + location + '\'' +
+                ", aboutMe='" + aboutMe + '\'' +
+                ", websiteURL='" + websiteURL + '\'' +
+                ", profileImage='" + profileImage + '\'' +
+                '}';
+    }
 }

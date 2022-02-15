@@ -74,7 +74,7 @@ public class DocumentDBManager {
         Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente","$Answers.Score"));
-        Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
+        Bson sortByCountDesc = sort(descending(" users wh"));
         Bson limitStage = limit(num);
 
         postsCollection.aggregate(
@@ -182,10 +182,10 @@ public class DocumentDBManager {
     /*
         db.Posts.find(
             {
-                $text: {$search: "??"},
+                $text: {$search: "copy constructor"},
                 $or:[
-                    {Title: {$regex: /.*??.* /i}},
-                    {Body:{$regex: /.*??.* /i}}
+                    {Title: {$regex: /.*copy constructor.* /i}},
+                    {Body:{$regex: /.*copy constructor.* /i}}
                 ]
             },
             {
@@ -308,7 +308,7 @@ public class DocumentDBManager {
         return (postsCollection.updateOne(
                 Filters.eq("GlobalPostId", answer.getParentPostId()),
                 Updates.push("Answers", answerDocument)
-        ).getModifiedCount()> 0);
+        ).getModifiedCount() > 0);
 
     }
 
@@ -447,7 +447,7 @@ public class DocumentDBManager {
         return true;
     }
 
-    public void updateVotesAnswerAndReputation(String postId, String answerId, int changeVote) {
+    public boolean updateVotesAnswerAndReputation(String postId, String answerId, int changeVote) {
         postsCollection.updateOne(
                 and(eq("GlobalPostId", postId), eq("Answers.answerId", answerId)),
                 Updates.inc("Answers.$.Score", changeVote)
@@ -455,7 +455,7 @@ public class DocumentDBManager {
         Document postDocument = postsCollection.find(and(eq("GlobalPostId", postId), eq("Answers.answerId", answerId)))
                 .first();
         if (postDocument == null) {
-            return;
+            return false;
         }
         List<Document> answerList = postDocument.getList("Answers", Document.class);
         for (Document answer: answerList) {
@@ -473,17 +473,22 @@ public class DocumentDBManager {
                 break;
             }
         }
+        return true;
     }
 
 
-    public void insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
-        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", 1));
-        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", 1));
+    public boolean insertUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
+         return
+            ((usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", 1))).getModifiedCount()> 0)
+            &&
+            (usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", 1)).getModifiedCount()> 0);
     }
 
-    public void removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
-        usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", -1));
-        usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", -1));
+    public boolean removeUserFollowerAndFollowedRelation(String userIdFollower, String userIdFollowed) {
+        return
+            (usersCollection.updateOne(eq("DisplayName", userIdFollower), inc("followedNumber", -1)).getModifiedCount()> 0)
+            &&
+            (usersCollection.updateOne(eq("DisplayName", userIdFollowed), inc("followerNumber", -1)).getModifiedCount()> 0);
     }
 
 }

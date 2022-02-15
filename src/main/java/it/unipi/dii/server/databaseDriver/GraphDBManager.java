@@ -218,7 +218,7 @@ public class GraphDBManager {
     }
 
     //funzione che effettua la query per per inserire il nodo Answer
-    public void insertAnswer(Answer answer){
+    public boolean insertAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("CREATE (a:Answer {answerId: $answerId}); ",
@@ -239,12 +239,14 @@ public class GraphDBManager {
                         parameters("DisplayName", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
                 return null;
             });
+        }catch (Exception e){
+            return false;
         }
-
+        return true;
     }
 
     //funzione che effettua la query per inserire la relazione Follow tra due username
-    public void insertFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
+    public boolean insertFollowRelationAndUpdate(String userDisplayNameFollower, String userDisplayNameFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fd:User {displayName: $userDisplayNameFollowed}), " +
@@ -253,11 +255,12 @@ public class GraphDBManager {
                         parameters("userDisplayNameFollowed", userDisplayNameFollowed, "userDisplayNameFollower", userDisplayNameFollower));
                 return null;
             });
-        }
+        }catch(Exception e){return false;}
+        return true;
     }
 
     //funzione che effettua la query per inserire il nodo Post
-    public void insertPost(Post post){
+    public boolean insertPost(Post post){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx ->{
                 tx.run("CREATE (q:Question {QuestionId: $questionId, Title: $title}); ",
@@ -277,11 +280,14 @@ public class GraphDBManager {
                         parameters("questionId", post.getGlobalId() ,"tagList", post.getTags()));
                 return null;
             });
+        }catch (Exception e){
+            return false;
         }
+        return true;
     }
 
     //funzione che effettua la query per inserire la relazione Votes tra Answer e Post
-    public void insertRelationVote(String displayName, String answerId, int voteAnswer){
+    public boolean insertRelationVote(String displayName, String answerId, int voteAnswer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {displayName: $displayName}), " +
@@ -294,23 +300,29 @@ public class GraphDBManager {
                         parameters("displayName", displayName, "answerId", answerId, "voteAnswer", voteAnswer));
                 return null;
             });
+        }catch(Exception e){
+            return false;
         }
+        return true;
     }
 
     //funzione che effettua la query per inserire il nodo User
-    public void insertUser(User user){
+    public boolean insertUser(User user){
         try (Session session = dbConnection.session())
         {
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run( "CREATE (u:User {displayName: $displayName}); ",
-                        parameters( "displayName", user.getDisplayName() ) );
-                return null;
-            });
+              session.writeTransaction((TransactionWork<Void>) tx -> {
+                 tx.run( "CREATE (u:User {displayName: $displayName}); ",
+                        parameters( "displayName", user.getDisplayName()));
+                 return null;
+             });
+             return true;
+        }catch (Exception e) {
+            return false;
         }
     }
 
     //funzione che effettua la query per rimuovere il nodo Answer
-    public void removeAnswer(Answer answer){
+    public boolean removeAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (a:Answer {answerId: $answerId}) " +
@@ -330,11 +342,14 @@ public class GraphDBManager {
                         parameters("displayName", answer.getOwnerUserName(), "answerId", answer.getAnswerId()));
                 return null;
             });
+        }catch (Exception e) {
+            return false;
         }
+        return true;
     }
 
     //funzione che effettua la query per rimuovere la relazione Follows tra due utenti
-    public void removeFollowRelationAndUpdate(String userDisplayNameFollower, String userdisplayNameFollowed){
+    public boolean removeFollowRelationAndUpdate(String userDisplayNameFollower, String userdisplayNameFollowed){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (fr:User {displayName: $userDisplayNameFollower})-[r:FOLLOW]->(fd:User {displayName: $userdisplayNameFollowed}) " +
@@ -342,7 +357,10 @@ public class GraphDBManager {
                         parameters("userDisplayNameFollower", userDisplayNameFollower, "userdisplayNameFollowed", userdisplayNameFollowed));
                 return null;
             });
+        }catch (Exception e) {
+            return false;
         }
+        return true;
     }
 
 
@@ -376,7 +394,7 @@ public class GraphDBManager {
         }
     }
 
-    public void removeRelationVote(String displayName, String answerId){
+    public boolean removeRelationVote(String displayName, String answerId){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (:User {displayName: $displayName})-[r:VOTE]->(:Answer {answerId: $answerId})" +
@@ -384,17 +402,21 @@ public class GraphDBManager {
                         parameters("displayName", displayName, "answerId", answerId));
                 return null;
             });
-        }
+        }catch (Exception e){return false;}
+        return true;
     }
 
-    public void removeUser(String displayName){
+    public boolean removeUser(String displayName){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MATCH (u:User {displayName: $displayName}) DETACH DELETE u;",
                         parameters("displayName", displayName));
                 return null;
             });
+        }catch (Exception e) {
+            return false;
         }
+        return true;
     }
 
     public int getVote(String displayName, String answerId){
