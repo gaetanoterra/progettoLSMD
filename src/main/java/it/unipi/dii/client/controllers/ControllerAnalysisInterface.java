@@ -244,7 +244,7 @@ public class ControllerAnalysisInterface {
         table_column_title.setCellValueFactory(new MapValueFactory("Title"));
     }
 
-    public void resetMostAnsweredTopUsersPosts(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
+    public void resetMostAnsweredTopUsersPosts(){ if(mostAnsweredTopUsersPostsObservableMap != null) mostAnsweredTopUsersPostsObservableMap.clear(); }
 
     //TODO: fare questa query con un hashmap
     public void fillMostAnsweredTopUsersPosts(HashMap<User, ArrayList<Post>>  map){
