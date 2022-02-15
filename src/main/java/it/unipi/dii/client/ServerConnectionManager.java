@@ -98,7 +98,7 @@ public class ServerConnectionManager extends Thread {
                     case Message_Get_User_Data:
                         MessageGetUserData messageGetUserData = (MessageGetUserData) message;
                         if (messageGetUserData.getProfileType())
-                            ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType()); //da modificare per il personal profile
+                            ClientInterface.fillProfileInterface(messageGetUserData.getObject());
                         else
                             ClientInterface.loadExternalProfile(messageGetUserData.getObject(), messageGetUserData.getPageType());
                         break;
