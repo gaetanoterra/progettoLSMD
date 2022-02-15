@@ -80,11 +80,11 @@ public class DBManager {
                     .setReputation(0);
             boolean insertedUserInMongoDB = documentDBManager.insertUser(newUser);
             if (!insertedUserInMongoDB) {
-                LOGGER.log(Level.SEVERE, "Faield to insert User in MongoDB " + newUser);
+                LOGGER.log(Level.SEVERE, "Failed to insert User in MongoDB " + newUser);
             }
             boolean insertedUserInNeo4J = graphDBManager.insertUser(newUser);
             if(!insertedUserInNeo4J){
-                LOGGER.log(Level.SEVERE, "Faield to insert User in Neo4j  " + newUser);
+                LOGGER.log(Level.SEVERE, "Failed to insert User in Neo4j  " + newUser);
             }
             return insertedUserInMongoDB && insertedUserInNeo4J ;
         }
@@ -95,10 +95,10 @@ public class DBManager {
     public boolean removeUser(User user){
         boolean removedUserMongoDB = graphDBManager.removeUser(user.getDisplayName());
         if (!removedUserMongoDB) {
-            LOGGER.log(Level.SEVERE, "Faield to remove User in MongoDB " + user);
+            LOGGER.log(Level.SEVERE, "Failed to remove User in MongoDB " + user);
         }
         if(!documentDBManager.removeUser(user.getDisplayName())) {
-            LOGGER.log(Level.SEVERE, "Faield to remove User in Neo4j " + user);
+            LOGGER.log(Level.SEVERE, "Failed to remove User in Neo4j " + user);
             return false;
         }
         return removedUserMongoDB;
@@ -107,7 +107,7 @@ public class DBManager {
 
     public boolean updateUserData(User user){
          if(!documentDBManager.updateUserData(user)){
-             LOGGER.log(Level.SEVERE, "Faield to update User data in MongoDB " + user);
+             LOGGER.log(Level.SEVERE, "Failed to update User data in MongoDB " + user);
              return false;
          }
          return true;

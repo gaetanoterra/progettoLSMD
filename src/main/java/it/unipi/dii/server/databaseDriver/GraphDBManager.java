@@ -221,8 +221,8 @@ public class GraphDBManager {
     public boolean insertAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("CREATE (a:Answer {answerId: $answerId, }); ",
-                        parameters("answerId", answer.getAnswerId()));
+                tx.run("CREATE (a:Answer {answerId: $answerId, body: $ansBody}); ",
+                        parameters("answerId", answer.getAnswerId(), "ansBody", answer.getBody()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {

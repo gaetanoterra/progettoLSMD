@@ -74,7 +74,7 @@ public class DocumentDBManager {
         Bson unwindAnswers = unwind("$Answers");
         //raggruppando su un attributo, questo dovrebbe diventare _id, e perde il nome originale
         Bson groupByOwnerUserId = group("$Answers.OwnerDisplayName", sum("totaleRisposteUtente","$Answers.Score"));
-        Bson sortByCountDesc = sort(descending(" users wh"));
+        Bson sortByCountDesc = sort(descending("totaleRisposteUtente"));
         Bson limitStage = limit(num);
 
         postsCollection.aggregate(
