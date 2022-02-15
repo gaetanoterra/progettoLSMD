@@ -511,7 +511,7 @@ public class GraphDBManager {
         RETURN top_users, title, answers_no
      */
 
-    public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
+    public HashMap<User, ArrayList<Post>> findMostAnsweredTopUserPosts() {
         String query =
                 """
                 MATCH (topUsers:User)<-[f:FOLLOW]-(otherUsers:User)
@@ -522,9 +522,9 @@ public class GraphDBManager {
                     MATCH (a:Answer)-[b_to:BELONGS_TO]->(quest:Question)<-[pq:POSTS_QUESTION]-(u:User{displayName:top_users})
                     WITH u.displayName as t_users, quest.Title as title, count(*) as answers_no
                     ORDER BY u.displayName, answers_no DESC LIMIT 3
-                    RETURN title, answers_no
+                    RETURN title
                 }
-                RETURN top_users, title, answers_no
+                RETURN top_users, title
                 """;
 
         try(Session session = dbConnection.session()){
@@ -532,10 +532,12 @@ public class GraphDBManager {
                 HashMap<User, ArrayList<Post>> mostAnsweredTopUserPostsHashMap = new HashMap<>();
                 Result result = tx.run(query);
                 while (result.hasNext()) {
-                    User u = new User().setDisplayName(result.next().get("top_users").asString());
+                    Record record = result.next();
+
+                    User u = new User().setDisplayName(record.get("top_users").asString());
                     Post p = new Post()
-                            .setTitle(result.next().get("title").asString())
-                            .setOwnerUserName(result.next().get("top_users").asString());
+                            .setTitle(record.get("title").asString())
+                            .setOwnerUserName(record.get("top_users").asString());
                     if(!mostAnsweredTopUserPostsHashMap.containsKey(u)){
                         mostAnsweredTopUserPostsHashMap.put(u, new ArrayList<>());
                     }

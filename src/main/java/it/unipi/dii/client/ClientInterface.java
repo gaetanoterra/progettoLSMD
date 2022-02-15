@@ -337,6 +337,11 @@ public class ClientInterface extends Application{
         controllerAnalysisInterface.fillHotTopicsMap(map);
     }
 
+    public static void fillTopUsersPosts(HashMap<User, ArrayList<Post>> map) {
+        controllerAnalysisInterface.resetMostAnsweredTopUsersPosts();
+        controllerAnalysisInterface.fillMostAnsweredTopUsersPosts(map);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                                //
     //                                         EXTERNAL PROFILE APIs                                                  //
