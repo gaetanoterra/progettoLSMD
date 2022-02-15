@@ -7,6 +7,7 @@ import it.unipi.dii.Libraries.User;
 import it.unipi.dii.client.ClientInterface;
 import it.unipi.dii.client.ServerConnectionManager;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,7 +16,9 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import javafx.util.Pair;
 
 import java.util.Map.*;
@@ -55,12 +58,19 @@ public class ControllerAnalysisInterface {
     @FXML
     private TableColumn<Map<String, String>, String> table_column_user, table_column_tags;
 
+    @FXML
+    private TableView<Map<String, String>> table_view_most_answered_top_users_posts;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> table_column_username, table_column_title;
+
     public void initAnalyticsInterface(PageType pageType) throws IOException {
         lastPageVisited = pageType;
         initMPUsersList();
         initTagsChart();
         initExpertUsersList();
         initHotTopicsMap();
+        iniMostAnsweredTopUsersPosts();
     }
 
 
@@ -228,18 +238,18 @@ public class ControllerAnalysisInterface {
 
     public void iniMostAnsweredTopUsersPosts() throws IOException {
         mostAnsweredTopUsersPostsObservableMap = FXCollections.observableArrayList();
-        serverConnectionManager.send(new MessageAnalyticHotTopics(null));
+        serverConnectionManager.send(new MessageGetTopUsersPosts(null));
 
-        table_column_user.setCellValueFactory(new MapValueFactory("User"));
-        table_column_tags.setCellValueFactory(new MapValueFactory("Tags"));
+        table_column_username.setCellValueFactory(new MapValueFactory("Username"));
+        table_column_title.setCellValueFactory(new MapValueFactory("Title"));
     }
 
     public void resetMostAnsweredTopUsersPosts(){ if(hotTopicsObservableMap != null) hotTopicsObservableMap.clear(); }
 
     //TODO: fare questa query con un hashmap
-    public void fillMostAnsweredTopUsersPosts(HashMap<User, ArrayList<Pair<Post, Integer>>>  map){
+    public void fillMostAnsweredTopUsersPosts(HashMap<User, ArrayList<Post>>  map){
 
-        HashMap<User, ArrayList<Pair<Post, Integer>>> lista = map;
+        HashMap<User, ArrayList<Post>> lista = map;
 
         Iterator it = lista.entrySet().iterator();
 
@@ -249,26 +259,22 @@ public class ControllerAnalysisInterface {
 
             Entry item = (Entry) it.next();
             User u = (User) item.getKey();
-            ArrayList<Pair<Post, Integer>> elem = (ArrayList<Pair<Post, Integer>>) item.getValue();
+            ArrayList<Post> elem = (ArrayList<Post>) item.getValue();
             String s = "";
 
-            for (Pair<Post, Integer> e:elem) {
-                s = s + e.getKey().getTags().toString() + "(" + e.getValue() + ") ";
-            }
+            rawData.put("Username", u.getDisplayName());
+            rawData.put("Title", elem.get(0).getTitle());
 
-            rawData.put("User", u.getDisplayName());
-            rawData.put("Tags", s);
-
-            hotTopicsObservableMap.add(rawData);
+            mostAnsweredTopUsersPostsObservableMap.add(rawData);
         }
 
-        table_view_hot_topics.setItems(hotTopicsObservableMap);
+        table_view_most_answered_top_users_posts.setItems(mostAnsweredTopUsersPostsObservableMap);
     }
 
-    public void eventShowMostAnsweredTopUsersPost(MouseEvent mouseEvent) {
+    public void eventShowHotUserOrPost(MouseEvent mouseEvent) {
 
         //ClientInterface.switchScene(PageType.EXTERNAL_PROFILE);
-        System.out.println(table_view_hot_topics.getSelectionModel().getSelectedItem());
+        System.out.println(table_view_most_answered_top_users_posts.getSelectionModel().getSelectedItem());
     }
 
 

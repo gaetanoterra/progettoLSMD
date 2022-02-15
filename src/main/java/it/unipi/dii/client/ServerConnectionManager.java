@@ -119,6 +119,8 @@ public class ServerConnectionManager extends Thread {
                         break;
 
                     case Message_Get_Top_Users_Posts:
+                        MessageGetTopUsersPosts messageGetTopUsersPosts = (MessageGetTopUsersPosts) message;
+                        ClientInterface.fillTopUsersPosts(messageGetTopUsersPosts.getObject());
                         break;
 
                     case Message_Analytics_Most_Popular_Tags:

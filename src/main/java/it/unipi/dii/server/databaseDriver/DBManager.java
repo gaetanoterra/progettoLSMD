@@ -32,7 +32,7 @@ public class DBManager {
     /*
     --------------------------- ANALYTICS ---------------------------
      */
-    public Map<User, ArrayList<Post>> findMostAnsweredTopUserPosts(){ return graphDBManager.findMostAnsweredTopUserPosts(); }
+    public HashMap<User, ArrayList<Post>> findMostAnsweredTopUserPosts(){ return graphDBManager.findMostAnsweredTopUserPosts(); }
 
     public String[] findTopExpertsByTag(String tagName, int numExperts){ return documentDBManager.findTopExpertsByTag(tagName, numExperts); }
 
