@@ -221,15 +221,19 @@ public class GraphDBManager {
     public boolean insertAnswer(Answer answer){
         try(Session session = dbConnection.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("CREATE (a:Answer {answerId: $answerId}); ",
+                tx.run("CREATE (a:Answer {answerId: $answerId, }); ",
                         parameters("answerId", answer.getAnswerId()));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (a:Answer {answerId: $answerId}), " +
+                tx.run("MATCH (a:Answer {answerId: $answerId, body: $ansBody}), " +
                                 "(q:Question {QuestionId: $questionId}) " +
                                 "CREATE (a)-[:BELONGS_TO]->(q); ",
-                        parameters("answerId", answer.getAnswerId(), "questionId", answer.getParentPostId()));
+                        parameters(
+                                "answerId", answer.getAnswerId(),
+                                "questionId", answer.getParentPostId(),
+                                "ansBody", answer.getBody()
+                        ));
                 return null;
             });
             session.writeTransaction((TransactionWork<Void>) tx -> {
